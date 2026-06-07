@@ -154,11 +154,26 @@ class ClientTile extends StatelessWidget {
                           color: const Color(0xFF4CAF50),
                         ),
                         _StatPill(
+                          label: '上传',
+                          value: stats.uploadingCount.toString(),
+                          color: const Color(0xFF2196F3),
+                        ),
+                        _StatPill(
                           label: '错误',
                           value: stats.errorCount.toString(),
                           color: stats.errorCount > 0
                               ? const Color(0xFFE53935)
                               : Colors.grey,
+                        ),
+                        _StatPill(
+                          label: '校验',
+                          value: stats.checkingCount.toString(),
+                          color: const Color(0xFF9C27B0),
+                        ),
+                        _StatPill(
+                          label: '等待',
+                          value: stats.waitingCount.toString(),
+                          color: const Color(0xFF607D8B),
                         ),
                         _StatPill(
                           label: '暂停上传',
