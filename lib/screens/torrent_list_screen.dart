@@ -5,6 +5,7 @@ import '../providers/torrent_provider.dart';
 import '../providers/client_provider.dart';
 import '../widgets/torrent_tile.dart';
 import '../widgets/empty_state.dart';
+import 'torrent_detail_screen.dart';
 
 class TorrentListScreen extends StatelessWidget {
   const TorrentListScreen({super.key});
@@ -87,6 +88,10 @@ class TorrentListScreen extends StatelessWidget {
                         onTap: () {
                           if (tp.selectMode) {
                             tp.toggleSelection(t.hash);
+                          } else {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (_) => TorrentDetailScreen(torrent: t),
+                            ));
                           }
                         },
                       );
