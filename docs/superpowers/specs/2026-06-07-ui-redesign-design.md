@@ -1,126 +1,216 @@
-# UI Redesign — 2026-06-07
+# Bit Manager UI Redesign — 2026-06-07
 
-## 目标
-专注下载管理的效率工具，让用户**快速查看各客户端状态 → 查看种子 → 处理异常**。
+## 1. Concept & Vision
 
-## 核心原则
-- **错误 > 下载中 > 其他** — 视觉权重按此顺序递减
-- 信息分层清晰，扫描效率优先
-- 保留所有现有数据（12项指标不删减）
+A modern torrent management app that feels calm and professional. Information is organized into clear visual hierarchy — the most important data (speeds, status) are immediately visible, while secondary details stay accessible but unobtrusive. The interface should feel like a well-designed dashboard: dense with information, yet never overwhelming.
 
 ---
 
-## 1. Home 概览 — 客户端状态
+## 2. Design Language
 
-### 全局速度展示（置顶）
-- 超大字号显示总下载/上传速度
-- 简洁无边框，以数字大小体现重要性
+### Aesthetic Direction
+Modern card-based dashboard. Inspired by fintech and health apps — clean, spacious cards with subtle depth, clear typographic hierarchy, purposeful use of color only for status indication.
 
-### ClientTile 重设计
+### Color Palette
+- **Primary**: `#1A5C8A` (light) / `#4D9FD8` (dark)
+- **Background**: `#F5F7FA` (light) / `#111318` (dark)
+- **Surface/Card**: theme surface color with 1px border `outlineVariant`
+- **Download**: `#4CAF50` green
+- **Upload/Seeding**: `#2196F3` blue
+- **Paused**: `#FF9800` orange
+- **Error**: `#E53935` red
+- **Text primary**: `onSurface` / secondary: `onSurfaceVariant`
 
-**12项指标分3组，视觉分层：**
+### Typography
+- **Speed hero numbers**: 48px, weight 800
+- **Card titles**: 15px, weight 600
+- **Body/labels**: 13-14px, weight 400-500
+- **Caption/secondary**: 11-12px, weight 400
 
+### Spatial System
+- Card border-radius: 12px
+- Card padding: 16px
+- Card gap (grid): 12px
+- Section spacing: 16-24px
+- Inner element spacing: 8-12px
+
+### Motion
+- No decorative animations
+- Only functional transitions: list item taps, modal sheets, loading states
+
+---
+
+## 3. Layout & Structure
+
+### Navigation
+Bottom NavigationBar with 4 tabs: Overview, Torrents, RSS, Settings. Already implemented.
+
+### HomeScreen (Overview)
 ```
-┌──────────────────────────────────────────────────────────────┐
-│ ● qBittorrent                              ⬇ 12.5 MB/s ⬆ 1.2 MB/s │
-│   192.168.1.100:8080                                               │
-├──────────────────────────────────────────────────────────────┤
-│  [在线]    下载:3    做种:12    错误:2        ← 高亮组（重点）    │
-│  暂停上传:1  暂停下载:0  校验中:0  等待中:5    ← 中等组           │
-│  上传限速:不限  下载限速:不限  剩余:1.2TB     ← 次要组           │
-└──────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────┐
+│  Hero Speed Card (full width)    │
+│  ┌─────────────┬─────────────┐   │
+│  │  ⬇ 12.5 MB/s│  ⬆ 1.2 MB/s │   │
+│  │    下载      │    上传      │   │
+│  └─────────────┴─────────────┘   │
+├──────────────────────────────────┤
+│  客户端 (2)              [管理]  │
+│  ┌─────────────┬─────────────┐  │
+│  │ NAS-qBitt ● │ Home-Trans○ │  │
+│  │ ⬇2 ⬆1     │ offline    │  │
+│  │ 12.5 MB/s   │            │  │
+│  │ 做种3 下载2  │            │  │
+│  └─────────────┴─────────────┘  │
+└──────────────────────────────────┘
 ```
 
-**视觉规则：**
-- 错误数 > 0：整卡左边 `4px 红色竖条` + 错误数字 `红色高亮`
-- 离线客户端：整卡 `60% 透明度灰化`，不可点击
-- 12项指标通过**行间距和字号**区分层级，不做分区块背景
+- Hero card: full-width, gradient background, two speed columns with icons
+- Section header with count + "管理" button
+- 2-column grid of ClientCards
+- Each ClientCard: name + status dot, speed, 3 stat pills (做种/下载/错误), free space
 
----
+### ClientListScreen
+- Full client list with detailed stats
+- Each item as expanded card showing all stats
 
-## 2. 种子列表 — 优先级分层
-
-### Tab Bar
-`全部` / `下载中` / `错误异常` / `做种中`
-
-- 默认选中「全部」
-- 错误异常 Tab 有badge显示错误数量，>0 时红色圆点提醒
-
-### TorrentTile 视觉规则
-
-| 状态 | 左边框 | 背景色 | 进度条 |
-|------|--------|--------|--------|
-| **错误异常** | `4px #E53935` 红色 | 淡红晕染 `rgba(229,57,53,0.05)` | 红色 |
-| **下载中** | `4px #4CAF50` 绿色 | 淡绿晕染 `rgba(76,175,80,0.05)` | 绿色，粗 |
-| **做种中** | `4px #2196F3` 蓝色 | 淡蓝晕染 `rgba(33,150,243,0.05)` | 蓝色 |
-| **已暂停** | `4px #FF9800` 橙色 | 淡橙晕染 | 橙色 |
-| **其他** | `1px #E0E0E0` 灰色 | 无 | 灰色细条 |
-
-### 每行信息分组
-```
-┌──────────────────────────────────────────────────────────────┐
-│ [状态Chip]                                          进度条 80% │
-│ 种子名称啊啊啊...                                            │
-│ ⬇ 12.5 MB/s  ⬆ 1.2 MB/s          做种 12/45   1.2GB   06-07│
-└──────────────────────────────────────────────────────────────┘
-```
-- 第一行：名称（主） + 状态Chip + 进度（下载中显示）
-- 第二行：下载/上传速度 + 做种数 + 总大小 + 添加日期
-
----
-
-## 3. 配色体系
-
-### 状态色
-- 错误：`#E53935`（红）
-- 下载中：`#4CAF50`（绿）
-- 做种中：`#2196F3`（蓝）
-- 已暂停：`#FF9800`（橙）
-- 校验/队列：`#9E9E9E`（灰）
-
-### 速度色
-- 下载速度：`#4CAF50`（绿）
-- 上传速度：`#2196F3`（蓝）
-
-### 背景色
-- 错误异常行：`rgba(229,57,53,0.05)`
-- 下载中行：`rgba(76,175,80,0.05)`
-- 做种中行：`rgba(33,150,243,0.05)`
-
----
-
-## 4. 布局优化
-
-### ClientTile 紧凑化
-- 缩小第二/三组的字号（12 → 11px）
-- 减小行间距，让12项在固定高度内展示
-- 不使用分区块背景，用竖线/间距区分层级
-
-### TorrentTile 紧凑化
-- 去掉站点信息行（种子名已包含）
-- 去掉保存路径显示（TorrentDetailScreen 展示）
-- 长名称截断，显示最关键信息
-
-### 间距规范
-- 列表项垂直间距：`4px`（更紧凑）
-- 列表项内 padding：`12px`
-- 区块间距：`16px`
-
----
-
-## 5. 其他页面
+### TorrentListScreen
+- Filter bar at top (状态 tabs): 全部/下载中/错误异常/做种中
+- Each TorrentTile: compact 2-row layout
+  - Row 1: checkbox (if select mode) + name + StatusChip + progress%
+  - Row 2: ⬇ speed + ⬆ speed + 做种peer + size + date
+- Left border color indicates state (already implemented)
 
 ### TorrentDetailScreen
-- 保持现有布局，仅微调样式
-- Section 左边竖条颜色与状态对应
+```
+┌──────────────────────────────────┐
+│ [暂停]  [恢复]  [删除]            │
+├──────────────────────────────────┤
+│ 进度 ─────────────────── 78.5%  │
+│ 2.3GB / 3.1GB        ETA: 2h30m │
+├──────────────────────────────────┤
+│ ⬇ 12.5 MB/s  ⬆ 1.2 MB/s  📊 2.1│
+├──────────────────────────────────┤
+│ 做种 12/15         下载 3/8      │
+├──────────────────────────────────┤
+│ 信息 ────────────────────────────│
+│ Hash: abc123...                  │
+│ 状态: 下载中                     │
+│ 总大小: 3.1GB                   │
+│ 添加时间: 2024-01-15            │
+│ 保存路径: /downloads             │
+├──────────────────────────────────┤
+│ 文件 (5) ───────────────────────│
+│ [file1.mp4] ████████░░ 1.2GB   │
+│ [file2.jpg] ██████████ 12MB     │
+├──────────────────────────────────┤
+│ Tracker (2) ─────────────────────│
+│ tracker1.com ✓  5 peers         │
+│ tracker2.com ✓  3 peers         │
+│ [+ 添加 Tracker]                 │
+└──────────────────────────────────┘
+```
 
-### SettingsScreen / ClientFormScreen
-- 保持现有布局，不作调整
+### RSS Screens
+- Source list: icon + name + item count + last fetched
+- Items list: title + date + duplicate/downloaded badge
+
+### SettingsScreen
+- Grouped list tiles for preferences
 
 ---
 
-## 实现优先级
-1. **Home 概览重设计** — ClientTile 视觉分层 + 错误红条
-2. **种子列表重设计** — TabBar + 状态边框 + 背景色
-3. **TorrentTile 精简** — 去掉次要信息，保留扫描重点
-4. **配色/主题统一** — 全局状态色规范
+## 4. Features & Interactions
+
+### HomeScreen
+- Pull-to-refresh: triggers stats refresh
+- Tap client card → navigates to client detail (future)
+- Tap "管理" → ClientListScreen
+
+### TorrentListScreen
+- Long press → enter select mode
+- Tap item → TorrentDetailScreen
+- Filter tabs → instant filter, no loading
+- Search → existing delegate
+- Filter sheet → client/name/category filters
+
+### TorrentDetailScreen
+- Tap action buttons: pause/resume/delete with snackbar feedback
+- File list: scrollable, max 300px height
+- Tracker: tap to replace/remove
+- Add tracker: dialog with URL input
+
+### Client Management
+- Add/edit client: form with validation
+- Test connection: shows success/fail snackbar
+- Delete: confirmation dialog
+
+---
+
+## 5. Component Inventory
+
+### SpeedHeroCard (new)
+- Full-width gradient container
+- Two columns: download (green icon) + upload (blue icon)
+- Large number (48px) + small unit label
+- Divider between columns
+
+### ClientCard (redesign of ClientTile)
+- 2-column grid item
+- Top: name + online dot
+- Middle: ⬇ speed + ⬆ speed with icons
+- Bottom row: 3 pills — 做种(n), 下载(n), 错误(n)
+- Footer: free space
+- Error state: red left border (4px)
+
+### TorrentTile (existing, minor tweaks)
+- Keep current 2-row compact layout
+- Ensure progress bar min-height 6px for downloading, 4px otherwise
+- StatusChip already good
+
+### StatusChip (existing)
+- Icon + label in colored pill
+- Background color 8% opacity, border 20% opacity
+
+### SectionCard (for detail screen)
+- Left color bar (3px) + title
+- Padding 16px
+- Border: 1px outlineVariant
+
+### StatItem
+- Icon + value + label stacked
+- Background: color 6% opacity, radius 8px
+
+---
+
+## 6. Technical Approach
+
+### Framework
+- Flutter with Material 3 (already in use)
+- Provider for state management (already in use)
+
+### Changes by File
+
+**New files:**
+- `lib/widgets/speed_hero_card.dart` — Hero speed display for HomeScreen
+
+**Modified files:**
+- `lib/widgets/client_tile.dart` — Redesign as grid card with stats pills
+- `lib/screens/home_screen.dart` — Use SpeedHeroCard + grid layout
+- `lib/screens/torrent_detail_screen.dart` — Restructure with SectionCard components
+- `lib/widgets/stats_card.dart` — Update for new detail view style
+
+### Implementation Order
+1. SpeedHeroCard — creates the new visual anchor
+2. ClientTile redesign — tests new card language
+3. HomeScreen update — puts it all together
+4. TorrentDetailScreen sections — refines detail view
+5. Stats_card.dart cleanup — if needed
+
+---
+
+## 7. Out of Scope (This Session)
+
+- RSS UI changes (lowest priority)
+- Settings screen changes
+- New screens or navigation changes
+- Dark/light theme divergence beyond current setup
