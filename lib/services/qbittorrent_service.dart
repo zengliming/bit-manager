@@ -102,6 +102,7 @@ class QBittorrentService implements ITorrentClientService {
       case 'queuedDL':
         return TorrentState.queued;
       case 'stalledUP':
+        return TorrentState.seeding;
       case 'stalledDL':
         return TorrentState.downloading;
       case 'metaDL':
@@ -128,11 +129,27 @@ class QBittorrentService implements ITorrentClientService {
     final resp = await _get(config, AppConstants.qbTorrents, sid: sid);
     final rawData = resp.data;
     final List<dynamic> rawList = (rawData is List) ? rawData : [];
-    return rawList.map((json) {
+    final torrents = <Torrent>[];
+    for (final json in rawList) {
       final m = (json is Map<String, dynamic>) ? json : <String, dynamic>{};
-      return Torrent(
-        id: m['hash'] as String? ?? '',
-        hash: m['hash'] as String? ?? '',
+      final hash = m['hash'] as String? ?? '';
+      final trackers = (m['tracker'] as String?) != null && (m['tracker'] as String).isNotEmpty
+          ? [(m['tracker'] as String)]
+          : <String>[];
+      final trackerStatuses = <String>[];
+      if (hash.isNotEmpty) {
+        try {
+          final trackerInfos = await getTrackers(config, hash);
+          trackerStatuses.addAll(trackerInfos.map((tracker) => tracker.status));
+          if (trackers.isEmpty) {
+            trackers.addAll(trackerInfos.map((tracker) => tracker.url).where((url) => url.isNotEmpty));
+          }
+        } catch (_) {}
+      }
+
+      torrents.add(Torrent(
+        id: hash,
+        hash: hash,
         name: m['name'] as String? ?? 'Unknown',
         clientId: config.id,
         clientType: config.type,
@@ -151,17 +168,17 @@ class QBittorrentService implements ITorrentClientService {
         eta: (m['eta'] as num?)?.toInt() ?? 0,
         error: m['error'] as String?,
         savePath: m['save_path'] as String?,
+        trackers: trackers,
+        trackerStatuses: trackerStatuses,
         addedAt: (m['added_on'] as num?) != null
-            ? DateTime.fromMillisecondsSinceEpoch(
-                (m['added_on'] as int) * 1000)
+            ? DateTime.fromMillisecondsSinceEpoch((m['added_on'] as int) * 1000)
             : null,
-        completedAt: (m['completion_on'] as num?) != null &&
-                (m['completion_on'] as int) > 0
-            ? DateTime.fromMillisecondsSinceEpoch(
-                (m['completion_on'] as int) * 1000)
+        completedAt: (m['completion_on'] as num?) != null && (m['completion_on'] as int) > 0
+            ? DateTime.fromMillisecondsSinceEpoch((m['completion_on'] as int) * 1000)
             : null,
-      );
-    }).toList();
+      ));
+    }
+    return torrents;
   }
 
   @override
@@ -182,6 +199,39 @@ class QBittorrentService implements ITorrentClientService {
       uploadSpeed: (transfer['up_info_speed'] as num?)?.toInt() ?? 0,
       sizeOnDisk: 0,
     );
+  }
+
+  @override
+  Future<int> getFreeSpace(ClientConfig config) async {
+    final sid = await _login(config);
+    if (sid == null) return 0;
+    try {
+      final resp = await _get(config, '/api/v2/sync/maindata', sid: sid);
+      final data = resp.data as Map<String, dynamic>? ?? {};
+      final serverState = data['server_state'] as Map<String, dynamic>? ?? {};
+      return (serverState['freeSpaceOnDisk'] as num?)?.toInt() ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  @override
+  Future<List<int>> getSpeedLimits(ClientConfig config) async {
+    final sid = await _login(config);
+    if (sid == null) return [0, 0];
+    try {
+      final dlResp = await _get(config, '/api/v2/transfer/downloadLimit', sid: sid);
+      final dlData = dlResp.data as Map<String, dynamic>? ?? {};
+      final dlLimit = (dlData['limit'] as num?)?.toInt() ?? 0;
+
+      final ulResp = await _get(config, '/api/v2/transfer/uploadLimit', sid: sid);
+      final ulData = ulResp.data as Map<String, dynamic>? ?? {};
+      final ulLimit = (ulData['limit'] as num?)?.toInt() ?? 0;
+
+      return [dlLimit, ulLimit];
+    } catch (_) {
+      return [0, 0];
+    }
   }
 
   @override
@@ -257,7 +307,8 @@ class QBittorrentService implements ITorrentClientService {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
     final resp = await _get(
-        config, '${AppConstants.qbTorrentTrackers}/$hash',
+        config, AppConstants.qbTorrentTrackers,
+        params: {'hash': hash},
         sid: sid);
     final List<dynamic> rawList = resp.data;
     return rawList.map((json) {

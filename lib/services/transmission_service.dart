@@ -17,10 +17,15 @@ class TransmissionService implements ITorrentClientService {
         '${config.baseUrl}${AppConstants.trRpc}',
         data: {'method': 'session-get'},
         options: Options(
-          validateStatus: (status) => status == 409,
+          validateStatus: (status) => status != null && status >= 200 && status < 500,
         ),
       );
-      return resp.headers.value('x-transmission-session-id');
+      // 优先从响应头取 session ID
+      final sid = resp.headers.value('x-transmission-session-id');
+      if (sid != null) return sid;
+      // 状态 200 说明已认证成功，使用标记
+      if (resp.statusCode == 200) return 'authenticated';
+      return null;
     } catch (_) {
       return null;
     }
@@ -104,7 +109,6 @@ class TransmissionService implements ITorrentClientService {
   @override
   Future<List<Torrent>> getTorrents(ClientConfig config) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
 
     final result = await _rpcCall(config, 'torrent-get',
         args: {
@@ -131,6 +135,7 @@ class TransmissionService implements ITorrentClientService {
             'addedDate',
             'doneDate',
             'trackerList',
+            'trackerStats',
           ],
         },
         sessionId: sid);
@@ -173,6 +178,7 @@ class TransmissionService implements ITorrentClientService {
                 (m['doneDate'] as int) * 1000)
             : null,
         trackers: _parseTrackerList(m['trackerList'] as String? ?? ''),
+        trackerStatuses: _parseTrackerStatuses(m['trackerStats']),
       );
     }).toList();
   }
@@ -185,10 +191,17 @@ class TransmissionService implements ITorrentClientService {
         .toList();
   }
 
+  List<String> _parseTrackerStatuses(dynamic trackerStatsRaw) {
+    final stats = (trackerStatsRaw is List) ? trackerStatsRaw : <dynamic>[];
+    return stats
+        .map((s) => (s is Map<String, dynamic>) ? s['lastAnnounceResult'] as String? ?? '' : '')
+        .where((status) => status.isNotEmpty)
+        .toList();
+  }
+
   @override
   Future<ClientStats> getStats(ClientConfig config) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
 
     final result = await _rpcCall(config, 'session-stats', sessionId: sid);
     final args = _safeMap(result['arguments']);
@@ -197,10 +210,56 @@ class TransmissionService implements ITorrentClientService {
       clientId: config.id,
       clientName: config.name,
       type: config.type,
-      online: true,
+      online: sid != null,
       downloadSpeed: (args['downloadSpeed'] as num?)?.toInt() ?? 0,
       uploadSpeed: (args['uploadSpeed'] as num?)?.toInt() ?? 0,
     );
+  }
+
+  @override
+  Future<int> getFreeSpace(ClientConfig config) async {
+    try {
+      // 先获取默认下载目录
+      final sid = await _getSessionId(config);
+      final sessResult = await _rpcCall(config, 'session-get',
+          args: {'fields': ['download-dir']}, sessionId: sid);
+      final sessArgs = _safeMap(sessResult['arguments']);
+      final downloadDir = sessArgs['download-dir'] as String? ?? '/downloads';
+
+      // 查询 free-space
+      final freeResult = await _rpcCall(config, 'free-space',
+          args: {'path': downloadDir}, sessionId: sid);
+      final freeArgs = _safeMap(freeResult['arguments']);
+      return (freeArgs['size'] as num?)?.toInt() ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  @override
+  Future<List<int>> getSpeedLimits(ClientConfig config) async {
+    try {
+      final sid = await _getSessionId(config);
+      final result = await _rpcCall(config, 'session-get',
+          args: {'fields': [
+            'speed-limit-down', 'speed-limit-down-enabled',
+            'speed-limit-up', 'speed-limit-up-enabled',
+          ]}, sessionId: sid);
+      final args = _safeMap(result['arguments']);
+
+      // Transmission 限速单位是 KB/s
+      final dlEnabled = args['speed-limit-down-enabled'] == true;
+      final ulEnabled = args['speed-limit-up-enabled'] == true;
+      final dlLimit = (args['speed-limit-down'] as num?)?.toInt() ?? 0;
+      final ulLimit = (args['speed-limit-up'] as num?)?.toInt() ?? 0;
+
+      return [
+        dlEnabled ? dlLimit * 1024 : 0,
+        ulEnabled ? ulLimit * 1024 : 0,
+      ];
+    } catch (_) {
+      return [0, 0];
+    }
   }
 
   @override
@@ -210,7 +269,6 @@ class TransmissionService implements ITorrentClientService {
         String? savePath,
       }) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final args = <String, dynamic>{'filename': url};
     if (savePath != null) args['download-dir'] = savePath;
     await _rpcCall(config, 'torrent-add', args: args, sessionId: sid);
@@ -222,14 +280,13 @@ class TransmissionService implements ITorrentClientService {
     final fileBytes = await File(filePath).readAsBytes();
     final base64Data = base64Encode(fileBytes);
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final args = <String, dynamic>{'metainfo': base64Data};
     if (savePath != null) args['download-dir'] = savePath;
     await _rpcCall(config, 'torrent-add', args: args, sessionId: sid);
   }
 
   Future<List<int>> _hashToIds(
-      ClientConfig config, List<String> hashes, String sid) async {
+      ClientConfig config, List<String> hashes, String? sid) async {
     final result = await _rpcCall(config, 'torrent-get',
         args: {'fields': ['id', 'hashString']}, sessionId: sid);
     final args = _safeMap(result['arguments']);
@@ -250,7 +307,6 @@ class TransmissionService implements ITorrentClientService {
   @override
   Future<void> pauseTorrent(ClientConfig config, String hash) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-stop',
@@ -261,7 +317,6 @@ class TransmissionService implements ITorrentClientService {
   @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-start',
@@ -273,7 +328,6 @@ class TransmissionService implements ITorrentClientService {
   Future<void> deleteTorrent(ClientConfig config, String hash,
       {bool deleteFiles = false}) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-remove',
@@ -286,7 +340,6 @@ class TransmissionService implements ITorrentClientService {
   Future<List<TrackerInfo>> getTrackers(
       ClientConfig config, String hash) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return [];
     final result = await _rpcCall(config, 'torrent-get',
@@ -313,7 +366,6 @@ class TransmissionService implements ITorrentClientService {
   Future<List<TorrentFile>> getTorrentFiles(
       ClientConfig config, String hash) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return [];
     final result = await _rpcCall(config, 'torrent-get',
@@ -352,7 +404,6 @@ class TransmissionService implements ITorrentClientService {
   Future<void> replaceTracker(
       ClientConfig config, String hash, String oldUrl, String newUrl) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return;
     final trackers = await getTrackers(config, hash);
@@ -366,7 +417,6 @@ class TransmissionService implements ITorrentClientService {
   Future<void> addTracker(
       ClientConfig config, String hash, String trackerUrl) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return;
     final trackers = await getTrackers(config, hash);
@@ -379,7 +429,6 @@ class TransmissionService implements ITorrentClientService {
   Future<void> removeTracker(
       ClientConfig config, String hash, String trackerUrl) async {
     final sid = await _getSessionId(config);
-    if (sid == null) throw Exception('Cannot get Transmission session ID');
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return;
     final trackers = await getTrackers(config, hash);
