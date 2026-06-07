@@ -36,6 +36,7 @@ class RssSourcesScreen extends StatelessWidget {
                 final source = provider.sources[index];
                 return RssSourceTile(
                   source: source,
+                  itemCount: provider.getItems(source.id).length,
                   onTap: () => Navigator.push(context, MaterialPageRoute(
                     builder: (_) => RssItemsScreen(source: source),
                   )),

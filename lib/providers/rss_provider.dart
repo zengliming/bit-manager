@@ -71,31 +71,40 @@ class RssProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---- 查重 ----
+
+  /// 统一查重逻辑：跨所有客户端检查种子是否已存在
+  Future<bool> _isDuplicate(RssItem item, List<ClientConfig> clients) async {
+    if (item.link == null) return false;
+    final link = item.link!;
+    for (final client in clients) {
+      try {
+        final service = ServiceFactory.getService(client.type);
+        final torrents = await service.getTorrents(client);
+        final exists = torrents.any((t) =>
+            t.name == item.title ||
+            (link.startsWith('magnet:') && link.contains(t.hash)) ||
+            (link.contains(t.hash)));
+        if (exists) return true;
+      } catch (_) {}
+    }
+    return false;
+  }
+
   // ---- 获取条目 ----
 
   Future<List<RssItem>> fetchItems(String sourceId, {List<ClientConfig>? clients}) async {
     final source = _sources.firstWhere((s) => s.id == sourceId);
     final rssService = RssService();
     try {
-      final items = await rssService.fetchItems(source);
+      final items = await rssService.fetchItems(source, since: source.lastFetchedAt);
       if (clients != null && clients.isNotEmpty) {
         for (final item in items) {
           if (_downloadedGuids.contains(item.guid)) {
             item.isDownloaded = true;
           }
-          if (item.link != null && item.link!.startsWith('magnet:')) {
-            for (final client in clients) {
-              try {
-                final service = ServiceFactory.getService(client.type);
-                final torrents = await service.getTorrents(client);
-                final exists = torrents.any((t) =>
-                    t.name == item.title || (item.link!.contains(t.hash)));
-                if (exists) {
-                  item.isDuplicate = true;
-                  break;
-                }
-              } catch (_) {}
-            }
+          if (await _isDuplicate(item, clients)) {
+            item.isDuplicate = true;
           }
         }
       }
@@ -120,15 +129,17 @@ class RssProvider extends ChangeNotifier {
       final targetClient = clients.where((c) => c.id == source.assignedClientId).firstOrNull;
       if (targetClient == null) continue;
       try {
-        final items = await rssService.fetchItems(source);
+        final items = await rssService.fetchItems(source, since: source.lastFetchedAt);
+        final allClients = clients; // check all clients, not just target
         for (final item in items) {
           if (_downloadedGuids.contains(item.guid)) continue;
           if (item.link == null) continue;
-          if (!rssService.matchesFilter(item.title, source.filterRegex)) continue;
+          if (source.enableRegex && source.filterRegex != null &&
+              !rssService.matchesFilter(item.title, source.filterRegex)) {
+            continue;
+          }
+          if (await _isDuplicate(item, allClients)) continue;
           final service = ServiceFactory.getService(targetClient.type);
-          final torrents = await service.getTorrents(targetClient);
-          final exists = torrents.any((t) => t.name == item.title);
-          if (exists) continue;
           try {
             await service.addTorrentFromUrl(targetClient, url: item.link!, savePath: source.savePath);
             _downloadedGuids.add(item.guid);

@@ -4,13 +4,18 @@ import '../models/rss_source.dart';
 
 class RssService {
   /// 从 RSS URL 获取并解析条目
-  Future<List<RssItem>> fetchItems(RssSource source) async {
+  /// 如果提供了 [since]，只返回该时间之后的新条目
+  Future<List<RssItem>> fetchItems(RssSource source, {DateTime? since}) async {
     try {
       final response = await http.get(Uri.parse(source.url));
       if (response.statusCode != 200) {
         throw Exception('HTTP ${response.statusCode}');
       }
-      return _parseXml(response.body, source);
+      var items = _parseXml(response.body, source);
+      if (since != null) {
+        items = items.where((item) => item.pubDate.isAfter(since)).toList();
+      }
+      return items;
     } catch (e) {
       throw Exception('Failed to fetch RSS: $e');
     }

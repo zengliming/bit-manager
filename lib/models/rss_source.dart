@@ -3,6 +3,7 @@ class RssSource {
   String name;
   String url;
   String? filterRegex;
+  bool enableRegex;
   bool autoDownload;
   String? assignedClientId;
   int refreshIntervalMinutes;
@@ -15,6 +16,7 @@ class RssSource {
     required this.name,
     required this.url,
     this.filterRegex,
+    this.enableRegex = true,
     this.autoDownload = false,
     this.assignedClientId,
     this.refreshIntervalMinutes = 15,
@@ -28,6 +30,7 @@ class RssSource {
     'name': name,
     'url': url,
     'filterRegex': filterRegex,
+    'enableRegex': enableRegex,
     'autoDownload': autoDownload,
     'assignedClientId': assignedClientId,
     'refreshIntervalMinutes': refreshIntervalMinutes,
@@ -41,6 +44,7 @@ class RssSource {
     name: json['name'] as String,
     url: json['url'] as String,
     filterRegex: json['filterRegex'] as String?,
+    enableRegex: json['enableRegex'] as bool? ?? true,
     autoDownload: json['autoDownload'] as bool? ?? false,
     assignedClientId: json['assignedClientId'] as String?,
     refreshIntervalMinutes: json['refreshIntervalMinutes'] as int? ?? 15,

@@ -7,8 +7,15 @@ import '../utils/http_client.dart';
 import 'torrent_client.dart';
 
 class QBittorrentService implements ITorrentClientService {
+  /// SID 缓存：clientId → sid，复用会话避免重复登录
+  final Map<String, String> _sidCache = {};
+
   /// 登录并获取 SID
   Future<String?> _login(ClientConfig config) async {
+    // 如果已有缓存的 SID，直接返回（通常有效，失败时下游会触发重试）
+    if (_sidCache.containsKey(config.id)) {
+      return _sidCache[config.id];
+    }
     final dio = HttpClientUtil.instance.createClientDio(config);
     try {
       final resp = await dio.post(
@@ -27,10 +34,15 @@ class QBittorrentService implements ITorrentClientService {
       final setCookie = resp.headers.value('set-cookie');
       if (setCookie != null && setCookie.contains('SID=')) {
         final match = RegExp(r'SID=([^;]+)').firstMatch(setCookie);
-        return match?.group(1);
+        final sid = match?.group(1);
+        if (sid != null) {
+          _sidCache[config.id] = sid;
+        }
+        return sid;
       }
       return null;
     } catch (_) {
+      _sidCache.remove(config.id);
       return null;
     }
   }
@@ -39,25 +51,39 @@ class QBittorrentService implements ITorrentClientService {
   Future<Response> _get(ClientConfig config, String path,
       {Map<String, dynamic>? params, String? sid}) async {
     final dio = HttpClientUtil.instance.createClientDio(config);
-    return dio.get(
-      '${config.baseUrl}$path',
-      queryParameters: params,
-      options: Options(headers: {'Cookie': 'SID=$sid'}),
-    );
+    try {
+      return await dio.get(
+        '${config.baseUrl}$path',
+        queryParameters: params,
+        options: Options(headers: {'Cookie': 'SID=$sid'}),
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 403) {
+        _sidCache.remove(config.id);
+      }
+      rethrow;
+    }
   }
 
   /// 携带 SID Cookie 的 POST 请求
   Future<Response> _post(ClientConfig config, String path,
       {Map<String, dynamic>? data, String? sid}) async {
     final dio = HttpClientUtil.instance.createClientDio(config);
-    return dio.post(
-      '${config.baseUrl}$path',
-      data: data,
-      options: Options(
-        contentType: Headers.formUrlEncodedContentType,
-        headers: {'Cookie': 'SID=$sid'},
-      ),
-    );
+    try {
+      return await dio.post(
+        '${config.baseUrl}$path',
+        data: data,
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+          headers: {'Cookie': 'SID=$sid'},
+        ),
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 403) {
+        _sidCache.remove(config.id);
+      }
+      rethrow;
+    }
   }
 
   TorrentState _mapState(String rawState) {

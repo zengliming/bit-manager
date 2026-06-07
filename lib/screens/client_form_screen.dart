@@ -19,6 +19,8 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
   late final TextEditingController _portCtrl;
   late final TextEditingController _usernameCtrl;
   late final TextEditingController _passwordCtrl;
+  late final TextEditingController _timeoutCtrl;
+  late final TextEditingController _savePathCtrl;
   late ClientType _type;
   late bool _useSsl;
 
@@ -33,6 +35,8 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
     _portCtrl = TextEditingController(text: c?.port.toString() ?? (c?.type == ClientType.qBittorrent ? '8080' : '9091'));
     _usernameCtrl = TextEditingController(text: c?.username ?? '');
     _passwordCtrl = TextEditingController(text: c?.password ?? '');
+    _timeoutCtrl = TextEditingController(text: (c?.timeoutSeconds ?? 10).toString());
+    _savePathCtrl = TextEditingController(text: c?.defaultSavePath ?? '');
     _type = c?.type ?? ClientType.qBittorrent;
     _useSsl = c?.useSsl ?? false;
   }
@@ -44,6 +48,8 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
     _portCtrl.dispose();
     _usernameCtrl.dispose();
     _passwordCtrl.dispose();
+    _timeoutCtrl.dispose();
+    _savePathCtrl.dispose();
     super.dispose();
   }
 
@@ -112,6 +118,24 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
               decoration: const InputDecoration(labelText: '密码'),
               obscureText: true,
             ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _timeoutCtrl,
+              decoration: const InputDecoration(
+                labelText: '超时时间（秒）',
+                hintText: '10',
+                helperText: '请求超时时间，默认 10 秒',
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _savePathCtrl,
+              decoration: const InputDecoration(
+                labelText: '默认保存路径（可选）',
+                hintText: '/downloads',
+              ),
+            ),
             const SizedBox(height: 32),
             FilledButton(
               onPressed: _submit,
@@ -136,6 +160,8 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
       username: _usernameCtrl.text.trim().isEmpty ? null : _usernameCtrl.text.trim(),
       password: _passwordCtrl.text.trim().isEmpty ? null : _passwordCtrl.text.trim(),
       useSsl: _useSsl,
+      timeoutSeconds: int.tryParse(_timeoutCtrl.text.trim()) ?? 10,
+      defaultSavePath: _savePathCtrl.text.trim().isEmpty ? null : _savePathCtrl.text.trim(),
     );
 
     if (isEditing) {
