@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/stats_provider.dart';
 import '../providers/client_provider.dart';
-import '../widgets/stats_card.dart';
 import '../widgets/client_tile.dart';
+import 'client_form_screen.dart';
+import 'client_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bit Manager'),
@@ -21,54 +23,106 @@ class HomeScreen extends StatelessWidget {
             return _buildEmptyState(context);
           }
 
-          final globalStats = stats.globalStats;
+          final gs = stats.globalStats;
           return RefreshIndicator(
-            onRefresh: () async {
-              // Refresh is handled by RefreshService
-            },
+            onRefresh: () async {},
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               children: [
+                // ── Hero speed display ──
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        theme.colorScheme.primary.withValues(alpha: 0.12),
+                        theme.colorScheme.primary.withValues(alpha: 0.04),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.15)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('下载', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                            const SizedBox(height: 4),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: (gs.downloadSpeed / 1024 / 1024).toStringAsFixed(1),
+                                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Colors.green[700]),
+                                  ),
+                                  TextSpan(
+                                    text: ' MB/s',
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[600]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(width: 1, height: 50, color: Colors.grey.withValues(alpha: 0.2)),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('上传', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                            const SizedBox(height: 4),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: (gs.uploadSpeed / 1024 / 1024).toStringAsFixed(1),
+                                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Colors.blue[700]),
+                                  ),
+                                  TextSpan(
+                                    text: ' MB/s',
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[600]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // ── 客户端 ──
                 Row(
                   children: [
-                    Expanded(child: StatsCard(
-                      icon: Icons.download,
-                      label: '下载',
-                      value: '${(globalStats.downloadSpeed / 1024 / 1024).toStringAsFixed(1)} MB/s',
-                      color: Colors.green,
-                    )),
-                    const SizedBox(width: 12),
-                    Expanded(child: StatsCard(
-                      icon: Icons.upload,
-                      label: '上传',
-                      value: '${(globalStats.uploadSpeed / 1024 / 1024).toStringAsFixed(1)} MB/s',
-                      color: Colors.blue,
-                    )),
+                    Icon(Icons.dns_outlined, size: 18, color: Colors.grey[600]),
+                    const SizedBox(width: 6),
+                    Text('客户端 (${clients.clients.length})',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey[700])),
+                    const Spacer(),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => const ClientListScreen(),
+                      )),
+                      child: const Text('管理', style: TextStyle(fontSize: 13)),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(child: StatsCard(
-                      icon: Icons.downloading,
-                      label: '活动种子',
-                      value: '${globalStats.activeTorrents} / ${globalStats.totalTorrents}',
-                      color: Colors.orange,
-                    )),
-                    const SizedBox(width: 12),
-                    Expanded(child: StatsCard(
-                      icon: Icons.storage,
-                      label: '磁盘占用',
-                      value: '${(globalStats.totalSizeOnDisk / 1024 / 1024 / 1024).toStringAsFixed(1)} GB',
-                      color: Colors.purple,
-                    )),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                const Text('客户端', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
-                ...globalStats.clientStatsList.map((cs) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                ...gs.clientStatsList.map((cs) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
                   child: ClientTile(stats: cs),
                 )),
               ],
@@ -81,18 +135,30 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.wifi_off, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text('还没有添加客户端', style: TextStyle(fontSize: 18, color: Colors.grey[600])),
-          const SizedBox(height: 8),
-          Text(
-            '在设置中添加客户端即可开始使用',
-            style: TextStyle(color: Colors.grey[500]),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.wifi_off, size: 72, color: Colors.grey[300]),
+            const SizedBox(height: 20),
+            Text('还没有添加客户端',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey[700])),
+            const SizedBox(height: 8),
+            Text(
+              '添加下载客户端即可开始管理种子',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              icon: const Icon(Icons.add),
+              label: const Text('添加客户端'),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(
+                builder: (_) => const ClientFormScreen(),
+              )),
+            ),
+          ],
+        ),
       ),
     );
   }
