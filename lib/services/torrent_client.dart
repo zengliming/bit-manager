@@ -1,0 +1,80 @@
+import '../models/client_config.dart';
+import '../models/torrent.dart';
+import '../models/stats.dart';
+
+/// 统一 BitTorrent 客户端 API 抽象
+abstract class ITorrentClientService {
+  /// 测试连接是否可用
+  Future<bool> testConnection(ClientConfig config);
+
+  /// 获取所有种子
+  Future<List<Torrent>> getTorrents(ClientConfig config);
+
+  /// 获取种子文件列表
+  Future<List<TorrentFile>> getTorrentFiles(ClientConfig config, String hash);
+
+  /// 获取种子的 Tracker 列表
+  Future<List<TrackerInfo>> getTrackers(ClientConfig config, String hash);
+
+  /// 添加种子（本地文件）
+  Future<void> addTorrentFile(ClientConfig config,
+      {required String filePath, String? savePath});
+
+  /// 通过链接添加种子
+  Future<void> addTorrentFromUrl(ClientConfig config,
+      {required String url, String? savePath});
+
+  /// 暂停种子
+  Future<void> pauseTorrent(ClientConfig config, String hash);
+
+  /// 恢复种子
+  Future<void> resumeTorrent(ClientConfig config, String hash);
+
+  /// 删除种子
+  Future<void> deleteTorrent(ClientConfig config, String hash,
+      {bool deleteFiles = false});
+
+  /// 替换 Tracker
+  Future<void> replaceTracker(
+      ClientConfig config, String hash, String oldUrl, String newUrl);
+
+  /// 添加 Tracker
+  Future<void> addTracker(
+      ClientConfig config, String hash, String trackerUrl);
+
+  /// 移除 Tracker
+  Future<void> removeTracker(
+      ClientConfig config, String hash, String trackerUrl);
+
+  /// 检查种子是否已存在
+  Future<bool> isTorrentExist(ClientConfig config, String hash);
+
+  /// 获取客户端统计
+  Future<ClientStats> getStats(ClientConfig config);
+}
+
+class TorrentFile {
+  final String name;
+  final int size;
+  final double progress;
+  final int priority;
+
+  TorrentFile({
+    required this.name,
+    required this.size,
+    required this.progress,
+    this.priority = 0,
+  });
+}
+
+class TrackerInfo {
+  final String url;
+  final String status;
+  final int peers;
+
+  TrackerInfo({
+    required this.url,
+    required this.status,
+    this.peers = 0,
+  });
+}
