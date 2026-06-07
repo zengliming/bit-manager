@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/stats.dart';
 
-/// Client card for HomeScreen grid display.
-/// Shows: name + status, speed, 3 stat pills, free space.
+/// Client tile for HomeScreen — full-width horizontal card.
+/// Layout: name+host on left, speed on right, stats pills below.
 class ClientTile extends StatelessWidget {
   final ClientStats stats;
   final VoidCallback? onTap;
@@ -44,101 +44,138 @@ class ClientTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Header: name + status dot ──
+                  // ── Row 1: name+host (left) + speed (right) ──
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: stats.online ? const Color(0xFF4CAF50) : const Color(0xFFE53935),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
+                      // Left: name + host
                       Expanded(
-                        child: Text(
-                          stats.clientName,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                          overflow: TextOverflow.ellipsis,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: stats.online
+                                        ? const Color(0xFF4CAF50)
+                                        : const Color(0xFFE53935),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  stats.clientName,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              '${stats.host}:${stats.port}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      // Right: speed
+                      if (!_isOffline) ...[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.arrow_downward,
+                                    size: 14, color: const Color(0xFF4CAF50)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  _formatSpeed(stats.downloadSpeed),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF2E7D32),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.arrow_upward,
+                                    size: 14, color: const Color(0xFF2196F3)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  _formatSpeed(stats.uploadSpeed),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF1565C0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        Text(
+                          '离线',
+                          style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+                        ),
+                      ],
                     ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${stats.host}:${stats.port}',
-                    style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-                    overflow: TextOverflow.ellipsis,
                   ),
 
                   const SizedBox(height: 12),
 
-                  // ── Speed row ──
+                  // ── Row 2: stat pills ──
                   if (!_isOffline) ...[
-                    Row(
-                      children: [
-                        Icon(Icons.arrow_downward, size: 14, color: const Color(0xFF4CAF50)),
-                        const SizedBox(width: 4),
-                        Text(
-                          _formatSpeed(stats.downloadSpeed),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF2E7D32),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Icon(Icons.arrow_upward, size: 14, color: const Color(0xFF2196F3)),
-                        const SizedBox(width: 4),
-                        Text(
-                          _formatSpeed(stats.uploadSpeed),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF1565C0),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                  ] else ...[
-                    Text(
-                      '离线',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[400]),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-
-                  // ── Stat pills row ──
-                  if (!_isOffline) ...[
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
                       children: [
                         _StatPill(
                           label: '做种',
                           value: stats.seedingCount.toString(),
                           color: const Color(0xFF2196F3),
                         ),
-                        const SizedBox(width: 6),
                         _StatPill(
                           label: '下载',
                           value: stats.downloadingCount.toString(),
                           color: const Color(0xFF4CAF50),
                         ),
-                        const SizedBox(width: 6),
                         _StatPill(
                           label: '错误',
                           value: stats.errorCount.toString(),
-                          color: stats.errorCount > 0 ? const Color(0xFFE53935) : Colors.grey,
+                          color: stats.errorCount > 0
+                              ? const Color(0xFFE53935)
+                              : Colors.grey,
+                        ),
+                        _StatPill(
+                          label: '暂停上传',
+                          value: stats.pausedUpCount.toString(),
+                          color: Colors.grey,
+                        ),
+                        _StatPill(
+                          label: '暂停下载',
+                          value: stats.pausedDlCount.toString(),
+                          color: Colors.grey,
+                        ),
+                        _StatPill(
+                          label: '剩余空间',
+                          value: _formatBytes(stats.freeSpace),
+                          color: Colors.grey,
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 10),
-
-                    // ── Free space ──
-                    Text(
-                      '剩余 ${_formatBytes(stats.freeSpace)}',
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                     ),
                   ],
                 ],

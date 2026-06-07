@@ -64,21 +64,11 @@ class HomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // ── Client grid ──
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.1,
-                  ),
-                  itemCount: gs.clientStatsList.length,
-                  itemBuilder: (context, index) {
-                    return ClientTile(stats: gs.clientStatsList[index]);
-                  },
-                ),
+                // ── Client list (full-width rows) ──
+                ...gs.clientStatsList.map((cs) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: ClientTile(stats: cs),
+                )),
               ],
             ),
           );
