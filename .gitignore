@@ -12,7 +12,10 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# Claude/codegraph local state
+.claude/
+.codegraph/
+
 *.iml
 *.ipr
 *.iws

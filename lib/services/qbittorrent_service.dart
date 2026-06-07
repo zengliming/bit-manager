@@ -315,7 +315,7 @@ class QBittorrentService implements ITorrentClientService {
       final m = json as Map<String, dynamic>;
       return TrackerInfo(
         url: m['url'] as String? ?? '',
-        status: m['msg'] as String? ?? '',
+        status: ((m['status'] as num?)?.toInt() ?? -1).toString(),
         peers: (m['num_peers'] as num?)?.toInt() ?? 0,
       );
     }).toList();

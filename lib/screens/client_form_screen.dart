@@ -59,89 +59,92 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
       appBar: AppBar(title: Text(isEditing ? '编辑客户端' : '添加客户端')),
       body: Form(
         key: _formKey,
-        child: ListView(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          children: [
-            TextFormField(
-              controller: _nameCtrl,
-              decoration: const InputDecoration(labelText: '名称', hintText: '例如: NAS-4T'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? '请输入名称' : null,
-            ),
-            const SizedBox(height: 16),
-            SegmentedButton<ClientType>(
-              segments: const [
-                ButtonSegment(value: ClientType.qBittorrent, label: Text('qBittorrent')),
-                ButtonSegment(value: ClientType.transmission, label: Text('Transmission')),
-              ],
-              selected: {_type},
-              onSelectionChanged: (v) {
-                setState(() {
-                  _type = v.first;
-                  if (!isEditing) {
-                    _portCtrl.text = _type == ClientType.qBittorrent ? '8080' : '9091';
-                  }
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _hostCtrl,
-              decoration: const InputDecoration(labelText: '地址', hintText: 'IP 或域名'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? '请输入地址' : null,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _portCtrl,
-              decoration: const InputDecoration(labelText: '端口'),
-              keyboardType: TextInputType.number,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return '请输入端口';
-                final port = int.tryParse(v);
-                if (port == null || port < 1 || port > 65535) return '无效端口';
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            SwitchListTile(
-              title: const Text('使用 HTTPS'),
-              value: _useSsl,
-              onChanged: (v) => setState(() => _useSsl = v),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _usernameCtrl,
-              decoration: const InputDecoration(labelText: '用户名（可选）'),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _passwordCtrl,
-              decoration: const InputDecoration(labelText: '密码'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _timeoutCtrl,
-              decoration: const InputDecoration(
-                labelText: '超时时间（秒）',
-                hintText: '10',
-                helperText: '请求超时时间，默认 10 秒',
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameCtrl,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(labelText: '名称', hintText: '例如: NAS-4T'),
+                validator: (v) => (v == null || v.trim().isEmpty) ? '请输入名称' : null,
               ),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _savePathCtrl,
-              decoration: const InputDecoration(
-                labelText: '默认保存路径（可选）',
-                hintText: '/downloads',
+              const SizedBox(height: 16),
+              SegmentedButton<ClientType>(
+                segments: const [
+                  ButtonSegment(value: ClientType.qBittorrent, label: Text('qBittorrent')),
+                  ButtonSegment(value: ClientType.transmission, label: Text('Transmission')),
+                ],
+                selected: {_type},
+                onSelectionChanged: (v) {
+                  setState(() {
+                    _type = v.first;
+                    if (!isEditing) {
+                      _portCtrl.text = _type == ClientType.qBittorrent ? '8080' : '9091';
+                    }
+                  });
+                },
               ),
-            ),
-            const SizedBox(height: 32),
-            FilledButton(
-              onPressed: _submit,
-              child: Text(isEditing ? '保存' : '添加'),
-            ),
-          ],
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _hostCtrl,
+                decoration: const InputDecoration(labelText: '地址', hintText: 'IP 或域名'),
+                validator: (v) => (v == null || v.trim().isEmpty) ? '请输入地址' : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _portCtrl,
+                decoration: const InputDecoration(labelText: '端口'),
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return '请输入端口';
+                  final port = int.tryParse(v);
+                  if (port == null || port < 1 || port > 65535) return '无效端口';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('使用 HTTPS'),
+                value: _useSsl,
+                onChanged: (v) => setState(() => _useSsl = v),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _usernameCtrl,
+                decoration: const InputDecoration(labelText: '用户名（可选）'),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordCtrl,
+                decoration: const InputDecoration(labelText: '密码'),
+                obscureText: true,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _timeoutCtrl,
+                decoration: const InputDecoration(
+                  labelText: '超时时间（秒）',
+                  hintText: '10',
+                  helperText: '请求超时时间，默认 10 秒',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _savePathCtrl,
+                decoration: const InputDecoration(
+                  labelText: '默认保存路径（可选）',
+                  hintText: '/downloads',
+                ),
+              ),
+              const SizedBox(height: 32),
+              FilledButton(
+                onPressed: _submit,
+                child: Text(isEditing ? '保存' : '添加'),
+              ),
+            ],
+          ),
         ),
       ),
     );

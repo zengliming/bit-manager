@@ -2,7 +2,7 @@ class AppConstants {
   static const String appName = 'Bit Manager';
 
   // 默认刷新间隔
-  static const int defaultPollIntervalSeconds = 3;
+  static const int defaultPollIntervalSeconds = 10;
   static const int defaultRssRefreshMinutes = 15;
   static const int defaultTimeoutSeconds = 10;
   static const int maxRetryCount = 3;

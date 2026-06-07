@@ -12,6 +12,11 @@ import 'screens/settings_screen.dart';
 import 'widgets/status_border.dart';
 import 'models/torrent.dart';
 
+/// Extension on [ColorScheme] to provide torrent state colors.
+extension TorrentStateColorScheme on ColorScheme {
+  Color torrentStateColor(TorrentState state) => statusColors(state).border;
+}
+
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -194,11 +199,6 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       ),
     );
   }
-
-/// Extension on [ColorScheme] to provide torrent state colors.
-extension TorrentStateColorScheme on ColorScheme {
-  Color torrentStateColor(TorrentState state) => statusColors(state).border;
-}
 
   ThemeData _buildDarkTheme() {
     final colorScheme = ColorScheme.fromSeed(

@@ -51,6 +51,12 @@ abstract class ITorrentClientService {
 
   /// 获取客户端统计
   Future<ClientStats> getStats(ClientConfig config);
+
+  /// 获取客户端剩余磁盘空间（字节），0=未知
+  Future<int> getFreeSpace(ClientConfig config);
+
+  /// 获取速度限制，返回 [downloadLimit, uploadLimit] 字节/秒，0=不限速
+  Future<List<int>> getSpeedLimits(ClientConfig config);
 }
 
 class TorrentFile {

@@ -61,11 +61,11 @@ class RefreshService {
     final activeClients = clientProvider.activeClients;
     if (activeClients.isEmpty) return;
 
-    await torrentProvider.refreshTorrents(activeClients);
+    await torrentProvider.refreshTorrents(activeClients, showLoading: false);
     await statsProvider.refreshStats(
       activeClients,
       torrentProvider.allTorrents,
-      clientProvider.onlineStatus,
+      torrentProvider.lastRefreshOnlineStatus,
     );
   }
 

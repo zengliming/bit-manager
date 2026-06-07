@@ -6,6 +6,7 @@ Torrent _torrent({
   TorrentState state = TorrentState.downloading,
   int downloadSpeed = 0,
   int uploadSpeed = 0,
+  ClientType clientType = ClientType.transmission,
   List<String> trackerStatuses = const ['Success'],
 }) {
   return Torrent(
@@ -13,7 +14,7 @@ Torrent _torrent({
     hash: 'hash-1',
     name: 'Torrent 1',
     clientId: 'client-1',
-    clientType: ClientType.qBittorrent,
+    clientType: clientType,
     state: state,
     downloadSpeed: downloadSpeed,
     uploadSpeed: uploadSpeed,
@@ -26,6 +27,39 @@ void main() {
     test('does not mark tracker as error when any tracker status contains Success', () {
       final torrent = _torrent(
         trackerStatuses: const ['Timeout', 'Success', 'Connection refused'],
+      );
+
+      expect(torrent.hasSuccessfulTracker, isTrue);
+      expect(torrent.hasTrackerError, isFalse);
+      expect(torrent.isError, isFalse);
+    });
+
+    test('uses qBittorrent numeric tracker status 2 as success', () {
+      final torrent = _torrent(
+        clientType: ClientType.qBittorrent,
+        trackerStatuses: const ['Timeout', '2'],
+      );
+
+      expect(torrent.hasSuccessfulTracker, isTrue);
+      expect(torrent.hasTrackerError, isFalse);
+      expect(torrent.isError, isFalse);
+    });
+
+    test('does not use Success text for qBittorrent tracker success', () {
+      final torrent = _torrent(
+        clientType: ClientType.qBittorrent,
+        trackerStatuses: const ['Success'],
+      );
+
+      expect(torrent.hasSuccessfulTracker, isFalse);
+      expect(torrent.hasTrackerError, isTrue);
+      expect(torrent.isError, isTrue);
+    });
+
+    test('uses Success text for Transmission tracker success', () {
+      final torrent = _torrent(
+        clientType: ClientType.transmission,
+        trackerStatuses: const ['Success'],
       );
 
       expect(torrent.hasSuccessfulTracker, isTrue);

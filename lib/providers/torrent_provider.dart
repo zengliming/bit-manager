@@ -2,9 +2,15 @@ import 'package:flutter/foundation.dart';
 import '../models/client_config.dart';
 import '../models/torrent.dart';
 import '../services/service_factory.dart';
+import '../services/torrent_client.dart';
+
+typedef TorrentServiceResolver =
+    ITorrentClientService Function(ClientType type);
 
 class TorrentProvider extends ChangeNotifier {
+  final TorrentServiceResolver _serviceResolver;
   List<Torrent> _allTorrents = [];
+  final Map<String, bool> _lastRefreshOnlineStatus = {};
   String _searchQuery = '';
   Set<TorrentState>? _stateFilter;
   String? _clientFilter;
@@ -16,6 +22,9 @@ class TorrentProvider extends ChangeNotifier {
   bool _selectMode = false;
   final Set<String> _selectedHashes = {};
   int _stateTabIndex = 0;
+
+  TorrentProvider({TorrentServiceResolver? serviceResolver})
+    : _serviceResolver = serviceResolver ?? ServiceFactory.getService;
 
   List<Torrent> get allTorrents => List.unmodifiable(_allTorrents);
 
@@ -34,7 +43,9 @@ class TorrentProvider extends ChangeNotifier {
       result = result.where((t) => t.error == _errorFilter).toList();
     }
     if (_siteFilter != null && _siteFilter!.isNotEmpty) {
-      result = result.where((t) => t.trackers.any((tr) => tr.contains(_siteFilter!))).toList();
+      result = result
+          .where((t) => t.trackers.any((tr) => tr.contains(_siteFilter!)))
+          .toList();
     }
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase();
@@ -52,6 +63,8 @@ class TorrentProvider extends ChangeNotifier {
   String? get siteFilter => _siteFilter;
   bool get loading => _loading;
   String? get error => _error;
+  Map<String, bool> get lastRefreshOnlineStatus =>
+      Map.unmodifiable(_lastRefreshOnlineStatus);
   bool get selectMode => _selectMode;
   Set<String> get selectedHashes => Set.unmodifiable(_selectedHashes);
   int get selectedCount => _selectedHashes.length;
@@ -168,7 +181,10 @@ class TorrentProvider extends ChangeNotifier {
 
   // ---- 数据刷新 ----
 
-  Future<void> refreshTorrents(List<ClientConfig> activeClients, {bool showLoading = true}) async {
+  Future<void> refreshTorrents(
+    List<ClientConfig> activeClients, {
+    bool showLoading = true,
+  }) async {
     if (showLoading) {
       _loading = true;
       _error = null;
@@ -177,16 +193,22 @@ class TorrentProvider extends ChangeNotifier {
 
     try {
       final allTorrents = <Torrent>[];
+      final onlineStatus = <String, bool>{};
       for (final client in activeClients) {
         try {
-          final service = ServiceFactory.getService(client.type);
+          final service = _serviceResolver(client.type);
           final torrents = await service.getTorrents(client);
           allTorrents.addAll(torrents);
+          onlineStatus[client.id] = true;
         } catch (e) {
+          onlineStatus[client.id] = false;
           debugPrint('Error fetching torrents from ${client.name}: $e');
         }
       }
       _allTorrents = allTorrents;
+      _lastRefreshOnlineStatus
+        ..clear()
+        ..addAll(onlineStatus);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -227,7 +249,11 @@ class TorrentProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> deleteTorrents(ClientConfig client, List<String> hashes, {bool deleteFiles = false}) async {
+  Future<bool> deleteTorrents(
+    ClientConfig client,
+    List<String> hashes, {
+    bool deleteFiles = false,
+  }) async {
     try {
       final service = ServiceFactory.getService(client.type);
       for (final hash in hashes) {
@@ -241,7 +267,12 @@ class TorrentProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> replaceTracker(ClientConfig client, String hash, String oldUrl, String newUrl) async {
+  Future<bool> replaceTracker(
+    ClientConfig client,
+    String hash,
+    String oldUrl,
+    String newUrl,
+  ) async {
     try {
       final service = ServiceFactory.getService(client.type);
       await service.replaceTracker(client, hash, oldUrl, newUrl);

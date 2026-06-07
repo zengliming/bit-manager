@@ -37,21 +37,28 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
 
   Future<void> _loadDetails() async {
     final client = _client;
-    if (client == null) return;
+    if (client == null) {
+      debugPrint('Cannot load details: client not found for ${_torrent.clientId}');
+      return;
+    }
 
     setState(() => _loadingFiles = true);
     try {
       final service = ServiceFactory.getService(client.type);
       _files = await service.getTorrentFiles(client, _torrent.hash);
-    } catch (_) {}
-    setState(() => _loadingFiles = false);
+    } catch (e) {
+      debugPrint('Failed to load files: $e');
+    }
+    if (mounted) setState(() => _loadingFiles = false);
 
     setState(() => _loadingTrackers = true);
     try {
       final service = ServiceFactory.getService(client.type);
       _trackers = await service.getTrackers(client, _torrent.hash);
-    } catch (_) {}
-    setState(() => _loadingTrackers = false);
+    } catch (e) {
+      debugPrint('Failed to load trackers: $e');
+    }
+    if (mounted) setState(() => _loadingTrackers = false);
   }
 
   @override
@@ -66,6 +73,18 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // ── 操作按钮（置顶） ──
+          Row(
+            children: [
+              Expanded(child: _actionButton('暂停', Icons.pause, () => _operate('pause'), Colors.orange)),
+              const SizedBox(width: 8),
+              Expanded(child: _actionButton('恢复', Icons.play_arrow, () => _operate('resume'), Colors.green)),
+              const SizedBox(width: 8),
+              Expanded(child: _actionButton('删除', Icons.delete, _confirmDelete, Colors.red)),
+            ],
+          ),
+          const SizedBox(height: 16),
+
           // ── 进度卡 ──
           _buildSection('进度', [
             Row(
@@ -135,20 +154,7 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
               _infoRow('错误信息', _torrent.error!, color: Colors.red),
           ]),
 
-          const SizedBox(height: 20),
-
-          // ── 操作按钮 ──
-          Row(
-            children: [
-              Expanded(child: _actionButton('暂停', Icons.pause, () => _operate('pause'), Colors.orange)),
-              const SizedBox(width: 8),
-              Expanded(child: _actionButton('恢复', Icons.play_arrow, () => _operate('resume'), Colors.green)),
-              const SizedBox(width: 8),
-              Expanded(child: _actionButton('删除', Icons.delete, _confirmDelete, Colors.red)),
-            ],
-          ),
-
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
 
           // ── 文件列表 ──
           _buildSection(
@@ -159,7 +165,15 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
                     ? [Text('加载失败', style: TextStyle(color: Colors.grey[500]))]
                     : _files!.isEmpty
                         ? [Text('无文件信息', style: TextStyle(color: Colors.grey[500]))]
-                        : _files!.map((f) => _fileTile(f)).toList(),
+                        : [
+                            SizedBox(
+                              height: (_files!.length * 52).clamp(0, 300).toDouble(),
+                              child: ListView.builder(
+                                itemCount: _files!.length,
+                                itemBuilder: (ctx, i) => _fileTile(_files![i]),
+                              ),
+                            ),
+                          ],
           ),
 
           const SizedBox(height: 12),
@@ -192,12 +206,34 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
 
   Widget _buildSection(String title, List<Widget> children) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.15)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary)),
+            Row(
+              children: [
+                Container(
+                  width: 3,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(title, style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primary,
+                )),
+              ],
+            ),
             const SizedBox(height: 12),
             ...children,
           ],
@@ -207,23 +243,30 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
   }
 
   Widget _statItem(IconData icon, String label, String value, Color color) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[600])),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(height: 4),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+        ],
+      ),
     );
   }
 
   Widget _infoRow(String label, String value, {bool selectable = false, Color? color}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 80, child: Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 13))),
+          SizedBox(width: 90, child: Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 13))),
           Expanded(
             child: selectable
                 ? SelectableText(value, style: TextStyle(fontSize: 13, color: color))
@@ -237,13 +280,17 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
   Widget _actionButton(String label, IconData icon, VoidCallback onPressed, Color color) {
     return FilledButton.tonal(
       onPressed: onPressed,
-      style: FilledButton.styleFrom(backgroundColor: color.withValues(alpha: 0.15)),
+      style: FilledButton.styleFrom(
+        backgroundColor: color.withValues(alpha: 0.12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 4),
-          Text(label, style: TextStyle(color: color)),
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 6),
+          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
         ],
       ),
     );

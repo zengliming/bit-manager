@@ -64,7 +64,12 @@ class Torrent {
     this.trackerStatuses = const [],
   });
 
-  bool get hasSuccessfulTracker => trackerStatuses.any((status) => status.contains('Success'));
+  bool get hasSuccessfulTracker {
+    if (clientType == ClientType.qBittorrent) {
+      return trackerStatuses.any((status) => status == '2');
+    }
+    return trackerStatuses.any((status) => status.contains('Success'));
+  }
   bool get hasTrackerError => !hasSuccessfulTracker;
   bool get isActivelyUploading => uploadSpeed > 0;
   bool get isActivelyDownloading => downloadSpeed > 0;
