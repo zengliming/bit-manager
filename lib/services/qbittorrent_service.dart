@@ -126,16 +126,17 @@ class QBittorrentService implements ITorrentClientService {
     if (sid == null) throw Exception('Login failed');
 
     final resp = await _get(config, AppConstants.qbTorrents, sid: sid);
-    final List<dynamic> rawList = resp.data;
+    final rawData = resp.data;
+    final List<dynamic> rawList = (rawData is List) ? rawData : [];
     return rawList.map((json) {
-      final m = json as Map<String, dynamic>;
+      final m = (json is Map<String, dynamic>) ? json : <String, dynamic>{};
       return Torrent(
-        id: m['hash'] as String,
-        hash: m['hash'] as String,
+        id: m['hash'] as String? ?? '',
+        hash: m['hash'] as String? ?? '',
         name: m['name'] as String? ?? 'Unknown',
         clientId: config.id,
         clientType: config.type,
-        progress: (m['progress'] as num).toDouble(),
+        progress: (m['progress'] as num?)?.toDouble() ?? 0,
         state: _mapState(m['state'] as String? ?? ''),
         downloadSpeed: (m['dlspeed'] as num?)?.toInt() ?? 0,
         uploadSpeed: (m['upspeed'] as num?)?.toInt() ?? 0,

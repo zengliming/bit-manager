@@ -40,12 +40,10 @@ class ClientProvider extends ChangeNotifier {
   Future<void> _saveClients() async {
     final storage = await LocalStorage.getInstance();
     final jsonList = _clients.map((c) {
-      final json = c.toJson();
       if (c.password != null) {
         storage.savePassword(c.id, c.password!);
       }
-      json.remove('password');
-      return json;
+      return c.toJson();
     }).toList();
     await storage.saveJsonList('clients', jsonList);
   }

@@ -18,7 +18,9 @@ class _RssSourceFormScreenState extends State<RssSourceFormScreen> {
   late final TextEditingController _nameCtrl;
   late final TextEditingController _urlCtrl;
   late final TextEditingController _filterCtrl;
+  late final TextEditingController _savePathCtrl;
   late bool _autoDownload;
+  late bool _enableRegex;
   late String? _assignedClientId;
   late int _refreshInterval;
 
@@ -31,7 +33,9 @@ class _RssSourceFormScreenState extends State<RssSourceFormScreen> {
     _nameCtrl = TextEditingController(text: s?.name ?? '');
     _urlCtrl = TextEditingController(text: s?.url ?? '');
     _filterCtrl = TextEditingController(text: s?.filterRegex ?? '');
+    _savePathCtrl = TextEditingController(text: s?.savePath ?? '');
     _autoDownload = s?.autoDownload ?? false;
+    _enableRegex = s?.enableRegex ?? true;
     _assignedClientId = s?.assignedClientId;
     _refreshInterval = s?.refreshIntervalMinutes ?? 15;
   }
@@ -41,6 +45,7 @@ class _RssSourceFormScreenState extends State<RssSourceFormScreen> {
     _nameCtrl.dispose();
     _urlCtrl.dispose();
     _filterCtrl.dispose();
+    _savePathCtrl.dispose();
     super.dispose();
   }
 
@@ -75,6 +80,13 @@ class _RssSourceFormScreenState extends State<RssSourceFormScreen> {
             ),
             const SizedBox(height: 16),
             SwitchListTile(
+              title: const Text('启用正则过滤'),
+              subtitle: const Text('关闭后所有条目均视为匹配'),
+              value: _enableRegex,
+              onChanged: (v) => setState(() => _enableRegex = v),
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
               title: const Text('自动下载'),
               subtitle: const Text('匹配规则后自动添加到客户端'),
               value: _autoDownload,
@@ -104,6 +116,15 @@ class _RssSourceFormScreenState extends State<RssSourceFormScreen> {
                   if (v != null) setState(() => _refreshInterval = v);
                 },
               ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _savePathCtrl,
+                decoration: const InputDecoration(
+                  labelText: '保存路径（可选）',
+                  hintText: '/downloads/BitManager',
+                  helperText: '覆盖客户端默认保存路径',
+                ),
+              ),
             ],
             const SizedBox(height: 32),
             FilledButton(
@@ -125,9 +146,11 @@ class _RssSourceFormScreenState extends State<RssSourceFormScreen> {
       name: _nameCtrl.text.trim(),
       url: _urlCtrl.text.trim(),
       filterRegex: _filterCtrl.text.trim().isEmpty ? null : _filterCtrl.text.trim(),
+      enableRegex: _enableRegex,
       autoDownload: _autoDownload,
       assignedClientId: _assignedClientId,
       refreshIntervalMinutes: _refreshInterval,
+      savePath: _savePathCtrl.text.trim().isEmpty ? null : _savePathCtrl.text.trim(),
     );
 
     if (isEditing) {

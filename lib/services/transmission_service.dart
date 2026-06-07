@@ -48,7 +48,9 @@ class TransmissionService implements ITorrentClientService {
         data: {'method': method, 'arguments': args ?? {}},
         options: Options(headers: headers),
       );
-      return resp.data as Map<String, dynamic>;
+      final data = resp.data;
+      if (data is! Map<String, dynamic>) throw Exception('Invalid RPC response');
+      return data;
     } on DioException catch (e) {
       // 如果是 409，尝试重新获取 Session ID 并重试
       if (e.response?.statusCode == 409) {
@@ -60,11 +62,18 @@ class TransmissionService implements ITorrentClientService {
             data: {'method': method, 'arguments': args ?? {}},
             options: Options(headers: headers),
           );
-          return retryResp.data as Map<String, dynamic>;
+          final retryData = retryResp.data;
+          if (retryData is! Map<String, dynamic>) throw Exception('Invalid RPC response');
+          return retryData;
         }
       }
       rethrow;
     }
+  }
+
+  /// 安全获取 Map 值
+  Map<String, dynamic> _safeMap(dynamic value) {
+    return (value is Map<String, dynamic>) ? value : <String, dynamic>{};
   }
 
   TorrentState _mapState(int status) {
@@ -126,11 +135,13 @@ class TransmissionService implements ITorrentClientService {
         },
         sessionId: sid);
 
-    final arguments = result['arguments'] as Map<String, dynamic>;
-    final List<dynamic> rawList = arguments['torrents'] as List<dynamic>;
+    final arguments = result['arguments'];
+    final argsMap = (arguments is Map<String, dynamic>) ? arguments : <String, dynamic>{};
+    final torrentsRaw = argsMap['torrents'];
+    final List<dynamic> rawList = (torrentsRaw is List) ? torrentsRaw : [];
 
     return rawList.map((json) {
-      final m = json as Map<String, dynamic>;
+      final m = (json is Map<String, dynamic>) ? json : <String, dynamic>{};
       return Torrent(
         id: (m['id'] as num).toString(),
         hash: m['hashString'] as String? ?? '',
@@ -180,7 +191,7 @@ class TransmissionService implements ITorrentClientService {
     if (sid == null) throw Exception('Cannot get Transmission session ID');
 
     final result = await _rpcCall(config, 'session-stats', sessionId: sid);
-    final args = result['arguments'] as Map<String, dynamic>;
+    final args = _safeMap(result['arguments']);
 
     return ClientStats(
       clientId: config.id,
@@ -221,13 +232,19 @@ class TransmissionService implements ITorrentClientService {
       ClientConfig config, List<String> hashes, String sid) async {
     final result = await _rpcCall(config, 'torrent-get',
         args: {'fields': ['id', 'hashString']}, sessionId: sid);
-    final args = result['arguments'] as Map<String, dynamic>;
-    final torrents = args['torrents'] as List<dynamic>;
-    return torrents
-        .where((t) =>
-            hashes.contains((t as Map<String, dynamic>)['hashString'] as String))
-        .map((t) => (t as Map<String, dynamic>)['id'] as int)
-        .toList();
+    final args = _safeMap(result['arguments']);
+    final torrentsRaw = args['torrents'];
+    final torrents = (torrentsRaw is List) ? torrentsRaw : <dynamic>[];
+    final ids = <int>[];
+    for (final t in torrents) {
+      if (t is! Map<String, dynamic>) continue;
+      final hash = t['hashString'] as String? ?? '';
+      if (hashes.contains(hash)) {
+        final id = t['id'] as int?;
+        if (id != null) ids.add(id);
+      }
+    }
+    return ids;
   }
 
   @override
@@ -275,13 +292,15 @@ class TransmissionService implements ITorrentClientService {
     final result = await _rpcCall(config, 'torrent-get',
         args: {'ids': ids, 'fields': ['trackerList', 'trackerStats']},
         sessionId: sid);
-    final args = result['arguments'] as Map<String, dynamic>;
-    final torrents = args['torrents'] as List<dynamic>;
+    final args = _safeMap(result['arguments']);
+    final torrentsRaw = args['torrents'];
+    final torrents = (torrentsRaw is List) ? torrentsRaw : <dynamic>[];
     if (torrents.isEmpty) return [];
-    final t = torrents[0] as Map<String, dynamic>;
-    final stats = t['trackerStats'] as List<dynamic>? ?? [];
+    final t = (torrents[0] is Map<String, dynamic>) ? torrents[0] as Map<String, dynamic> : <String, dynamic>{};
+    final statsRaw = t['trackerStats'];
+    final stats = (statsRaw is List) ? statsRaw : <dynamic>[];
     return stats.map((s) {
-      final m = s as Map<String, dynamic>;
+      final m = (s is Map<String, dynamic>) ? s : <String, dynamic>{};
       return TrackerInfo(
         url: m['announce'] as String? ?? '',
         status: m['lastAnnounceResult'] as String? ?? '',
@@ -300,13 +319,15 @@ class TransmissionService implements ITorrentClientService {
     final result = await _rpcCall(config, 'torrent-get',
         args: {'ids': ids, 'fields': ['files', 'fileStats']},
         sessionId: sid);
-    final args = result['arguments'] as Map<String, dynamic>;
-    final torrents = args['torrents'] as List<dynamic>;
+    final args = _safeMap(result['arguments']);
+    final torrentsRaw = args['torrents'];
+    final torrents = (torrentsRaw is List) ? torrentsRaw : <dynamic>[];
     if (torrents.isEmpty) return [];
-    final t = torrents[0] as Map<String, dynamic>;
-    final files = t['files'] as List<dynamic>? ?? [];
+    final t = (torrents[0] is Map<String, dynamic>) ? torrents[0] as Map<String, dynamic> : <String, dynamic>{};
+    final filesRaw = t['files'];
+    final files = (filesRaw is List) ? filesRaw : <dynamic>[];
     return List.generate(files.length, (i) {
-      final f = files[i] as Map<String, dynamic>;
+      final f = (files[i] is Map<String, dynamic>) ? files[i] as Map<String, dynamic> : <String, dynamic>{};
       final completed = (f['bytesCompleted'] as num?)?.toDouble() ?? 0;
       final length = (f['length'] as num?)?.toDouble() ?? 1;
       return TorrentFile(
