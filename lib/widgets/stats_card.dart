@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/stats.dart';
 
 class StatsCard extends StatelessWidget {
   final IconData icon;
