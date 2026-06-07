@@ -25,6 +25,16 @@ class TorrentListScreen extends StatelessWidget {
               );
             },
           ),
+          Consumer<TorrentProvider>(
+            builder: (ctx, tp, _) => Badge(
+              isLabelVisible: tp.activeFilterCount > 0,
+              label: Text('${tp.activeFilterCount}'),
+              child: IconButton(
+                icon: const Icon(Icons.filter_list),
+                onPressed: () => _showFilterSheet(ctx),
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -112,27 +122,55 @@ class TorrentListScreen extends StatelessWidget {
   }
 
   Widget _buildFilterBar(BuildContext context, TorrentProvider tp) {
-    final filters = <TorrentState?>[
-      null,
-      TorrentState.downloading,
-      TorrentState.seeding,
-      TorrentState.paused,
-      TorrentState.error,
-    ];
-    final labels = ['全部', '下载中', '做种中', '已暂停', '出错'];
+    final colorScheme = Theme.of(context).colorScheme;
+    final tabs = ['全部', '下载中', '错误异常', '做种中'];
+    final errorCount = tp.errorCount;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
-        children: List.generate(filters.length, (i) {
-          final isSelected = tp.stateFilter == filters[i];
+        children: List.generate(tabs.length, (i) {
+          final isSelected = tp.stateTabIndex == i;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(labels[i]),
-              selected: isSelected,
-              onSelected: (_) => tp.setStateFilter(filters[i]),
+            child: Material(
+              color: isSelected
+                  ? colorScheme.primaryContainer
+                  : colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(20),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => tp.setStateTabIndex(i),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (i == 2 && errorCount > 0) ...[
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Text(
+                        tabs[i],
+                        style: TextStyle(
+                          color: isSelected
+                              ? colorScheme.onPrimaryContainer
+                              : colorScheme.onSurfaceVariant,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         }),
@@ -252,6 +290,154 @@ class TorrentListScreen extends StatelessWidget {
       }
     }
     tp.exitSelectMode();
+  }
+
+  void _showFilterSheet(BuildContext context) {
+    final tp = context.read<TorrentProvider>();
+    final cp = context.read<ClientProvider>();
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 标题行
+                  Row(
+                    children: [
+                      Text('筛选', style: Theme.of(context).textTheme.titleLarge),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          tp.clearAllFilters();
+                          setSheetState(() {});
+                        },
+                        child: const Text('重置'),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  // ── 状态筛选 ──
+                  Text('状态', style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: [
+                      FilterChip(
+                        label: const Text('全部'),
+                        selected: tp.stateFilter == null || tp.stateFilter!.isEmpty,
+                        onSelected: (_) { tp.setStateFilter(null); tp.setStateTabIndex(0); setSheetState(() {}); },
+                      ),
+                      ...TorrentState.values.map((state) {
+                        final labels = {
+                          TorrentState.downloading: '下载中',
+                          TorrentState.seeding: '做种中',
+                          TorrentState.paused: '已暂停',
+                          TorrentState.checking: '校验中',
+                          TorrentState.queued: '等待中',
+                          TorrentState.error: '出错',
+                          TorrentState.metaDL: '获取元数据',
+                          TorrentState.unknown: '未知',
+                        };
+                        return FilterChip(
+                          label: Text(labels[state] ?? state.name),
+                          selected: tp.stateFilter?.contains(state) == true,
+                          onSelected: (_) {
+                            final current = tp.stateFilter ?? {};
+                            final newSet = current.contains(state)
+                                ? (current..remove(state))
+                                : {...current, state};
+                            tp.setStateFilter(newSet.isEmpty ? null : newSet);
+                            setSheetState(() {});
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // ── 客户端筛选 ──
+                  Text('客户端', style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: [
+                      FilterChip(
+                        label: const Text('全部'),
+                        selected: tp.clientFilter == null,
+                        onSelected: (_) { tp.setClientFilter(null); setSheetState(() {}); },
+                      ),
+                      ...cp.clients.map((client) => FilterChip(
+                        label: Text(client.name),
+                        selected: tp.clientFilter == client.id,
+                        onSelected: (_) {
+                          tp.setClientFilter(tp.clientFilter == client.id ? null : client.id);
+                          setSheetState(() {});
+                        },
+                      )),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // ── 错误过滤 ──
+                  SwitchListTile(
+                    title: const Text('仅显示有错误的种子'),
+                    value: tp.errorOnly,
+                    contentPadding: EdgeInsets.zero,
+                    onChanged: (v) {
+                      tp.setErrorOnly(v);
+                      tp.setErrorFilter(null);
+                      setSheetState(() {});
+                    },
+                  ),
+                  if (tp.errorOnly) ...[
+                    const SizedBox(height: 8),
+                    Text('错误类型', style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        FilterChip(
+                          label: const Text('全部'),
+                          selected: tp.errorFilter == null,
+                          onSelected: (_) { tp.setErrorFilter(null); setSheetState(() {}); },
+                        ),
+                        ...tp.allTorrents
+                            .map((t) => t.error)
+                            .where((e) => e != null && e.isNotEmpty)
+                            .toSet()
+                            .map((err) => FilterChip(
+                              label: Text(err!, maxLines: 1, overflow: TextOverflow.ellipsis),
+                              selected: tp.errorFilter == err,
+                              onSelected: (_) {
+                                tp.setErrorFilter(tp.errorFilter == err ? null : err);
+                                setSheetState(() {});
+                              },
+                            )),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  // ── 应用按钮 ──
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('应用'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
 

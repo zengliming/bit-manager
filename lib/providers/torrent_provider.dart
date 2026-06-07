@@ -6,22 +6,35 @@ import '../services/service_factory.dart';
 class TorrentProvider extends ChangeNotifier {
   List<Torrent> _allTorrents = [];
   String _searchQuery = '';
-  TorrentState? _stateFilter;
+  Set<TorrentState>? _stateFilter;
   String? _clientFilter;
+  bool _errorOnly = false;
+  String? _errorFilter;
+  String? _siteFilter;
   bool _loading = false;
   String? _error;
   bool _selectMode = false;
   final Set<String> _selectedHashes = {};
+  int _stateTabIndex = 0;
 
   List<Torrent> get allTorrents => List.unmodifiable(_allTorrents);
 
   List<Torrent> get filteredTorrents {
     var result = _allTorrents;
-    if (_stateFilter != null) {
-      result = result.where((t) => t.state == _stateFilter).toList();
+    if (_stateFilter != null && _stateFilter!.isNotEmpty) {
+      result = result.where((t) => _stateFilter!.contains(t.state)).toList();
     }
     if (_clientFilter != null) {
       result = result.where((t) => t.clientId == _clientFilter).toList();
+    }
+    if (_errorOnly) {
+      result = result.where((t) => t.error != null && t.error!.isNotEmpty).toList();
+    }
+    if (_errorFilter != null) {
+      result = result.where((t) => t.error == _errorFilter).toList();
+    }
+    if (_siteFilter != null && _siteFilter!.isNotEmpty) {
+      result = result.where((t) => t.trackers.any((tr) => tr.contains(_siteFilter!))).toList();
     }
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase();
@@ -31,13 +44,29 @@ class TorrentProvider extends ChangeNotifier {
   }
 
   String get searchQuery => _searchQuery;
-  TorrentState? get stateFilter => _stateFilter;
+  Set<TorrentState>? get stateFilter => _stateFilter;
+  int get stateTabIndex => _stateTabIndex;
   String? get clientFilter => _clientFilter;
+  bool get errorOnly => _errorOnly;
+  String? get errorFilter => _errorFilter;
+  String? get siteFilter => _siteFilter;
   bool get loading => _loading;
   String? get error => _error;
   bool get selectMode => _selectMode;
   Set<String> get selectedHashes => Set.unmodifiable(_selectedHashes);
   int get selectedCount => _selectedHashes.length;
+
+  int get activeFilterCount => [
+    if (_stateFilter != null && _stateFilter!.isNotEmpty) 1,
+    if (_clientFilter != null) 1,
+    if (_errorOnly) 1,
+    if (_errorFilter != null) 1,
+    if (_siteFilter != null) 1,
+  ].length;
+
+  int get errorCount => _allTorrents
+      .where((t) => t.state == TorrentState.error || t.state == TorrentState.unknown)
+      .length;
 
   // ---- 筛选 ----
 
@@ -46,13 +75,60 @@ class TorrentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setStateFilter(TorrentState? state) {
-    _stateFilter = state;
+  void setStateFilter(Set<TorrentState>? states) {
+    _stateFilter = states;
+    notifyListeners();
+  }
+
+  void setStateTabIndex(int index) {
+    _stateTabIndex = index;
+    switch (index) {
+      case 0:
+        _stateFilter = null;
+        break;
+      case 1:
+        _stateFilter = {TorrentState.downloading, TorrentState.metaDL};
+        break;
+      case 2:
+        _stateFilter = {TorrentState.error, TorrentState.unknown};
+        break;
+      case 3:
+        _stateFilter = {TorrentState.seeding};
+        break;
+      default:
+        _stateFilter = null;
+    }
     notifyListeners();
   }
 
   void setClientFilter(String? clientId) {
     _clientFilter = clientId;
+    notifyListeners();
+  }
+
+  void setErrorOnly(bool v) {
+    _errorOnly = v;
+    notifyListeners();
+  }
+
+  void setErrorFilter(String? errorMsg) {
+    _errorFilter = errorMsg;
+    notifyListeners();
+  }
+
+  void setSiteFilter(String? site) {
+    _siteFilter = site;
+    notifyListeners();
+  }
+
+  void clearAllFilters() {
+    _stateFilter = null;
+    _stateTabIndex = 0;
+    _clientFilter = null;
+    _errorOnly = false;
+    _errorFilter = null;
+    _siteFilter = null;
+    _searchQuery = '';
     notifyListeners();
   }
 
@@ -90,10 +166,12 @@ class TorrentProvider extends ChangeNotifier {
 
   // ---- 数据刷新 ----
 
-  Future<void> refreshTorrents(List<ClientConfig> activeClients) async {
-    _loading = true;
-    _error = null;
-    notifyListeners();
+  Future<void> refreshTorrents(List<ClientConfig> activeClients, {bool showLoading = true}) async {
+    if (showLoading) {
+      _loading = true;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       final allTorrents = <Torrent>[];
@@ -110,8 +188,10 @@ class TorrentProvider extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
     } finally {
-      _loading = false;
-      notifyListeners();
+      if (showLoading) {
+        _loading = false;
+        notifyListeners();
+      }
     }
   }
 
