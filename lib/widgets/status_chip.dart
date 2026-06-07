@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/torrent.dart';
+import 'status_border.dart';
 
 class StatusChip extends StatelessWidget {
   final TorrentState state;
@@ -8,25 +9,33 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (Color color, String label) = switch (state) {
-      TorrentState.downloading => (Colors.blue, '下载中'),
-      TorrentState.metaDL      => (Colors.lightBlue, '获取元数据'),
-      TorrentState.seeding     => (Colors.green, '做种中'),
-      TorrentState.paused      => (Colors.orange, '已暂停'),
-      TorrentState.checking    => (Colors.purple, '校验中'),
-      TorrentState.queued      => (Colors.grey, '队列中'),
-      TorrentState.error       => (Colors.red, '出错'),
-      TorrentState.unknown     => (Colors.grey, '未知'),
+    final colors = statusColors(state);
+    final (IconData icon, String label) = switch (state) {
+      TorrentState.downloading => (Icons.download, '下载中'),
+      TorrentState.metaDL      => (Icons.downloading, '获取元数据'),
+      TorrentState.seeding     => (Icons.arrow_upward, '做种中'),
+      TorrentState.paused      => (Icons.pause, '已暂停'),
+      TorrentState.checking    => (Icons.hourglass_bottom, '校验中'),
+      TorrentState.queued      => (Icons.hourglass_empty, '队列中'),
+      TorrentState.error       => (Icons.error, '出错'),
+      TorrentState.unknown     => (Icons.help, '未知'),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: colors.background,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: colors.border.withValues(alpha: 0.2)),
       ),
-      child: Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w500)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: colors.border),
+          const SizedBox(width: 4),
+          Text(label, style: TextStyle(color: colors.border, fontSize: 11, fontWeight: FontWeight.w600)),
+        ],
+      ),
     );
   }
 }
