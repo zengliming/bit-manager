@@ -28,7 +28,7 @@ class TorrentProvider extends ChangeNotifier {
       result = result.where((t) => t.clientId == _clientFilter).toList();
     }
     if (_errorOnly) {
-      result = result.where((t) => t.error != null && t.error!.isNotEmpty).toList();
+      result = result.where((t) => t.isError).toList();
     }
     if (_errorFilter != null) {
       result = result.where((t) => t.error == _errorFilter).toList();
@@ -64,9 +64,7 @@ class TorrentProvider extends ChangeNotifier {
     if (_siteFilter != null) 1,
   ].length;
 
-  int get errorCount => _allTorrents
-      .where((t) => t.state == TorrentState.error || t.state == TorrentState.unknown)
-      .length;
+  int get errorCount => _allTorrents.where((t) => t.isError).length;
 
   // ---- 筛选 ----
 
@@ -85,15 +83,19 @@ class TorrentProvider extends ChangeNotifier {
     switch (index) {
       case 0:
         _stateFilter = null;
+        _errorOnly = false;
         break;
       case 1:
         _stateFilter = {TorrentState.downloading, TorrentState.metaDL};
+        _errorOnly = false;
         break;
       case 2:
-        _stateFilter = {TorrentState.error, TorrentState.unknown};
+        _stateFilter = null;
+        _errorOnly = true;
         break;
       case 3:
         _stateFilter = {TorrentState.seeding};
+        _errorOnly = false;
         break;
       default:
         _stateFilter = null;

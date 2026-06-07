@@ -73,27 +73,23 @@ class StatsProvider extends ChangeNotifier {
         totalUploaded += clientTorrents.fold<int>(0, (sum, t) => sum + t.uploaded);
         totalSize += clientSize;
 
-        int downloading = 0, seeding = 0, pausedUp = 0, pausedDl = 0, error = 0, checking = 0, waiting = 0;
+        int downloading = 0, uploading = 0, seeding = 0, pausedUp = 0, pausedDl = 0, error = 0, checking = 0, waiting = 0;
         int seedsConnected = 0;
         for (final t in clientTorrents) {
           seedsConnected += t.seedsConnected;
-          if (t.state == TorrentState.downloading || t.state == TorrentState.metaDL) {
-            downloading++;
-          } else if (t.state == TorrentState.seeding) {
-            seeding++;
-          } else if (t.state == TorrentState.paused) {
-            if (t.progress >= 1.0) {
+          if (t.isActivelyDownloading) downloading++;
+          if (t.isActivelyUploading) uploading++;
+          if (t.isSeeding) seeding++;
+          if (t.isPaused) {
+            if (t.isComplete) {
               pausedUp++;
             } else {
               pausedDl++;
             }
-          } else if (t.state == TorrentState.error) {
-            error++;
-          } else if (t.state == TorrentState.checking) {
-            checking++;
-          } else if (t.state == TorrentState.queued) {
-            waiting++;
           }
+          if (t.isError) error++;
+          if (t.isChecking) checking++;
+          if (t.isWaiting) waiting++;
         }
 
         clientStatsList.add(ClientStats(
@@ -108,6 +104,7 @@ class StatsProvider extends ChangeNotifier {
           uploadSpeed: clientUl,
           sizeOnDisk: clientSize,
           downloadingCount: downloading,
+          uploadingCount: uploading,
           seedingCount: seeding,
           pausedUpCount: pausedUp,
           pausedDlCount: pausedDl,
@@ -124,10 +121,13 @@ class StatsProvider extends ChangeNotifier {
       _globalStats = GlobalStats(
         totalTorrents: allTorrents.length,
         activeTorrents: allTorrents.where((t) => t.isActive).length,
-        downloadingCount: allTorrents.where((t) => t.isDownloading).length,
+        downloadingCount: allTorrents.where((t) => t.isActivelyDownloading).length,
+        uploadingCount: allTorrents.where((t) => t.isActivelyUploading).length,
         seedingCount: allTorrents.where((t) => t.isSeeding).length,
         pausedCount: allTorrents.where((t) => t.isPaused).length,
         errorCount: allTorrents.where((t) => t.isError).length,
+        checkingCount: allTorrents.where((t) => t.isChecking).length,
+        waitingCount: allTorrents.where((t) => t.isWaiting).length,
         downloadSpeed: downloadSpeed,
         uploadSpeed: uploadSpeed,
         totalDownloaded: totalDownloaded,
