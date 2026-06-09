@@ -4,7 +4,11 @@ import '../models/rss_source.dart';
 import '../models/torrent.dart';
 import '../services/rss_service.dart';
 import '../services/service_factory.dart';
+import '../services/torrent_client.dart';
 import '../utils/storage.dart';
+
+typedef RssServiceFactory = RssService Function();
+typedef RssTorrentServiceResolver = ITorrentClientService Function(ClientType type);
 
 class RssProvider extends ChangeNotifier {
   List<RssSource> _sources = [];
@@ -13,9 +17,14 @@ class RssProvider extends ChangeNotifier {
   bool _loading = false;
   String? _error;
 
-  /// 按 clientId 缓存的种子列表，用于批量查重
-  /// 每次 RSS 刷新时一次性获取，避免每个条目单独调用 API
-  final Map<String, List<Torrent>> _torrentsCache = {};
+  final RssServiceFactory _rssServiceFactory;
+  final RssTorrentServiceResolver _serviceResolver;
+
+  RssProvider({
+    RssServiceFactory? rssServiceFactory,
+    RssTorrentServiceResolver? serviceResolver,
+  })  : _rssServiceFactory = rssServiceFactory ?? RssService.new,
+        _serviceResolver = serviceResolver ?? ServiceFactory.getService;
 
   List<RssSource> get sources => List.unmodifiable(_sources);
   bool get loading => _loading;
@@ -78,27 +87,32 @@ class RssProvider extends ChangeNotifier {
 
   // ---- 查重 ----
 
-  /// 批量预取所有活跃客户端的种子列表，缓存到 _torrentsCache
-  Future<void> _prefetchTorrents(List<ClientConfig> clients) async {
-    _torrentsCache.clear();
+  /// 批量预取所有活跃客户端的种子列表，返回本次操作的局部快照
+  Future<Map<String, List<Torrent>>> _prefetchTorrents(List<ClientConfig> clients) async {
+    final cache = <String, List<Torrent>>{};
     await Future.wait(clients.map((client) async {
       try {
-        final service = ServiceFactory.getService(client.type);
+        final service = _serviceResolver(client.type);
         final torrents = await service.getTorrents(client);
-        _torrentsCache[client.id] = torrents;
+        cache[client.id] = torrents;
       } catch (_) {
-        _torrentsCache[client.id] = [];
+        cache[client.id] = [];
       }
     }));
+    return cache;
   }
 
   /// 统一查重逻辑：跨所有客户端检查种子是否已存在
-  /// 使用缓存中的种子列表，不再重复调用 API
-  bool _isDuplicateFromCache(RssItem item, List<ClientConfig> clients) {
+  /// 使用传入的快照中的种子列表，不再重复调用 API
+  bool _isDuplicateFromCache(
+    RssItem item,
+    List<ClientConfig> clients,
+    Map<String, List<Torrent>> torrentsCache,
+  ) {
     if (item.link == null) return false;
     final link = item.link!;
     for (final client in clients) {
-      final torrents = _torrentsCache[client.id] ?? [];
+      final torrents = torrentsCache[client.id] ?? [];
       final exists = torrents.any((t) =>
           t.name == item.title ||
           (link.startsWith('magnet:') && link.contains(t.hash)) ||
@@ -112,17 +126,17 @@ class RssProvider extends ChangeNotifier {
 
   Future<List<RssItem>> fetchItems(String sourceId, {List<ClientConfig>? clients}) async {
     final source = _sources.firstWhere((s) => s.id == sourceId);
-    final rssService = RssService();
+    final rssService = _rssServiceFactory();
     try {
       final items = await rssService.fetchItems(source, since: source.lastFetchedAt);
       if (clients != null && clients.isNotEmpty) {
         // 一次性预取所有客户端的种子列表
-        await _prefetchTorrents(clients);
+        final torrentsCache = await _prefetchTorrents(clients);
         for (final item in items) {
           if (_downloadedGuids.contains(item.guid)) {
             item.isDownloaded = true;
           }
-          if (_isDuplicateFromCache(item, clients)) {
+          if (_isDuplicateFromCache(item, clients, torrentsCache)) {
             item.isDuplicate = true;
           }
         }
@@ -141,10 +155,28 @@ class RssProvider extends ChangeNotifier {
 
   // ---- 自动下载 ----
 
+  Set<String> _rssItemKeys(RssItem item) {
+    return {
+      if (item.guid.isNotEmpty) 'guid:${item.guid}',
+      if (item.link != null && item.link!.isNotEmpty) 'link:${item.link}',
+      if (item.title.isNotEmpty) 'title:${item.title}',
+    };
+  }
+
+  bool _isDuplicateInCurrentPass(RssItem item, Set<String> downloadedKeys) {
+    final keys = _rssItemKeys(item);
+    return keys.any(downloadedKeys.contains);
+  }
+
+  void _markDownloadedInCurrentPass(RssItem item, Set<String> downloadedKeys) {
+    downloadedKeys.addAll(_rssItemKeys(item));
+  }
+
   Future<void> processAutoDownloads(List<ClientConfig> clients) async {
-    final rssService = RssService();
+    final rssService = _rssServiceFactory();
     // 一次性预取所有客户端的种子列表，供本轮所有 RSS 源查重使用
-    await _prefetchTorrents(clients);
+    final torrentsCache = await _prefetchTorrents(clients);
+    final downloadedKeysInCurrentPass = <String>{};
     for (final source in _sources) {
       if (!source.autoDownload || source.assignedClientId == null) continue;
       final targetClient = clients.where((c) => c.id == source.assignedClientId).firstOrNull;
@@ -158,11 +190,13 @@ class RssProvider extends ChangeNotifier {
               !rssService.matchesFilter(item.title, source.filterRegex)) {
             continue;
           }
-          if (_isDuplicateFromCache(item, clients)) continue;
-          final service = ServiceFactory.getService(targetClient.type);
+          if (_isDuplicateInCurrentPass(item, downloadedKeysInCurrentPass)) continue;
+          if (_isDuplicateFromCache(item, clients, torrentsCache)) continue;
+          final service = _serviceResolver(targetClient.type);
           try {
             await service.addTorrentFromUrl(targetClient, url: item.link!, savePath: source.savePath);
             _downloadedGuids.add(item.guid);
+            _markDownloadedInCurrentPass(item, downloadedKeysInCurrentPass);
             await _saveDownloadedGuids();
           } catch (e) {
             debugPrint('Auto-download failed for ${item.title}: $e');
