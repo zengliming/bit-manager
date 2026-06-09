@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../models/client_config.dart';
 import '../models/torrent.dart';
 import '../models/stats.dart';
@@ -9,6 +10,19 @@ import '../utils/http_client.dart';
 import 'torrent_client.dart';
 
 class TransmissionService implements ITorrentClientService {
+  @visibleForTesting
+  Future<String?> debugGetSessionIdForTest(ClientConfig config) =>
+      _getSessionId(config);
+
+  @visibleForTesting
+  Future<Map<String, dynamic>> debugRpcCallForTest(
+    ClientConfig config,
+    String method, {
+    Map<String, dynamic>? args,
+    String? sessionId,
+  }) =>
+      _rpcCall(config, method, args: args, sessionId: sessionId);
+
   /// 获取 Session ID（Transmission RPC 需要）
   Future<String?> _getSessionId(ClientConfig config) async {
     final dio = HttpClientUtil.instance.createClientDio(config);
@@ -287,7 +301,7 @@ class TransmissionService implements ITorrentClientService {
 
   Future<List<int>> _hashToIds(
       ClientConfig config, List<String> hashes, String? sid) async {
-    final result = await _rpcCall(config, 'torrent-get',
+    final result = await debugRpcCallForTest(config, 'torrent-get',
         args: {'fields': ['id', 'hashString']}, sessionId: sid);
     final args = _safeMap(result['arguments']);
     final torrentsRaw = args['torrents'];
@@ -300,6 +314,19 @@ class TransmissionService implements ITorrentClientService {
         final id = t['id'] as int?;
         if (id != null) ids.add(id);
       }
+    }
+    return ids;
+  }
+
+  Future<List<int>> _hashToIdsOrThrow(
+    ClientConfig config,
+    List<String> hashes,
+    String? sid,
+  ) async {
+    final ids = await _hashToIds(config, hashes, sid);
+    if (ids.length != hashes.toSet().length) {
+      throw Exception(
+          'Unable to resolve torrent hashes: expected ${hashes.toSet().length}, found ${ids.length}');
     }
     return ids;
   }
@@ -317,8 +344,8 @@ class TransmissionService implements ITorrentClientService {
   @override
   Future<void> pauseTorrents(ClientConfig config, List<String> hashes) async {
     if (hashes.isEmpty) return;
-    final sid = await _getSessionId(config);
-    final ids = await _hashToIds(config, hashes, sid);
+    final sid = await debugGetSessionIdForTest(config);
+    final ids = await _hashToIdsOrThrow(config, hashes, sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-stop',
           args: {'ids': ids}, sessionId: sid);
@@ -338,8 +365,8 @@ class TransmissionService implements ITorrentClientService {
   @override
   Future<void> resumeTorrents(ClientConfig config, List<String> hashes) async {
     if (hashes.isEmpty) return;
-    final sid = await _getSessionId(config);
-    final ids = await _hashToIds(config, hashes, sid);
+    final sid = await debugGetSessionIdForTest(config);
+    final ids = await _hashToIdsOrThrow(config, hashes, sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-start',
           args: {'ids': ids}, sessionId: sid);
@@ -362,8 +389,8 @@ class TransmissionService implements ITorrentClientService {
   Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
       {bool deleteFiles = false}) async {
     if (hashes.isEmpty) return;
-    final sid = await _getSessionId(config);
-    final ids = await _hashToIds(config, hashes, sid);
+    final sid = await debugGetSessionIdForTest(config);
+    final ids = await _hashToIdsOrThrow(config, hashes, sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-remove',
           args: {'ids': ids, 'delete-local-data': deleteFiles},
