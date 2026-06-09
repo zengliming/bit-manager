@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/client_config.dart';
 import '../models/rss_source.dart';
+import '../models/torrent.dart';
 import '../services/rss_service.dart';
 import '../services/service_factory.dart';
 import '../utils/storage.dart';
@@ -11,6 +12,10 @@ class RssProvider extends ChangeNotifier {
   Set<String> _downloadedGuids = {};
   bool _loading = false;
   String? _error;
+
+  /// 按 clientId 缓存的种子列表，用于批量查重
+  /// 每次 RSS 刷新时一次性获取，避免每个条目单独调用 API
+  final Map<String, List<Torrent>> _torrentsCache = {};
 
   List<RssSource> get sources => List.unmodifiable(_sources);
   bool get loading => _loading;
@@ -73,20 +78,32 @@ class RssProvider extends ChangeNotifier {
 
   // ---- 查重 ----
 
-  /// 统一查重逻辑：跨所有客户端检查种子是否已存在
-  Future<bool> _isDuplicate(RssItem item, List<ClientConfig> clients) async {
-    if (item.link == null) return false;
-    final link = item.link!;
-    for (final client in clients) {
+  /// 批量预取所有活跃客户端的种子列表，缓存到 _torrentsCache
+  Future<void> _prefetchTorrents(List<ClientConfig> clients) async {
+    _torrentsCache.clear();
+    await Future.wait(clients.map((client) async {
       try {
         final service = ServiceFactory.getService(client.type);
         final torrents = await service.getTorrents(client);
-        final exists = torrents.any((t) =>
-            t.name == item.title ||
-            (link.startsWith('magnet:') && link.contains(t.hash)) ||
-            (link.contains(t.hash)));
-        if (exists) return true;
-      } catch (_) {}
+        _torrentsCache[client.id] = torrents;
+      } catch (_) {
+        _torrentsCache[client.id] = [];
+      }
+    }));
+  }
+
+  /// 统一查重逻辑：跨所有客户端检查种子是否已存在
+  /// 使用缓存中的种子列表，不再重复调用 API
+  bool _isDuplicateFromCache(RssItem item, List<ClientConfig> clients) {
+    if (item.link == null) return false;
+    final link = item.link!;
+    for (final client in clients) {
+      final torrents = _torrentsCache[client.id] ?? [];
+      final exists = torrents.any((t) =>
+          t.name == item.title ||
+          (link.startsWith('magnet:') && link.contains(t.hash)) ||
+          (link.contains(t.hash)));
+      if (exists) return true;
     }
     return false;
   }
@@ -99,11 +116,13 @@ class RssProvider extends ChangeNotifier {
     try {
       final items = await rssService.fetchItems(source, since: source.lastFetchedAt);
       if (clients != null && clients.isNotEmpty) {
+        // 一次性预取所有客户端的种子列表
+        await _prefetchTorrents(clients);
         for (final item in items) {
           if (_downloadedGuids.contains(item.guid)) {
             item.isDownloaded = true;
           }
-          if (await _isDuplicate(item, clients)) {
+          if (_isDuplicateFromCache(item, clients)) {
             item.isDuplicate = true;
           }
         }
@@ -124,13 +143,14 @@ class RssProvider extends ChangeNotifier {
 
   Future<void> processAutoDownloads(List<ClientConfig> clients) async {
     final rssService = RssService();
+    // 一次性预取所有客户端的种子列表，供本轮所有 RSS 源查重使用
+    await _prefetchTorrents(clients);
     for (final source in _sources) {
       if (!source.autoDownload || source.assignedClientId == null) continue;
       final targetClient = clients.where((c) => c.id == source.assignedClientId).firstOrNull;
       if (targetClient == null) continue;
       try {
         final items = await rssService.fetchItems(source, since: source.lastFetchedAt);
-        final allClients = clients; // check all clients, not just target
         for (final item in items) {
           if (_downloadedGuids.contains(item.guid)) continue;
           if (item.link == null) continue;
@@ -138,7 +158,7 @@ class RssProvider extends ChangeNotifier {
               !rssService.matchesFilter(item.title, source.filterRegex)) {
             continue;
           }
-          if (await _isDuplicate(item, allClients)) continue;
+          if (_isDuplicateFromCache(item, clients)) continue;
           final service = ServiceFactory.getService(targetClient.type);
           try {
             await service.addTorrentFromUrl(targetClient, url: item.link!, savePath: source.savePath);

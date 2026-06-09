@@ -47,12 +47,25 @@ class _EmptyTorrentService implements ITorrentClientService {
   Future<void> pauseTorrent(ClientConfig config, String hash) async {}
 
   @override
+  Future<void> pauseTorrents(ClientConfig config, List<String> hashes) async {}
+
+  @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {}
+
+  @override
+  Future<void> resumeTorrents(ClientConfig config, List<String> hashes) async {}
 
   @override
   Future<void> deleteTorrent(
     ClientConfig config,
     String hash, {
+    bool deleteFiles = false,
+  }) async {}
+
+  @override
+  Future<void> deleteTorrents(
+    ClientConfig config,
+    List<String> hashes, {
     bool deleteFiles = false,
   }) async {}
 

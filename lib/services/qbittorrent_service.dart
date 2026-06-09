@@ -281,11 +281,29 @@ class QBittorrentService implements ITorrentClientService {
   }
 
   @override
+  Future<void> pauseTorrents(ClientConfig config, List<String> hashes) async {
+    if (hashes.isEmpty) return;
+    final sid = await _login(config);
+    if (sid == null) throw Exception('Login failed');
+    await _post(config, AppConstants.qbTorrentPause,
+        data: {'hashes': hashes.join('|')}, sid: sid);
+  }
+
+  @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
     await _post(config, AppConstants.qbTorrentResume,
         data: {'hashes': hash}, sid: sid);
+  }
+
+  @override
+  Future<void> resumeTorrents(ClientConfig config, List<String> hashes) async {
+    if (hashes.isEmpty) return;
+    final sid = await _login(config);
+    if (sid == null) throw Exception('Login failed');
+    await _post(config, AppConstants.qbTorrentResume,
+        data: {'hashes': hashes.join('|')}, sid: sid);
   }
 
   @override
@@ -296,6 +314,20 @@ class QBittorrentService implements ITorrentClientService {
     await _post(config, AppConstants.qbTorrentDelete,
         data: {
           'hashes': hash,
+          'deleteFiles': deleteFiles ? 'true' : 'false'
+        },
+        sid: sid);
+  }
+
+  @override
+  Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
+      {bool deleteFiles = false}) async {
+    if (hashes.isEmpty) return;
+    final sid = await _login(config);
+    if (sid == null) throw Exception('Login failed');
+    await _post(config, AppConstants.qbTorrentDelete,
+        data: {
+          'hashes': hashes.join('|'),
           'deleteFiles': deleteFiles ? 'true' : 'false'
         },
         sid: sid);

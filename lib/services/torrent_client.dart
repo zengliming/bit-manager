@@ -27,11 +27,21 @@ abstract class ITorrentClientService {
   /// 暂停种子
   Future<void> pauseTorrent(ClientConfig config, String hash);
 
+  /// 批量暂停种子
+  Future<void> pauseTorrents(ClientConfig config, List<String> hashes);
+
   /// 恢复种子
   Future<void> resumeTorrent(ClientConfig config, String hash);
 
+  /// 批量恢复种子
+  Future<void> resumeTorrents(ClientConfig config, List<String> hashes);
+
   /// 删除种子
   Future<void> deleteTorrent(ClientConfig config, String hash,
+      {bool deleteFiles = false});
+
+  /// 批量删除种子
+  Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
       {bool deleteFiles = false});
 
   /// 替换 Tracker

@@ -113,11 +113,12 @@ class TorrentListScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton:
-          context.watch<TorrentProvider>().selectMode &&
-              context.watch<TorrentProvider>().selectedCount > 0
-          ? _buildBatchActions(context)
-          : null,
+      floatingActionButton: () {
+        final tp = context.watch<TorrentProvider>();
+        return tp.selectMode && tp.selectedCount > 0
+            ? _buildBatchActions(context)
+            : null;
+      }(),
     );
   }
 

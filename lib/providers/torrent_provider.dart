@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../models/client_config.dart';
 import '../models/torrent.dart';
@@ -23,36 +24,33 @@ class TorrentProvider extends ChangeNotifier {
   final Set<String> _selectedHashes = {};
   int _stateTabIndex = 0;
 
+  /// 缓存的错误种子计数，避免每次 UI 重建时 O(n) 遍历
+  int _errorCount = 0;
+
+  /// 搜索防抖定时器：用户停止输入 200ms 后才触发筛选
+  Timer? _searchDebounce;
+
   TorrentProvider({TorrentServiceResolver? serviceResolver})
     : _serviceResolver = serviceResolver ?? ServiceFactory.getService;
 
   List<Torrent> get allTorrents => List.unmodifiable(_allTorrents);
 
+  /// 单次遍历过滤：所有筛选条件在一次迭代中完成，避免链式 .where().toList() 创建多个中间列表
   List<Torrent> get filteredTorrents {
-    var result = _allTorrents;
-    if (_stateFilter != null && _stateFilter!.isNotEmpty) {
-      result = result.where((t) => _stateFilter!.contains(t.state)).toList();
-    }
-    if (_clientFilter != null) {
-      result = result.where((t) => t.clientId == _clientFilter).toList();
-    }
-    if (_errorOnly) {
-      result = result.where((t) => t.isError).toList();
-    }
-    if (_errorFilter != null) {
-      result = result.where((t) => t.error == _errorFilter).toList();
-    }
-    if (_siteFilter != null && _siteFilter!.isNotEmpty) {
-      result = result
-          .where((t) => t.trackers.any((tr) => tr.contains(_siteFilter!)))
-          .toList();
-    }
-    if (_searchQuery.isNotEmpty) {
-      final q = _searchQuery.toLowerCase();
-      result = result.where((t) => t.name.toLowerCase().contains(q)).toList();
-    }
-    return result;
+    return _allTorrents.where((t) {
+      if (_stateFilter != null && _stateFilter!.isNotEmpty && !_stateFilter!.contains(t.state)) return false;
+      if (_clientFilter != null && t.clientId != _clientFilter) return false;
+      if (_errorOnly && !t.isError) return false;
+      if (_errorFilter != null && t.error != _errorFilter) return false;
+      if (_siteFilter != null && _siteFilter!.isNotEmpty && !t.trackers.any((tr) => tr.contains(_siteFilter!))) return false;
+      if (_searchQuery.isNotEmpty && !t.name.toLowerCase().contains(_searchQueryLowerCase)) return false;
+      return true;
+    }).toList();
   }
+
+  /// 缓存的搜索查询小写，避免每次筛选时重复转换
+  String _searchQueryLowerCase = '';
+
 
   String get searchQuery => _searchQuery;
   Set<TorrentState>? get stateFilter => _stateFilter;
@@ -77,21 +75,34 @@ class TorrentProvider extends ChangeNotifier {
     if (_siteFilter != null) 1,
   ].length;
 
-  int get errorCount => _allTorrents.where((t) => t.isError).length;
+  int get errorCount => _errorCount;
 
   // ---- 筛选 ----
 
   void setSearchQuery(String query) {
+    if (_searchQuery == query) return;
     _searchQuery = query;
-    notifyListeners();
+    _searchQueryLowerCase = query.toLowerCase();
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 200), () {
+      notifyListeners();
+    });
   }
 
   void setStateFilter(Set<TorrentState>? states) {
+    // 比较集合内容而非引用，避免不同 Set 实例但内容相同导致的不必要通知
+    if (_stateFilter == states) return;
+    if (_stateFilter != null && states != null && _stateFilter!.length == states.length) {
+      if (states.every((s) => _stateFilter!.contains(s))) {
+        return;
+      }
+    }
     _stateFilter = states;
     notifyListeners();
   }
 
   void setStateTabIndex(int index) {
+    if (_stateTabIndex == index) return;
     _stateTabIndex = index;
     switch (index) {
       case 0:
@@ -117,21 +128,25 @@ class TorrentProvider extends ChangeNotifier {
   }
 
   void setClientFilter(String? clientId) {
+    if (_clientFilter == clientId) return;
     _clientFilter = clientId;
     notifyListeners();
   }
 
   void setErrorOnly(bool v) {
+    if (_errorOnly == v) return;
     _errorOnly = v;
     notifyListeners();
   }
 
   void setErrorFilter(String? errorMsg) {
+    if (_errorFilter == errorMsg) return;
     _errorFilter = errorMsg;
     notifyListeners();
   }
 
   void setSiteFilter(String? site) {
+    if (_siteFilter == site) return;
     _siteFilter = site;
     notifyListeners();
   }
@@ -194,7 +209,7 @@ class TorrentProvider extends ChangeNotifier {
     try {
       final allTorrents = <Torrent>[];
       final onlineStatus = <String, bool>{};
-      for (final client in activeClients) {
+      await Future.wait(activeClients.map((client) async {
         try {
           final service = _serviceResolver(client.type);
           final torrents = await service.getTorrents(client);
@@ -204,8 +219,9 @@ class TorrentProvider extends ChangeNotifier {
           onlineStatus[client.id] = false;
           debugPrint('Error fetching torrents from ${client.name}: $e');
         }
-      }
+      }));
       _allTorrents = allTorrents;
+      _errorCount = allTorrents.where((t) => t.isError).length;
       _lastRefreshOnlineStatus
         ..clear()
         ..addAll(onlineStatus);
@@ -223,10 +239,8 @@ class TorrentProvider extends ChangeNotifier {
 
   Future<bool> pauseTorrents(ClientConfig client, List<String> hashes) async {
     try {
-      final service = ServiceFactory.getService(client.type);
-      for (final hash in hashes) {
-        await service.pauseTorrent(client, hash);
-      }
+      final service = _serviceResolver(client.type);
+      await service.pauseTorrents(client, hashes);
       return true;
     } catch (e) {
       _error = e.toString();
@@ -237,10 +251,8 @@ class TorrentProvider extends ChangeNotifier {
 
   Future<bool> resumeTorrents(ClientConfig client, List<String> hashes) async {
     try {
-      final service = ServiceFactory.getService(client.type);
-      for (final hash in hashes) {
-        await service.resumeTorrent(client, hash);
-      }
+      final service = _serviceResolver(client.type);
+      await service.resumeTorrents(client, hashes);
       return true;
     } catch (e) {
       _error = e.toString();
@@ -255,10 +267,8 @@ class TorrentProvider extends ChangeNotifier {
     bool deleteFiles = false,
   }) async {
     try {
-      final service = ServiceFactory.getService(client.type);
-      for (final hash in hashes) {
-        await service.deleteTorrent(client, hash, deleteFiles: deleteFiles);
-      }
+      final service = _serviceResolver(client.type);
+      await service.deleteTorrents(client, hashes, deleteFiles: deleteFiles);
       return true;
     } catch (e) {
       _error = e.toString();

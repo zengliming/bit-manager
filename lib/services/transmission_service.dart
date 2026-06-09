@@ -315,9 +315,31 @@ class TransmissionService implements ITorrentClientService {
   }
 
   @override
+  Future<void> pauseTorrents(ClientConfig config, List<String> hashes) async {
+    if (hashes.isEmpty) return;
+    final sid = await _getSessionId(config);
+    final ids = await _hashToIds(config, hashes, sid);
+    if (ids.isNotEmpty) {
+      await _rpcCall(config, 'torrent-stop',
+          args: {'ids': ids}, sessionId: sid);
+    }
+  }
+
+  @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
+    if (ids.isNotEmpty) {
+      await _rpcCall(config, 'torrent-start',
+          args: {'ids': ids}, sessionId: sid);
+    }
+  }
+
+  @override
+  Future<void> resumeTorrents(ClientConfig config, List<String> hashes) async {
+    if (hashes.isEmpty) return;
+    final sid = await _getSessionId(config);
+    final ids = await _hashToIds(config, hashes, sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-start',
           args: {'ids': ids}, sessionId: sid);
@@ -329,6 +351,19 @@ class TransmissionService implements ITorrentClientService {
       {bool deleteFiles = false}) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
+    if (ids.isNotEmpty) {
+      await _rpcCall(config, 'torrent-remove',
+          args: {'ids': ids, 'delete-local-data': deleteFiles},
+          sessionId: sid);
+    }
+  }
+
+  @override
+  Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
+      {bool deleteFiles = false}) async {
+    if (hashes.isEmpty) return;
+    final sid = await _getSessionId(config);
+    final ids = await _hashToIds(config, hashes, sid);
     if (ids.isNotEmpty) {
       await _rpcCall(config, 'torrent-remove',
           args: {'ids': ids, 'delete-local-data': deleteFiles},

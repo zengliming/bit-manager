@@ -5,6 +5,9 @@ class HttpClientUtil {
   static HttpClientUtil? _instance;
   late Dio _dio;
 
+  /// 按 baseUrl 缓存的客户端 Dio 实例，复用连接池
+  final Map<String, Dio> _clientDioCache = {};
+
   HttpClientUtil._() {
     _dio = Dio(BaseOptions(
       connectTimeout: const Duration(seconds: 10),
@@ -26,14 +29,23 @@ class HttpClientUtil {
 
   Dio get dio => _dio;
 
-  /// 创建一个为特定客户端配置的 Dio 实例（含超时设置）
+  /// 获取或创建为特定客户端配置的 Dio 实例（按 baseUrl 缓存复用）
+  /// 同一个客户端地址共享连接池，避免重复 TLS 握手
   Dio createClientDio(ClientConfig config) {
-    return Dio(BaseOptions(
-      baseUrl: config.baseUrl,
-      connectTimeout: Duration(seconds: config.timeoutSeconds),
-      receiveTimeout: Duration(seconds: config.timeoutSeconds + 5),
-      sendTimeout: Duration(seconds: config.timeoutSeconds + 5),
-      headers: {'User-Agent': 'BitManager/1.0'},
-    ));
+    return _clientDioCache.putIfAbsent(
+      config.baseUrl,
+      () => Dio(BaseOptions(
+        baseUrl: config.baseUrl,
+        connectTimeout: Duration(seconds: config.timeoutSeconds),
+        receiveTimeout: Duration(seconds: config.timeoutSeconds + 5),
+        sendTimeout: Duration(seconds: config.timeoutSeconds + 5),
+        headers: {'User-Agent': 'BitManager/1.0'},
+      )),
+    );
+  }
+
+  /// 清除客户端 Dio 缓存（客户端配置变更时调用）
+  void clearClientDioCache() {
+    _clientDioCache.clear();
   }
 }

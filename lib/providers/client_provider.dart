@@ -18,7 +18,6 @@ class ClientProvider extends ChangeNotifier {
   /// 从本地存储加载客户端配置
   Future<void> loadClients() async {
     _loading = true;
-    notifyListeners();
 
     try {
       final storage = await LocalStorage.getInstance();

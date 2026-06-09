@@ -8,9 +8,17 @@ import 'package:flutter_test/flutter_test.dart';
 class _FakeTorrentService implements ITorrentClientService {
   final List<Torrent> torrents;
   final Object? error;
+  final bool throwsOnBatch;
 
-  _FakeTorrentService.success(this.torrents) : error = null;
-  _FakeTorrentService.failure(this.error) : torrents = const [];
+  _FakeTorrentService.success(this.torrents)
+      : error = null,
+        throwsOnBatch = false;
+  _FakeTorrentService.failure(this.error)
+      : torrents = const [],
+        throwsOnBatch = false;
+  _FakeTorrentService({this.throwsOnBatch = false})
+      : torrents = const [],
+        error = null;
 
   @override
   Future<List<Torrent>> getTorrents(ClientConfig config) async {
@@ -52,7 +60,17 @@ class _FakeTorrentService implements ITorrentClientService {
   Future<void> pauseTorrent(ClientConfig config, String hash) async {}
 
   @override
+  Future<void> pauseTorrents(ClientConfig config, List<String> hashes) async {
+    if (throwsOnBatch) throw Exception('batch error');
+  }
+
+  @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {}
+
+  @override
+  Future<void> resumeTorrents(ClientConfig config, List<String> hashes) async {
+    if (throwsOnBatch) throw Exception('batch error');
+  }
 
   @override
   Future<void> deleteTorrent(
@@ -60,6 +78,15 @@ class _FakeTorrentService implements ITorrentClientService {
     String hash, {
     bool deleteFiles = false,
   }) async {}
+
+  @override
+  Future<void> deleteTorrents(
+    ClientConfig config,
+    List<String> hashes, {
+    bool deleteFiles = false,
+  }) async {
+    if (throwsOnBatch) throw Exception('batch error');
+  }
 
   @override
   Future<void> replaceTracker(
@@ -110,6 +137,27 @@ void main() {
     port: 8080,
   );
 
+  Torrent torrent({
+    required String id,
+    required String hash,
+    String name = 'Test Torrent',
+    TorrentState state = TorrentState.downloading,
+    String? error,
+    List<String> trackers = const [],
+  }) => Torrent(
+    id: id,
+    hash: hash,
+    name: name,
+    clientId: 'qb',
+    clientType: ClientType.qBittorrent,
+    state: state,
+    error: error,
+    trackers: trackers,
+    trackerStatuses: const ['2'], // 标记 tracker 成功，避免 isError 误判
+  );
+
+  // ---- 在线状态测试 ----
+
   test(
     'marks client online when torrent API succeeds with an empty list',
     () async {
@@ -135,5 +183,301 @@ void main() {
 
     expect(provider.allTorrents, isEmpty);
     expect(provider.lastRefreshOnlineStatus[qb.id], isFalse);
+  });
+
+  // ---- 并行拉取测试 ----
+
+  test('parallel fetching: mixed success/failure across clients', () async {
+    ClientConfig qbClient(String id) => ClientConfig(
+      id: id,
+      name: 'Client $id',
+      type: ClientType.qBittorrent,
+      host: '127.0.0.1',
+      port: 8080,
+    );
+    ClientConfig trClient(String id) => ClientConfig(
+      id: id,
+      name: 'Client $id',
+      type: ClientType.transmission,
+      host: '127.0.0.2',
+      port: 9091,
+    );
+    final qb = qbClient('qb');
+    final tr = trClient('tr');
+    final successService = _FakeTorrentService.success([
+      torrent(id: 't1', hash: 'aaa'),
+    ]);
+    final failService = _FakeTorrentService.failure(Exception('offline'));
+
+    final provider = TorrentProvider(
+      serviceResolver: (type) => type == ClientType.qBittorrent ? successService : failService,
+    );
+
+    await provider.refreshTorrents([qb, tr], showLoading: false);
+
+    expect(provider.allTorrents, hasLength(1));
+    expect(provider.lastRefreshOnlineStatus[qb.id], isTrue);
+    expect(provider.lastRefreshOnlineStatus[tr.id], isFalse);
+  });
+
+  // ---- 单次遍历过滤测试 ----
+
+  group('filteredTorrents single-pass filtering', () {
+    late ClientConfig qb;
+
+    setUp(() {
+      qb = client('qb');
+    });
+
+    test('returns all torrents when no filter is applied', () async {
+      final t1 = torrent(id: '1', hash: 'a', name: 'Linux ISO', state: TorrentState.downloading);
+      final t2 = torrent(id: '2', hash: 'b', name: 'Ubuntu ISO', state: TorrentState.seeding);
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      expect(p.filteredTorrents, hasLength(2));
+    });
+
+    test('filters by state', () async {
+      final t1 = torrent(id: '1', hash: 'a', name: 'Linux ISO', state: TorrentState.downloading);
+      final t2 = torrent(id: '2', hash: 'b', name: 'Ubuntu ISO', state: TorrentState.seeding);
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      p.setStateFilter({TorrentState.downloading});
+      expect(p.filteredTorrents, hasLength(1));
+      expect(p.filteredTorrents.single.id, '1');
+    });
+
+    test('filters by search query', () async {
+      final t1 = torrent(id: '1', hash: 'a', name: 'Linux ISO', state: TorrentState.downloading);
+      final t2 = torrent(id: '2', hash: 'b', name: 'Ubuntu ISO', state: TorrentState.seeding);
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      p.setSearchQuery('linux');
+      expect(p.filteredTorrents, hasLength(1));
+      expect(p.filteredTorrents.single.name, 'Linux ISO');
+    });
+
+    test('filters by error only', () async {
+      final t1 = torrent(id: '1', hash: 'a', name: 'Good', state: TorrentState.downloading);
+      final t2 = torrent(id: '2', hash: 'b', name: 'Bad', state: TorrentState.error, error: 'fail');
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      p.setErrorOnly(true);
+      expect(p.filteredTorrents, hasLength(1));
+      expect(p.filteredTorrents.single.id, '2');
+    });
+
+    test('combines state and search filters', () async {
+      final t1 = torrent(id: '1', hash: 'a', name: 'Linux ISO', state: TorrentState.downloading);
+      final t2 = torrent(id: '2', hash: 'b', name: 'Ubuntu ISO', state: TorrentState.seeding);
+      final t3 = torrent(id: '3', hash: 'c', name: 'Linux Mint', state: TorrentState.seeding);
+      final mockService = _FakeTorrentService.success([t1, t2, t3]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      p.setStateFilter({TorrentState.seeding});
+      p.setSearchQuery('linux');
+      expect(p.filteredTorrents, hasLength(1));
+      expect(p.filteredTorrents.single.name, 'Linux Mint');
+    });
+  });
+
+  // ---- 缓存 errorCount 测试 ----
+
+  test('errorCount caches result from refresh', () async {
+    final t1 = torrent(id: '1', hash: 'a', name: 'Good', state: TorrentState.downloading);
+    final t2 = torrent(id: '2', hash: 'b', name: 'Error File', state: TorrentState.error, error: 'IO error');
+    final mockService = _FakeTorrentService.success([t1, t2]);
+    final qb = client('qb');
+    final provider = TorrentProvider(serviceResolver: (_) => mockService);
+
+    await provider.refreshTorrents([qb], showLoading: false);
+    expect(provider.errorCount, 1);
+
+    // 再次刷新，数据变化
+    final mockService2 = _FakeTorrentService.success([t1]);
+    final provider2 = TorrentProvider(serviceResolver: (_) => mockService2);
+    await provider2.refreshTorrents([qb], showLoading: false);
+    expect(provider2.errorCount, 0);
+  });
+
+  test('errorCount is zero when no torrents are in error state', () async {
+    final t1 = torrent(id: '1', hash: 'a', name: 'Good DL', state: TorrentState.downloading);
+    final t2 = torrent(id: '2', hash: 'b', name: 'Good Seed', state: TorrentState.seeding);
+    final mockService = _FakeTorrentService.success([t1, t2]);
+    final qb = client('qb');
+    final provider = TorrentProvider(serviceResolver: (_) => mockService);
+
+    await provider.refreshTorrents([qb], showLoading: false);
+    expect(provider.errorCount, 0);
+  });
+
+  // ---- 空守卫测试 ----
+
+  test('setSearchQuery no-op guard prevents duplicate notification', () async {
+    final qb = client('qb');
+    final provider = TorrentProvider(
+      serviceResolver: (_) => _FakeTorrentService.success(const []),
+    );
+    await provider.refreshTorrents([qb], showLoading: false);
+
+    int notifyCount = 0;
+    provider.addListener(() => notifyCount++);
+
+    provider.setSearchQuery('test');
+    // 搜索有 200ms 防抖，先更新值但不立即通知
+    expect(provider.searchQuery, 'test');
+    expect(notifyCount, 0);
+
+    // 等待防抖触发
+    await Future.delayed(const Duration(milliseconds: 250));
+    expect(notifyCount, 1);
+
+    // 相同的查询不应触发额外通知
+    provider.setSearchQuery('test');
+    await Future.delayed(const Duration(milliseconds: 250));
+    expect(notifyCount, 1);
+  });
+
+  test('setStateTabIndex changes to a different index triggers notification', () async {
+    final qb = client('qb');
+    final provider = TorrentProvider(
+      serviceResolver: (_) => _FakeTorrentService.success(const []),
+    );
+    await provider.refreshTorrents([qb], showLoading: false);
+
+    int notifyCount = 0;
+    provider.addListener(() => notifyCount++);
+
+    // 切换到下载中标签
+    provider.setStateTabIndex(1);
+    expect(notifyCount, 1);
+
+    // 再次切换相同标签不应触发通知
+    provider.setStateTabIndex(1);
+    expect(notifyCount, 1);
+
+    // 切换到不同标签
+    provider.setStateTabIndex(2);
+    expect(notifyCount, 2);
+  });
+
+  test('setClientFilter no-op guard prevents duplicate notification', () async {
+    final qb = client('qb');
+    final provider = TorrentProvider(
+      serviceResolver: (_) => _FakeTorrentService.success(const []),
+    );
+    await provider.refreshTorrents([qb], showLoading: false);
+
+    int notifyCount = 0;
+    provider.addListener(() => notifyCount++);
+
+    provider.setClientFilter('client-1');
+    expect(notifyCount, 1);
+
+    provider.setClientFilter('client-1');
+    expect(notifyCount, 1);
+  });
+
+  test('setStateFilter no-op guard compares set contents, not references', () async {
+    final qb = client('qb');
+    final provider = TorrentProvider(
+      serviceResolver: (_) => _FakeTorrentService.success(const []),
+    );
+    await provider.refreshTorrents([qb], showLoading: false);
+
+    int notifyCount = 0;
+    provider.addListener(() => notifyCount++);
+
+    provider.setStateFilter({TorrentState.downloading});
+    expect(notifyCount, 1);
+
+    // 相同内容的 Set（不同实例）不应触发通知
+    provider.setStateFilter({TorrentState.downloading});
+    expect(notifyCount, 1);
+
+    // 不同的 Set 内容应触发通知
+    provider.setStateFilter({TorrentState.seeding});
+    expect(notifyCount, 2);
+  });
+
+  test('setErrorOnly no-op guard prevents duplicate notification', () async {
+    final qb = client('qb');
+    final provider = TorrentProvider(
+      serviceResolver: (_) => _FakeTorrentService.success(const []),
+    );
+    await provider.refreshTorrents([qb], showLoading: false);
+
+    int notifyCount = 0;
+    provider.addListener(() => notifyCount++);
+
+    provider.setErrorOnly(true);
+    expect(notifyCount, 1);
+
+    provider.setErrorOnly(true);
+    expect(notifyCount, 1);
+
+    provider.setErrorOnly(false);
+    expect(notifyCount, 2);
+  });
+
+  // ---- 批量操作测试 ----
+
+  group('batch torrent operations', () {
+    test('pauseTorrents calls service batch method and returns true', () async {
+      final qb = client('qb');
+      final service = _FakeTorrentService.success(const []);
+      final provider = TorrentProvider(
+        serviceResolver: (_) => service,
+      );
+      await provider.refreshTorrents([qb], showLoading: false);
+
+      final result = await provider.pauseTorrents(qb, ['a', 'b', 'c']);
+      expect(result, isTrue);
+    });
+
+    test('resumeTorrents calls service batch method and returns true', () async {
+      final qb = client('qb');
+      final service = _FakeTorrentService.success(const []);
+      final provider = TorrentProvider(
+        serviceResolver: (_) => service,
+      );
+      await provider.refreshTorrents([qb], showLoading: false);
+
+      final result = await provider.resumeTorrents(qb, ['a', 'b']);
+      expect(result, isTrue);
+    });
+
+    test('deleteTorrents calls service batch method with deleteFiles flag', () async {
+      final qb = client('qb');
+      final service = _FakeTorrentService.success(const []);
+      final provider = TorrentProvider(
+        serviceResolver: (_) => service,
+      );
+      await provider.refreshTorrents([qb], showLoading: false);
+
+      final result = await provider.deleteTorrents(qb, ['a'], deleteFiles: true);
+      expect(result, isTrue);
+    });
+
+    test('batch operations return false on service error', () async {
+      final qb = client('qb');
+      final failService = _FakeTorrentService(throwsOnBatch: true);
+      final provider = TorrentProvider(
+        serviceResolver: (_) => failService,
+      );
+      await provider.refreshTorrents([qb], showLoading: false);
+
+      final result = await provider.pauseTorrents(qb, ['a']);
+      expect(result, isFalse);
+    });
   });
 }
