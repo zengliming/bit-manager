@@ -4,6 +4,24 @@ import '../models/torrent.dart';
 import '../models/stats.dart';
 import '../services/service_factory.dart';
 
+class _ClientStatsRefreshResult {
+  final int downloadSpeed;
+  final int uploadSpeed;
+  final int totalDownloaded;
+  final int totalUploaded;
+  final int clientSize;
+  final ClientStats clientStats;
+
+  _ClientStatsRefreshResult({
+    required this.downloadSpeed,
+    required this.uploadSpeed,
+    required this.totalDownloaded,
+    required this.totalUploaded,
+    required this.clientSize,
+    required this.clientStats,
+  });
+}
+
 class StatsProvider extends ChangeNotifier {
   GlobalStats _globalStats = GlobalStats();
   bool _loading = false;
@@ -22,13 +40,6 @@ class StatsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      int downloadSpeed = 0;
-      int uploadSpeed = 0;
-      int totalDownloaded = 0;
-      int totalUploaded = 0;
-      int totalSize = 0;
-      final clientStatsList = <ClientStats>[];
-
       // 并行获取所有客户端的统计信息
       final results = await Future.wait(activeClients.map((client) async {
         final clientTorrents = allTorrents.where((t) => t.clientId == client.id);
@@ -90,13 +101,13 @@ class StatsProvider extends ChangeNotifier {
           if (t.isWaiting) waiting++;
         }
 
-        return {
-          'downloadSpeed': clientDl,
-          'uploadSpeed': clientUl,
-          'totalDownloaded': totalDl,
-          'totalUploaded': totalUl,
-          'clientSize': clientSize,
-          'clientStats': ClientStats(
+        return _ClientStatsRefreshResult(
+          downloadSpeed: clientDl,
+          uploadSpeed: clientUl,
+          totalDownloaded: totalDl,
+          totalUploaded: totalUl,
+          clientSize: clientSize,
+          clientStats: ClientStats(
             clientId: client.id,
             clientName: client.name,
             type: client.type,
@@ -120,19 +131,25 @@ class StatsProvider extends ChangeNotifier {
             downloadLimit: dllimit,
             uploadLimit: ullimit,
           ),
-        };
+        );
       }));
 
       // 汇总并行结果，同时累加全局计数（避免再次遍历 allTorrents）
+      int downloadSpeed = 0;
+      int uploadSpeed = 0;
+      int totalDownloaded = 0;
+      int totalUploaded = 0;
+      int totalSize = 0;
+      final clientStatsList = <ClientStats>[];
       int globalDownloading = 0, globalUploading = 0, globalSeeding = 0;
       int globalPaused = 0, globalError = 0, globalChecking = 0, globalWaiting = 0;
       for (final r in results) {
-        downloadSpeed += r['downloadSpeed'] as int;
-        uploadSpeed += r['uploadSpeed'] as int;
-        totalDownloaded += r['totalDownloaded'] as int;
-        totalUploaded += r['totalUploaded'] as int;
-        totalSize += r['clientSize'] as int;
-        final cs = r['clientStats'] as ClientStats;
+        downloadSpeed += r.downloadSpeed;
+        uploadSpeed += r.uploadSpeed;
+        totalDownloaded += r.totalDownloaded;
+        totalUploaded += r.totalUploaded;
+        totalSize += r.clientSize;
+        final cs = r.clientStats;
         clientStatsList.add(cs);
         globalDownloading += cs.downloadingCount;
         globalUploading += cs.uploadingCount;
@@ -145,7 +162,7 @@ class StatsProvider extends ChangeNotifier {
 
       _globalStats = GlobalStats(
         totalTorrents: allTorrents.length,
-        activeTorrents: globalDownloading + globalUploading + globalChecking,
+        activeTorrents: allTorrents.where((t) => t.isActive).length,
         downloadingCount: globalDownloading,
         uploadingCount: globalUploading,
         seedingCount: globalSeeding,
