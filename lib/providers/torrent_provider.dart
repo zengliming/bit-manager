@@ -159,6 +159,7 @@ class TorrentProvider extends ChangeNotifier {
     _errorFilter = null;
     _siteFilter = null;
     _searchQuery = '';
+    _searchQueryLowerCase = '';
     notifyListeners();
   }
 
@@ -292,5 +293,11 @@ class TorrentProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
   }
 }

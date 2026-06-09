@@ -468,6 +468,43 @@ void main() {
       expect(result, isTrue);
     });
 
+    test('clearAllFilters clears cached lowercase search query', () async {
+      final t1 = torrent(id: '1', hash: 'a', name: 'Linux ISO', state: TorrentState.downloading);
+      final t2 = torrent(id: '2', hash: 'b', name: 'Ubuntu ISO', state: TorrentState.seeding);
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final qb = client('qb');
+      final provider = TorrentProvider(serviceResolver: (_) => mockService);
+      await provider.refreshTorrents([qb], showLoading: false);
+
+      provider.setSearchQuery('linux');
+      // 等待防抖
+      await Future.delayed(const Duration(milliseconds: 250));
+      expect(provider.filteredTorrents, hasLength(1));
+
+      provider.clearAllFilters();
+      expect(provider.searchQuery, isEmpty);
+      expect(provider.filteredTorrents, hasLength(2));
+    });
+
+    test('dispose cancels pending search debounce notification', () async {
+      final qb = client('qb');
+      final provider = TorrentProvider(
+        serviceResolver: (_) => _FakeTorrentService.success(const []),
+      );
+      await provider.refreshTorrents([qb], showLoading: false);
+
+      int notifyCount = 0;
+      provider.addListener(() => notifyCount++);
+
+      provider.setSearchQuery('test');
+      // 在防抖触发前 dispose
+      provider.dispose();
+
+      // 等待超过防抖时间
+      await Future.delayed(const Duration(milliseconds: 250));
+      expect(notifyCount, 0);
+    });
+
     test('batch operations return false on service error', () async {
       final qb = client('qb');
       final failService = _FakeTorrentService(throwsOnBatch: true);
