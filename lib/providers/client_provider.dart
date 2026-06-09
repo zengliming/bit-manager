@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/client_config.dart';
 import '../services/service_factory.dart';
+import '../utils/http_client.dart';
 import '../utils/storage.dart';
 
 class ClientProvider extends ChangeNotifier {
@@ -50,6 +51,7 @@ class ClientProvider extends ChangeNotifier {
   Future<void> addClient(ClientConfig config) async {
     _clients.add(config);
     await _saveClients();
+    HttpClientUtil.instance.clearClientDioCache();
     notifyListeners();
   }
 
@@ -58,6 +60,7 @@ class ClientProvider extends ChangeNotifier {
     if (index != -1) {
       _clients[index] = updated;
       await _saveClients();
+      HttpClientUtil.instance.clearClientDioCache();
       notifyListeners();
     }
   }
@@ -69,6 +72,7 @@ class ClientProvider extends ChangeNotifier {
     final storage = await LocalStorage.getInstance();
     await storage.deletePassword(id);
     await _saveClients();
+    HttpClientUtil.instance.clearClientDioCache();
     notifyListeners();
   }
 
