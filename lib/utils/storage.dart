@@ -57,9 +57,11 @@ class LocalStorage {
   // --- 简单键值 ---
 
   Future<String?> getString(String key) async => _prefs.getString(key);
-  Future<void> setString(String key, String value) async => _prefs.setString(key, value);
+  Future<void> setString(String key, String value) async =>
+      _prefs.setString(key, value);
   Future<int?> getInt(String key) async => _prefs.getInt(key);
   Future<void> setInt(String key, int value) async => _prefs.setInt(key, value);
   Future<bool?> getBool(String key) async => _prefs.getBool(key);
-  Future<void> setBool(String key, bool value) async => _prefs.setBool(key, value);
+  Future<void> setBool(String key, bool value) async =>
+      _prefs.setBool(key, value);
 }

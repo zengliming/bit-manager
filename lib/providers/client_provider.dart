@@ -11,7 +11,8 @@ class ClientProvider extends ChangeNotifier {
   bool _loading = false;
 
   List<ClientConfig> get clients => List.unmodifiable(_clients);
-  List<ClientConfig> get activeClients => _clients.where((c) => c.isActive).toList();
+  List<ClientConfig> get activeClients =>
+      _clients.where((c) => c.isActive).toList();
   Map<String, bool> get onlineStatus => Map.unmodifiable(_onlineStatus);
   Map<String, String> get errorMessages => Map.unmodifiable(_errorMessages);
   bool get loading => _loading;

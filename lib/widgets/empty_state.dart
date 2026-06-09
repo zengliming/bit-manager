@@ -26,14 +26,24 @@ class EmptyState extends StatelessWidget {
           children: [
             Icon(icon, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
-            Text(title, style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+            Text(
+              title,
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+            ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),
-              Text(subtitle!, style: TextStyle(color: Colors.grey[500]), textAlign: TextAlign.center),
+              Text(
+                subtitle!,
+                style: TextStyle(color: Colors.grey[500]),
+                textAlign: TextAlign.center,
+              ),
             ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 16),
-              FilledButton.tonal(onPressed: onAction, child: Text(actionLabel!)),
+              FilledButton.tonal(
+                onPressed: onAction,
+                child: Text(actionLabel!),
+              ),
             ],
           ],
         ),

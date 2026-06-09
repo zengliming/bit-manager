@@ -20,8 +20,7 @@ class TransmissionService implements ITorrentClientService {
     String method, {
     Map<String, dynamic>? args,
     String? sessionId,
-  }) =>
-      _rpcCall(config, method, args: args, sessionId: sessionId);
+  }) => _rpcCall(config, method, args: args, sessionId: sessionId);
 
   /// 获取 Session ID（Transmission RPC 需要）
   Future<String?> _getSessionId(ClientConfig config) async {
@@ -31,7 +30,8 @@ class TransmissionService implements ITorrentClientService {
         '${config.baseUrl}${AppConstants.trRpc}',
         data: {'method': 'session-get'},
         options: Options(
-          validateStatus: (status) => status != null && status >= 200 && status < 500,
+          validateStatus: (status) =>
+              status != null && status >= 200 && status < 500,
         ),
       );
       // 优先从响应头取 session ID
@@ -56,8 +56,9 @@ class TransmissionService implements ITorrentClientService {
     final headers = <String, dynamic>{};
     if (sessionId != null) headers['X-Transmission-Session-Id'] = sessionId;
     if (config.username != null && config.password != null) {
-      final basicAuth =
-          base64Encode(utf8.encode('${config.username}:${config.password}'));
+      final basicAuth = base64Encode(
+        utf8.encode('${config.username}:${config.password}'),
+      );
       headers['Authorization'] = 'Basic $basicAuth';
     }
 
@@ -68,7 +69,8 @@ class TransmissionService implements ITorrentClientService {
         options: Options(headers: headers),
       );
       final data = resp.data;
-      if (data is! Map<String, dynamic>) throw Exception('Invalid RPC response');
+      if (data is! Map<String, dynamic>)
+        throw Exception('Invalid RPC response');
       return data;
     } on DioException catch (e) {
       // 如果是 409，尝试重新获取 Session ID 并重试
@@ -82,7 +84,8 @@ class TransmissionService implements ITorrentClientService {
             options: Options(headers: headers),
           );
           final retryData = retryResp.data;
-          if (retryData is! Map<String, dynamic>) throw Exception('Invalid RPC response');
+          if (retryData is! Map<String, dynamic>)
+            throw Exception('Invalid RPC response');
           return retryData;
         }
       }
@@ -124,38 +127,43 @@ class TransmissionService implements ITorrentClientService {
   Future<List<Torrent>> getTorrents(ClientConfig config) async {
     final sid = await _getSessionId(config);
 
-    final result = await _rpcCall(config, 'torrent-get',
-        args: {
-          'fields': [
-            'id',
-            'hashString',
-            'name',
-            'status',
-            'percentDone',
-            'rateDownload',
-            'rateUpload',
-            'downloadedEver',
-            'uploadedEver',
-            'totalSize',
-            'uploadRatio',
-            'peersConnected',
-            'peersSendingToUs',
-            'peersGettingFromUs',
-            'peersFrom',
-            'eta',
-            'error',
-            'errorString',
-            'downloadDir',
-            'addedDate',
-            'doneDate',
-            'trackerList',
-            'trackerStats',
-          ],
-        },
-        sessionId: sid);
+    final result = await _rpcCall(
+      config,
+      'torrent-get',
+      args: {
+        'fields': [
+          'id',
+          'hashString',
+          'name',
+          'status',
+          'percentDone',
+          'rateDownload',
+          'rateUpload',
+          'downloadedEver',
+          'uploadedEver',
+          'totalSize',
+          'uploadRatio',
+          'peersConnected',
+          'peersSendingToUs',
+          'peersGettingFromUs',
+          'peersFrom',
+          'eta',
+          'error',
+          'errorString',
+          'downloadDir',
+          'addedDate',
+          'doneDate',
+          'trackerList',
+          'trackerStats',
+        ],
+      },
+      sessionId: sid,
+    );
 
     final arguments = result['arguments'];
-    final argsMap = (arguments is Map<String, dynamic>) ? arguments : <String, dynamic>{};
+    final argsMap = (arguments is Map<String, dynamic>)
+        ? arguments
+        : <String, dynamic>{};
     final torrentsRaw = argsMap['torrents'];
     final List<dynamic> rawList = (torrentsRaw is List) ? torrentsRaw : [];
 
@@ -184,12 +192,12 @@ class TransmissionService implements ITorrentClientService {
         savePath: m['downloadDir'] as String?,
         addedAt: (m['addedDate'] as num?) != null
             ? DateTime.fromMillisecondsSinceEpoch(
-                (m['addedDate'] as int) * 1000)
+                (m['addedDate'] as int) * 1000,
+              )
             : null,
-        completedAt: (m['doneDate'] as num?) != null &&
-                (m['doneDate'] as int) > 0
-            ? DateTime.fromMillisecondsSinceEpoch(
-                (m['doneDate'] as int) * 1000)
+        completedAt:
+            (m['doneDate'] as num?) != null && (m['doneDate'] as int) > 0
+            ? DateTime.fromMillisecondsSinceEpoch((m['doneDate'] as int) * 1000)
             : null,
         trackers: _parseTrackerList(m['trackerList'] as String? ?? ''),
         trackerStatuses: _parseTrackerStatuses(m['trackerStats']),
@@ -208,7 +216,11 @@ class TransmissionService implements ITorrentClientService {
   List<String> _parseTrackerStatuses(dynamic trackerStatsRaw) {
     final stats = (trackerStatsRaw is List) ? trackerStatsRaw : <dynamic>[];
     return stats
-        .map((s) => (s is Map<String, dynamic>) ? s['lastAnnounceResult'] as String? ?? '' : '')
+        .map(
+          (s) => (s is Map<String, dynamic>)
+              ? s['lastAnnounceResult'] as String? ?? ''
+              : '',
+        )
         .where((status) => status.isNotEmpty)
         .toList();
   }
@@ -235,14 +247,24 @@ class TransmissionService implements ITorrentClientService {
     try {
       // 先获取默认下载目录
       final sid = await _getSessionId(config);
-      final sessResult = await _rpcCall(config, 'session-get',
-          args: {'fields': ['download-dir']}, sessionId: sid);
+      final sessResult = await _rpcCall(
+        config,
+        'session-get',
+        args: {
+          'fields': ['download-dir'],
+        },
+        sessionId: sid,
+      );
       final sessArgs = _safeMap(sessResult['arguments']);
       final downloadDir = sessArgs['download-dir'] as String? ?? '/downloads';
 
       // 查询 free-space
-      final freeResult = await _rpcCall(config, 'free-space',
-          args: {'path': downloadDir}, sessionId: sid);
+      final freeResult = await _rpcCall(
+        config,
+        'free-space',
+        args: {'path': downloadDir},
+        sessionId: sid,
+      );
       final freeArgs = _safeMap(freeResult['arguments']);
       return (freeArgs['size'] as num?)?.toInt() ?? 0;
     } catch (_) {
@@ -254,11 +276,19 @@ class TransmissionService implements ITorrentClientService {
   Future<List<int>> getSpeedLimits(ClientConfig config) async {
     try {
       final sid = await _getSessionId(config);
-      final result = await _rpcCall(config, 'session-get',
-          args: {'fields': [
-            'speed-limit-down', 'speed-limit-down-enabled',
-            'speed-limit-up', 'speed-limit-up-enabled',
-          ]}, sessionId: sid);
+      final result = await _rpcCall(
+        config,
+        'session-get',
+        args: {
+          'fields': [
+            'speed-limit-down',
+            'speed-limit-down-enabled',
+            'speed-limit-up',
+            'speed-limit-up-enabled',
+          ],
+        },
+        sessionId: sid,
+      );
       final args = _safeMap(result['arguments']);
 
       // Transmission 限速单位是 KB/s
@@ -267,10 +297,7 @@ class TransmissionService implements ITorrentClientService {
       final dlLimit = (args['speed-limit-down'] as num?)?.toInt() ?? 0;
       final ulLimit = (args['speed-limit-up'] as num?)?.toInt() ?? 0;
 
-      return [
-        dlEnabled ? dlLimit * 1024 : 0,
-        ulEnabled ? ulLimit * 1024 : 0,
-      ];
+      return [dlEnabled ? dlLimit * 1024 : 0, ulEnabled ? ulLimit * 1024 : 0];
     } catch (_) {
       return [0, 0];
     }
@@ -278,10 +305,10 @@ class TransmissionService implements ITorrentClientService {
 
   @override
   Future<void> addTorrentFromUrl(
-      ClientConfig config, {
-        required String url,
-        String? savePath,
-      }) async {
+    ClientConfig config, {
+    required String url,
+    String? savePath,
+  }) async {
     final sid = await _getSessionId(config);
     final args = <String, dynamic>{'filename': url};
     if (savePath != null) args['download-dir'] = savePath;
@@ -289,8 +316,11 @@ class TransmissionService implements ITorrentClientService {
   }
 
   @override
-  Future<void> addTorrentFile(ClientConfig config,
-      {required String filePath, String? savePath}) async {
+  Future<void> addTorrentFile(
+    ClientConfig config, {
+    required String filePath,
+    String? savePath,
+  }) async {
     final fileBytes = await File(filePath).readAsBytes();
     final base64Data = base64Encode(fileBytes);
     final sid = await _getSessionId(config);
@@ -300,9 +330,18 @@ class TransmissionService implements ITorrentClientService {
   }
 
   Future<List<int>> _hashToIds(
-      ClientConfig config, List<String> hashes, String? sid) async {
-    final result = await debugRpcCallForTest(config, 'torrent-get',
-        args: {'fields': ['id', 'hashString']}, sessionId: sid);
+    ClientConfig config,
+    List<String> hashes,
+    String? sid,
+  ) async {
+    final result = await debugRpcCallForTest(
+      config,
+      'torrent-get',
+      args: {
+        'fields': ['id', 'hashString'],
+      },
+      sessionId: sid,
+    );
     final args = _safeMap(result['arguments']);
     final torrentsRaw = args['torrents'];
     final torrents = (torrentsRaw is List) ? torrentsRaw : <dynamic>[];
@@ -326,7 +365,8 @@ class TransmissionService implements ITorrentClientService {
     final ids = await _hashToIds(config, hashes, sid);
     if (ids.length != hashes.toSet().length) {
       throw Exception(
-          'Unable to resolve torrent hashes: expected ${hashes.toSet().length}, found ${ids.length}');
+        'Unable to resolve torrent hashes: expected ${hashes.toSet().length}, found ${ids.length}',
+      );
     }
     return ids;
   }
@@ -336,8 +376,12 @@ class TransmissionService implements ITorrentClientService {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isNotEmpty) {
-      await _rpcCall(config, 'torrent-stop',
-          args: {'ids': ids}, sessionId: sid);
+      await _rpcCall(
+        config,
+        'torrent-stop',
+        args: {'ids': ids},
+        sessionId: sid,
+      );
     }
   }
 
@@ -347,8 +391,12 @@ class TransmissionService implements ITorrentClientService {
     final sid = await debugGetSessionIdForTest(config);
     final ids = await _hashToIdsOrThrow(config, hashes, sid);
     if (ids.isNotEmpty) {
-      await _rpcCall(config, 'torrent-stop',
-          args: {'ids': ids}, sessionId: sid);
+      await _rpcCall(
+        config,
+        'torrent-stop',
+        args: {'ids': ids},
+        sessionId: sid,
+      );
     }
   }
 
@@ -357,8 +405,12 @@ class TransmissionService implements ITorrentClientService {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isNotEmpty) {
-      await _rpcCall(config, 'torrent-start',
-          args: {'ids': ids}, sessionId: sid);
+      await _rpcCall(
+        config,
+        'torrent-start',
+        args: {'ids': ids},
+        sessionId: sid,
+      );
     }
   }
 
@@ -368,50 +420,76 @@ class TransmissionService implements ITorrentClientService {
     final sid = await debugGetSessionIdForTest(config);
     final ids = await _hashToIdsOrThrow(config, hashes, sid);
     if (ids.isNotEmpty) {
-      await _rpcCall(config, 'torrent-start',
-          args: {'ids': ids}, sessionId: sid);
+      await _rpcCall(
+        config,
+        'torrent-start',
+        args: {'ids': ids},
+        sessionId: sid,
+      );
     }
   }
 
   @override
-  Future<void> deleteTorrent(ClientConfig config, String hash,
-      {bool deleteFiles = false}) async {
+  Future<void> deleteTorrent(
+    ClientConfig config,
+    String hash, {
+    bool deleteFiles = false,
+  }) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isNotEmpty) {
-      await _rpcCall(config, 'torrent-remove',
-          args: {'ids': ids, 'delete-local-data': deleteFiles},
-          sessionId: sid);
+      await _rpcCall(
+        config,
+        'torrent-remove',
+        args: {'ids': ids, 'delete-local-data': deleteFiles},
+        sessionId: sid,
+      );
     }
   }
 
   @override
-  Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
-      {bool deleteFiles = false}) async {
+  Future<void> deleteTorrents(
+    ClientConfig config,
+    List<String> hashes, {
+    bool deleteFiles = false,
+  }) async {
     if (hashes.isEmpty) return;
     final sid = await debugGetSessionIdForTest(config);
     final ids = await _hashToIdsOrThrow(config, hashes, sid);
     if (ids.isNotEmpty) {
-      await _rpcCall(config, 'torrent-remove',
-          args: {'ids': ids, 'delete-local-data': deleteFiles},
-          sessionId: sid);
+      await _rpcCall(
+        config,
+        'torrent-remove',
+        args: {'ids': ids, 'delete-local-data': deleteFiles},
+        sessionId: sid,
+      );
     }
   }
 
   @override
   Future<List<TrackerInfo>> getTrackers(
-      ClientConfig config, String hash) async {
+    ClientConfig config,
+    String hash,
+  ) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return [];
-    final result = await _rpcCall(config, 'torrent-get',
-        args: {'ids': ids, 'fields': ['trackerList', 'trackerStats']},
-        sessionId: sid);
+    final result = await _rpcCall(
+      config,
+      'torrent-get',
+      args: {
+        'ids': ids,
+        'fields': ['trackerList', 'trackerStats'],
+      },
+      sessionId: sid,
+    );
     final args = _safeMap(result['arguments']);
     final torrentsRaw = args['torrents'];
     final torrents = (torrentsRaw is List) ? torrentsRaw : <dynamic>[];
     if (torrents.isEmpty) return [];
-    final t = (torrents[0] is Map<String, dynamic>) ? torrents[0] as Map<String, dynamic> : <String, dynamic>{};
+    final t = (torrents[0] is Map<String, dynamic>)
+        ? torrents[0] as Map<String, dynamic>
+        : <String, dynamic>{};
     final statsRaw = t['trackerStats'];
     final stats = (statsRaw is List) ? statsRaw : <dynamic>[];
     return stats.map((s) {
@@ -426,22 +504,34 @@ class TransmissionService implements ITorrentClientService {
 
   @override
   Future<List<TorrentFile>> getTorrentFiles(
-      ClientConfig config, String hash) async {
+    ClientConfig config,
+    String hash,
+  ) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return [];
-    final result = await _rpcCall(config, 'torrent-get',
-        args: {'ids': ids, 'fields': ['files', 'fileStats']},
-        sessionId: sid);
+    final result = await _rpcCall(
+      config,
+      'torrent-get',
+      args: {
+        'ids': ids,
+        'fields': ['files', 'fileStats'],
+      },
+      sessionId: sid,
+    );
     final args = _safeMap(result['arguments']);
     final torrentsRaw = args['torrents'];
     final torrents = (torrentsRaw is List) ? torrentsRaw : <dynamic>[];
     if (torrents.isEmpty) return [];
-    final t = (torrents[0] is Map<String, dynamic>) ? torrents[0] as Map<String, dynamic> : <String, dynamic>{};
+    final t = (torrents[0] is Map<String, dynamic>)
+        ? torrents[0] as Map<String, dynamic>
+        : <String, dynamic>{};
     final filesRaw = t['files'];
     final files = (filesRaw is List) ? filesRaw : <dynamic>[];
     return List.generate(files.length, (i) {
-      final f = (files[i] is Map<String, dynamic>) ? files[i] as Map<String, dynamic> : <String, dynamic>{};
+      final f = (files[i] is Map<String, dynamic>)
+          ? files[i] as Map<String, dynamic>
+          : <String, dynamic>{};
       final completed = (f['bytesCompleted'] as num?)?.toDouble() ?? 0;
       final length = (f['length'] as num?)?.toDouble() ?? 1;
       return TorrentFile(
@@ -464,39 +554,62 @@ class TransmissionService implements ITorrentClientService {
 
   @override
   Future<void> replaceTracker(
-      ClientConfig config, String hash, String oldUrl, String newUrl) async {
+    ClientConfig config,
+    String hash,
+    String oldUrl,
+    String newUrl,
+  ) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return;
     final trackers = await getTrackers(config, hash);
-    final urls =
-        trackers.map((t) => t.url == oldUrl ? newUrl : t.url).toList();
-    await _rpcCall(config, 'torrent-set',
-        args: {'ids': ids, 'trackerList': urls.join('\n')}, sessionId: sid);
+    final urls = trackers.map((t) => t.url == oldUrl ? newUrl : t.url).toList();
+    await _rpcCall(
+      config,
+      'torrent-set',
+      args: {'ids': ids, 'trackerList': urls.join('\n')},
+      sessionId: sid,
+    );
   }
 
   @override
   Future<void> addTracker(
-      ClientConfig config, String hash, String trackerUrl) async {
+    ClientConfig config,
+    String hash,
+    String trackerUrl,
+  ) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return;
     final trackers = await getTrackers(config, hash);
     final urls = trackers.map((t) => t.url).toList()..add(trackerUrl);
-    await _rpcCall(config, 'torrent-set',
-        args: {'ids': ids, 'trackerList': urls.join('\n')}, sessionId: sid);
+    await _rpcCall(
+      config,
+      'torrent-set',
+      args: {'ids': ids, 'trackerList': urls.join('\n')},
+      sessionId: sid,
+    );
   }
 
   @override
   Future<void> removeTracker(
-      ClientConfig config, String hash, String trackerUrl) async {
+    ClientConfig config,
+    String hash,
+    String trackerUrl,
+  ) async {
     final sid = await _getSessionId(config);
     final ids = await _hashToIds(config, [hash], sid);
     if (ids.isEmpty) return;
     final trackers = await getTrackers(config, hash);
-    final urls =
-        trackers.map((t) => t.url).where((u) => u != trackerUrl).toList();
-    await _rpcCall(config, 'torrent-set',
-        args: {'ids': ids, 'trackerList': urls.join('\n')}, sessionId: sid);
+    final urls = trackers
+        .map((t) => t.url)
+        .where((u) => u != trackerUrl)
+        .toList();
+    await _rpcCall(
+      config,
+      'torrent-set',
+      args: {'ids': ids, 'trackerList': urls.join('\n')},
+      sessionId: sid,
+    );
   }
 }

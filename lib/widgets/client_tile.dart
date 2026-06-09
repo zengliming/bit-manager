@@ -22,8 +22,14 @@ class ClientTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: _hasErrors
-              ? const Border(left: BorderSide(color: Color(0xFFE53935), width: 4))
-              : Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+              ? const Border(
+                  left: BorderSide(color: Color(0xFFE53935), width: 4),
+                )
+              : Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.5,
+                  ),
+                ),
           color: theme.cardColor,
           boxShadow: [
             BoxShadow(
@@ -94,8 +100,11 @@ class ClientTile extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.arrow_downward,
-                                    size: 14, color: const Color(0xFF4CAF50)),
+                                Icon(
+                                  Icons.arrow_downward,
+                                  size: 14,
+                                  color: const Color(0xFF4CAF50),
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   _formatSpeed(stats.downloadSpeed),
@@ -111,8 +120,11 @@ class ClientTile extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.arrow_upward,
-                                    size: 14, color: const Color(0xFF2196F3)),
+                                Icon(
+                                  Icons.arrow_upward,
+                                  size: 14,
+                                  color: const Color(0xFF2196F3),
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   _formatSpeed(stats.uploadSpeed),
@@ -129,7 +141,10 @@ class ClientTile extends StatelessWidget {
                       ] else ...[
                         Text(
                           '离线',
-                          style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[400],
+                          ),
                         ),
                       ],
                     ],
@@ -212,7 +227,8 @@ class ClientTile extends StatelessWidget {
     if (bytes <= 0) return '-';
     if (bytes < 1024) return '${bytes}B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(0)}KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / 1024 / 1024).toStringAsFixed(1)}MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / 1024 / 1024).toStringAsFixed(1)}MB';
     return '${(bytes / 1024 / 1024 / 1024).toStringAsFixed(1)}GB';
   }
 }

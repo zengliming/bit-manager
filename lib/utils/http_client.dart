@@ -13,17 +13,21 @@ class HttpClientUtil {
   final Map<String, Dio> _clientDioCache = {};
 
   HttpClientUtil._() {
-    _dio = Dio(BaseOptions(
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 15),
-      sendTimeout: const Duration(seconds: 15),
-      headers: {'User-Agent': 'BitManager/1.0'},
-    ));
-    _dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      logPrint: (obj) => print('[HTTP] $obj'),
-    ));
+    _dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 15),
+        headers: {'User-Agent': 'BitManager/1.0'},
+      ),
+    );
+    _dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        logPrint: (obj) => print('[HTTP] $obj'),
+      ),
+    );
   }
 
   static HttpClientUtil get instance {
@@ -38,13 +42,15 @@ class HttpClientUtil {
   Dio createClientDio(ClientConfig config) {
     return _clientDioCache.putIfAbsent(
       _clientDioCacheKey(config),
-      () => Dio(BaseOptions(
-        baseUrl: config.baseUrl,
-        connectTimeout: Duration(seconds: config.timeoutSeconds),
-        receiveTimeout: Duration(seconds: config.timeoutSeconds + 5),
-        sendTimeout: Duration(seconds: config.timeoutSeconds + 5),
-        headers: {'User-Agent': 'BitManager/1.0'},
-      )),
+      () => Dio(
+        BaseOptions(
+          baseUrl: config.baseUrl,
+          connectTimeout: Duration(seconds: config.timeoutSeconds),
+          receiveTimeout: Duration(seconds: config.timeoutSeconds + 5),
+          sendTimeout: Duration(seconds: config.timeoutSeconds + 5),
+          headers: {'User-Agent': 'BitManager/1.0'},
+        ),
+      ),
     );
   }
 

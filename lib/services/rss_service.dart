@@ -29,9 +29,10 @@ class RssService {
     // 支持 RSS 2.0
     final rssItems = document.findAllElements('item');
     for (final item in rssItems) {
-      final guid = item.findElements('guid').firstOrNull?.innerText ??
-                   item.findElements('link').firstOrNull?.innerText ??
-                   '';
+      final guid =
+          item.findElements('guid').firstOrNull?.innerText ??
+          item.findElements('link').firstOrNull?.innerText ??
+          '';
       final title = item.findElements('title').firstOrNull?.innerText ?? '';
       final link = item.findElements('link').firstOrNull?.innerText;
       final category = item.findElements('category').firstOrNull?.innerText;
@@ -43,13 +44,15 @@ class RssService {
         pubDate ??= _parseRfc2822(pubDateStr);
       }
 
-      items.add(RssItem(
-        guid: guid,
-        title: title,
-        link: link,
-        category: category,
-        pubDate: pubDate ?? DateTime.now(),
-      ));
+      items.add(
+        RssItem(
+          guid: guid,
+          title: title,
+          link: link,
+          category: category,
+          pubDate: pubDate ?? DateTime.now(),
+        ),
+      );
     }
 
     // 也尝试 Atom 格式
@@ -58,17 +61,30 @@ class RssService {
       for (final entry in atomEntries) {
         final id = entry.findElements('id').firstOrNull?.innerText ?? '';
         final title = entry.findElements('title').firstOrNull?.innerText ?? '';
-        final link = entry.findElements('link').firstOrNull?.getAttribute('href');
-        final category = entry.findElements('category').firstOrNull?.getAttribute('term');
-        final published = entry.findElements('published').firstOrNull?.innerText;
+        final link = entry
+            .findElements('link')
+            .firstOrNull
+            ?.getAttribute('href');
+        final category = entry
+            .findElements('category')
+            .firstOrNull
+            ?.getAttribute('term');
+        final published = entry
+            .findElements('published')
+            .firstOrNull
+            ?.innerText;
 
-        items.add(RssItem(
-          guid: id,
-          title: title,
-          link: link,
-          category: category,
-          pubDate: published != null ? DateTime.tryParse(published) ?? DateTime.now() : DateTime.now(),
-        ));
+        items.add(
+          RssItem(
+            guid: id,
+            title: title,
+            link: link,
+            category: category,
+            pubDate: published != null
+                ? DateTime.tryParse(published) ?? DateTime.now()
+                : DateTime.now(),
+          ),
+        );
       }
     }
 
@@ -79,8 +95,18 @@ class RssService {
     try {
       final cleaned = input.replaceAll(RegExp(r'\s+'), ' ').trim();
       final months = {
-        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
-        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12,
+        'Jan': 1,
+        'Feb': 2,
+        'Mar': 3,
+        'Apr': 4,
+        'May': 5,
+        'Jun': 6,
+        'Jul': 7,
+        'Aug': 8,
+        'Sep': 9,
+        'Oct': 10,
+        'Nov': 11,
+        'Dec': 12,
       };
       final parts = cleaned.split(' ');
       if (parts.length < 5) return null;

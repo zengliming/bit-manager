@@ -50,7 +50,8 @@ class RssSource {
     refreshIntervalMinutes: json['refreshIntervalMinutes'] as int? ?? 15,
     savePath: json['savePath'] as String?,
     lastFetchedAt: DateTime.tryParse(json['lastFetchedAt'] as String? ?? ''),
-    addedAt: DateTime.tryParse(json['addedAt'] as String? ?? '') ?? DateTime.now(),
+    addedAt:
+        DateTime.tryParse(json['addedAt'] as String? ?? '') ?? DateTime.now(),
   );
 }
 

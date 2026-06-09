@@ -25,26 +25,41 @@ class ClientListScreen extends StatelessWidget {
               return Card(
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: online ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
+                    backgroundColor: online
+                        ? Colors.green.withValues(alpha: 0.2)
+                        : Colors.red.withValues(alpha: 0.2),
                     child: Icon(
-                      client.type == ClientType.qBittorrent ? Icons.download : Icons.wifi,
+                      client.type == ClientType.qBittorrent
+                          ? Icons.download
+                          : Icons.wifi,
                       color: online ? Colors.green : Colors.red,
                     ),
                   ),
                   title: Text(client.name),
-                  subtitle: Text('${client.host}:${client.port}\n${client.type == ClientType.qBittorrent ? "qBittorrent" : "Transmission"}'),
+                  subtitle: Text(
+                    '${client.host}:${client.port}\n${client.type == ClientType.qBittorrent ? "qBittorrent" : "Transmission"}',
+                  ),
                   trailing: PopupMenuButton(
                     itemBuilder: (context) => [
                       const PopupMenuItem(value: 'edit', child: Text('编辑')),
                       const PopupMenuItem(value: 'test', child: Text('测试连接')),
-                      PopupMenuItem(value: 'delete', child: Text('删除', style: TextStyle(color: Colors.red[700]))),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Text(
+                          '删除',
+                          style: TextStyle(color: Colors.red[700]),
+                        ),
+                      ),
                     ],
                     onSelected: (action) async {
                       switch (action) {
                         case 'edit':
-                          await Navigator.push(context, MaterialPageRoute(
-                            builder: (_) => ClientFormScreen(client: client),
-                          ));
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ClientFormScreen(client: client),
+                            ),
+                          );
                         case 'test':
                           final ok = await provider.testConnection(client);
                           if (context.mounted) {
@@ -59,8 +74,17 @@ class ClientListScreen extends StatelessWidget {
                               title: const Text('删除客户端'),
                               content: Text('确定要删除 "${client.name}" 吗？'),
                               actions: [
-                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-                                TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('删除', style: TextStyle(color: Colors.red))),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: const Text('取消'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text(
+                                    '删除',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
                               ],
                             ),
                           );
@@ -78,7 +102,10 @@ class ClientListScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ClientFormScreen())),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ClientFormScreen()),
+        ),
       ),
     );
   }

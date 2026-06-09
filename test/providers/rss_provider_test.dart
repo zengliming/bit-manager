@@ -39,8 +39,11 @@ class FakeTorrentService implements ITorrentClientService {
   }
 
   @override
-  Future<void> addTorrentFromUrl(ClientConfig config,
-      {required String url, String? savePath}) async {
+  Future<void> addTorrentFromUrl(
+    ClientConfig config, {
+    required String url,
+    String? savePath,
+  }) async {
     if (error != null) throw error!;
     addTorrentFromUrlCalled = true;
     lastAddedUrl = url;
@@ -63,34 +66,37 @@ class FakeTorrentService implements ITorrentClientService {
   ) async => [];
 
   @override
-  Future<void> addTorrentFile(ClientConfig config,
-      {required String filePath, String? savePath}) async {}
+  Future<void> addTorrentFile(
+    ClientConfig config, {
+    required String filePath,
+    String? savePath,
+  }) async {}
 
   @override
   Future<void> pauseTorrent(ClientConfig config, String hash) async {}
 
   @override
-  Future<void> pauseTorrents(
-    ClientConfig config,
-    List<String> hashes,
-  ) async {}
+  Future<void> pauseTorrents(ClientConfig config, List<String> hashes) async {}
 
   @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {}
 
   @override
-  Future<void> resumeTorrents(
+  Future<void> resumeTorrents(ClientConfig config, List<String> hashes) async {}
+
+  @override
+  Future<void> deleteTorrent(
     ClientConfig config,
-    List<String> hashes,
-  ) async {}
+    String hash, {
+    bool deleteFiles = false,
+  }) async {}
 
   @override
-  Future<void> deleteTorrent(ClientConfig config, String hash,
-      {bool deleteFiles = false}) async {}
-
-  @override
-  Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
-      {bool deleteFiles = false}) async {}
+  Future<void> deleteTorrents(
+    ClientConfig config,
+    List<String> hashes, {
+    bool deleteFiles = false,
+  }) async {}
 
   @override
   Future<void> replaceTracker(
@@ -118,8 +124,11 @@ class FakeTorrentService implements ITorrentClientService {
   Future<bool> isTorrentExist(ClientConfig config, String hash) async => false;
 
   @override
-  Future<ClientStats> getStats(ClientConfig config) async =>
-      ClientStats(clientId: 'fake', clientName: 'fake', type: ClientType.qBittorrent);
+  Future<ClientStats> getStats(ClientConfig config) async => ClientStats(
+    clientId: 'fake',
+    clientName: 'fake',
+    type: ClientType.qBittorrent,
+  );
 
   @override
   Future<int> getFreeSpace(ClientConfig config) async => 0;
@@ -155,12 +164,7 @@ RssItem _testItem({
   String title = 'Test Item',
   String link = 'https://example.com/torrent.torrent',
 }) {
-  return RssItem(
-    guid: guid,
-    title: title,
-    link: link,
-    pubDate: DateTime.now(),
-  );
+  return RssItem(guid: guid, title: title, link: link, pubDate: DateTime.now());
 }
 
 Torrent _testTorrent({
@@ -186,8 +190,9 @@ void main() {
       final duplicateItem = _testItem(guid: 'dup-1', title: 'Dupe Title');
 
       // Two RSS items with the same title/guid from the same source
-      final fakeRssService =
-          FakeRssService(itemsToReturn: [duplicateItem, duplicateItem]);
+      final fakeRssService = FakeRssService(
+        itemsToReturn: [duplicateItem, duplicateItem],
+      );
       final fakeTorrentService = FakeTorrentService();
 
       final provider = RssProvider(
@@ -211,10 +216,16 @@ void main() {
 
     test('duplicate detected by link in same pass', () async {
       SharedPreferences.setMockInitialValues({});
-      final itemA = _testItem(guid: 'a', title: 'Title A',
-          link: 'https://example.com/same.torrent');
-      final itemB = _testItem(guid: 'b', title: 'Title B',
-          link: 'https://example.com/same.torrent');
+      final itemA = _testItem(
+        guid: 'a',
+        title: 'Title A',
+        link: 'https://example.com/same.torrent',
+      );
+      final itemB = _testItem(
+        guid: 'b',
+        title: 'Title B',
+        link: 'https://example.com/same.torrent',
+      );
 
       final fakeRssService = FakeRssService(itemsToReturn: [itemA, itemB]);
       final fakeTorrentService = FakeTorrentService();
@@ -229,8 +240,10 @@ void main() {
       await provider.processAutoDownloads([_testClient()]);
 
       expect(fakeTorrentService.addTorrentFromUrlCalled, isTrue);
-      expect(fakeTorrentService.lastAddedUrl,
-          equals('https://example.com/same.torrent'));
+      expect(
+        fakeTorrentService.lastAddedUrl,
+        equals('https://example.com/same.torrent'),
+      );
     });
   });
 }

@@ -38,19 +38,26 @@ class TorrentProvider extends ChangeNotifier {
   /// 单次遍历过滤：所有筛选条件在一次迭代中完成，避免链式 .where().toList() 创建多个中间列表
   List<Torrent> get filteredTorrents {
     return _allTorrents.where((t) {
-      if (_stateFilter != null && _stateFilter!.isNotEmpty && !_stateFilter!.contains(t.state)) return false;
+      if (_stateFilter != null &&
+          _stateFilter!.isNotEmpty &&
+          !_stateFilter!.contains(t.state))
+        return false;
       if (_clientFilter != null && t.clientId != _clientFilter) return false;
       if (_errorOnly && !t.isError) return false;
       if (_errorFilter != null && t.error != _errorFilter) return false;
-      if (_siteFilter != null && _siteFilter!.isNotEmpty && !t.trackers.any((tr) => tr.contains(_siteFilter!))) return false;
-      if (_searchQuery.isNotEmpty && !t.name.toLowerCase().contains(_searchQueryLowerCase)) return false;
+      if (_siteFilter != null &&
+          _siteFilter!.isNotEmpty &&
+          !t.trackers.any((tr) => tr.contains(_siteFilter!)))
+        return false;
+      if (_searchQuery.isNotEmpty &&
+          !t.name.toLowerCase().contains(_searchQueryLowerCase))
+        return false;
       return true;
     }).toList();
   }
 
   /// 缓存的搜索查询小写，避免每次筛选时重复转换
   String _searchQueryLowerCase = '';
-
 
   String get searchQuery => _searchQuery;
   Set<TorrentState>? get stateFilter => _stateFilter;
@@ -92,7 +99,9 @@ class TorrentProvider extends ChangeNotifier {
   void setStateFilter(Set<TorrentState>? states) {
     // 比较集合内容而非引用，避免不同 Set 实例但内容相同导致的不必要通知
     if (_stateFilter == states) return;
-    if (_stateFilter != null && states != null && _stateFilter!.length == states.length) {
+    if (_stateFilter != null &&
+        states != null &&
+        _stateFilter!.length == states.length) {
       if (states.every((s) => _stateFilter!.contains(s))) {
         return;
       }
@@ -210,17 +219,19 @@ class TorrentProvider extends ChangeNotifier {
     try {
       final allTorrents = <Torrent>[];
       final onlineStatus = <String, bool>{};
-      await Future.wait(activeClients.map((client) async {
-        try {
-          final service = _serviceResolver(client.type);
-          final torrents = await service.getTorrents(client);
-          allTorrents.addAll(torrents);
-          onlineStatus[client.id] = true;
-        } catch (e) {
-          onlineStatus[client.id] = false;
-          debugPrint('Error fetching torrents from ${client.name}: $e');
-        }
-      }));
+      await Future.wait(
+        activeClients.map((client) async {
+          try {
+            final service = _serviceResolver(client.type);
+            final torrents = await service.getTorrents(client);
+            allTorrents.addAll(torrents);
+            onlineStatus[client.id] = true;
+          } catch (e) {
+            onlineStatus[client.id] = false;
+            debugPrint('Error fetching torrents from ${client.name}: $e');
+          }
+        }),
+      );
       _allTorrents = allTorrents;
       _errorCount = allTorrents.where((t) => t.isError).length;
       _lastRefreshOnlineStatus

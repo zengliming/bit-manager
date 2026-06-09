@@ -29,8 +29,7 @@ class ClientConfig {
     DateTime? addedAt,
   }) : addedAt = addedAt ?? DateTime.now();
 
-  String get baseUrl =>
-      '${useSsl ? "https" : "http"}://$host:$port';
+  String get baseUrl => '${useSsl ? "https" : "http"}://$host:$port';
 
   ClientConfig copyWith({
     String? name,

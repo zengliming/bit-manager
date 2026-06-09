@@ -17,12 +17,18 @@ abstract class ITorrentClientService {
   Future<List<TrackerInfo>> getTrackers(ClientConfig config, String hash);
 
   /// 添加种子（本地文件）
-  Future<void> addTorrentFile(ClientConfig config,
-      {required String filePath, String? savePath});
+  Future<void> addTorrentFile(
+    ClientConfig config, {
+    required String filePath,
+    String? savePath,
+  });
 
   /// 通过链接添加种子
-  Future<void> addTorrentFromUrl(ClientConfig config,
-      {required String url, String? savePath});
+  Future<void> addTorrentFromUrl(
+    ClientConfig config, {
+    required String url,
+    String? savePath,
+  });
 
   /// 暂停种子
   Future<void> pauseTorrent(ClientConfig config, String hash);
@@ -37,24 +43,36 @@ abstract class ITorrentClientService {
   Future<void> resumeTorrents(ClientConfig config, List<String> hashes);
 
   /// 删除种子
-  Future<void> deleteTorrent(ClientConfig config, String hash,
-      {bool deleteFiles = false});
+  Future<void> deleteTorrent(
+    ClientConfig config,
+    String hash, {
+    bool deleteFiles = false,
+  });
 
   /// 批量删除种子
-  Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
-      {bool deleteFiles = false});
+  Future<void> deleteTorrents(
+    ClientConfig config,
+    List<String> hashes, {
+    bool deleteFiles = false,
+  });
 
   /// 替换 Tracker
   Future<void> replaceTracker(
-      ClientConfig config, String hash, String oldUrl, String newUrl);
+    ClientConfig config,
+    String hash,
+    String oldUrl,
+    String newUrl,
+  );
 
   /// 添加 Tracker
-  Future<void> addTracker(
-      ClientConfig config, String hash, String trackerUrl);
+  Future<void> addTracker(ClientConfig config, String hash, String trackerUrl);
 
   /// 移除 Tracker
   Future<void> removeTracker(
-      ClientConfig config, String hash, String trackerUrl);
+    ClientConfig config,
+    String hash,
+    String trackerUrl,
+  );
 
   /// 检查种子是否已存在
   Future<bool> isTorrentExist(ClientConfig config, String hash);
@@ -88,9 +106,5 @@ class TrackerInfo {
   final String status;
   final int peers;
 
-  TrackerInfo({
-    required this.url,
-    required this.status,
-    this.peers = 0,
-  });
+  TrackerInfo({required this.url, required this.status, this.peers = 0});
 }

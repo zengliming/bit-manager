@@ -24,9 +24,10 @@ class SettingsScreen extends StatelessWidget {
                 builder: (_, cp, __) => Text('${cp.clients.length} 个客户端'),
               ),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(context, MaterialPageRoute(
-                builder: (_) => const ClientListScreen(),
-              )),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ClientListScreen()),
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -39,9 +40,10 @@ class SettingsScreen extends StatelessWidget {
                 builder: (_, rp, __) => Text('${rp.sources.length} 个订阅源'),
               ),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(context, MaterialPageRoute(
-                builder: (_) => const RssSourcesScreen(),
-              )),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RssSourcesScreen()),
+              ),
             ),
           ),
           const SizedBox(height: 24),

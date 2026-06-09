@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Shows download/upload speeds with large numbers and icons.
 class SpeedHeroCard extends StatelessWidget {
   final int downloadSpeed; // bytes/s
-  final int uploadSpeed;   // bytes/s
+  final int uploadSpeed; // bytes/s
 
   const SpeedHeroCard({
     super.key,
@@ -28,29 +28,35 @@ class SpeedHeroCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.15)),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+        ),
       ),
       child: Row(
         children: [
-          Expanded(child: _SpeedColumn(
-            icon: Icons.arrow_downward,
-            iconColor: const Color(0xFF4CAF50),
-            label: '下载',
-            speed: downloadSpeed,
-            textColor: const Color(0xFF2E7D32),
-          )),
+          Expanded(
+            child: _SpeedColumn(
+              icon: Icons.arrow_downward,
+              iconColor: const Color(0xFF4CAF50),
+              label: '下载',
+              speed: downloadSpeed,
+              textColor: const Color(0xFF2E7D32),
+            ),
+          ),
           Container(
             width: 1,
             height: 60,
             color: Colors.grey.withValues(alpha: 0.2),
           ),
-          Expanded(child: _SpeedColumn(
-            icon: Icons.arrow_upward,
-            iconColor: const Color(0xFF2196F3),
-            label: '上传',
-            speed: uploadSpeed,
-            textColor: const Color(0xFF1565C0),
-          )),
+          Expanded(
+            child: _SpeedColumn(
+              icon: Icons.arrow_upward,
+              iconColor: const Color(0xFF2196F3),
+              label: '上传',
+              speed: uploadSpeed,
+              textColor: const Color(0xFF1565C0),
+            ),
+          ),
         ],
       ),
     );
@@ -82,7 +88,10 @@ class _SpeedColumn extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: iconColor),
             const SizedBox(width: 6),
-            Text(label, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+            Text(
+              label,
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -108,7 +117,8 @@ class _SpeedColumn extends StatelessWidget {
     if (bytes <= 0) return '0 KB/s';
     if (bytes < 1024) return '${bytes}B/s';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(0)}KB/s';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / 1024 / 1024).toStringAsFixed(1)}MB/s';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / 1024 / 1024).toStringAsFixed(1)}MB/s';
     return '${(bytes / 1024 / 1024 / 1024).toStringAsFixed(2)}GB/s';
   }
 }

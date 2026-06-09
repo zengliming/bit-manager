@@ -24,15 +24,18 @@ Torrent _torrent({
 
 void main() {
   group('Torrent tracker classification', () {
-    test('does not mark tracker as error when any tracker status contains Success', () {
-      final torrent = _torrent(
-        trackerStatuses: const ['Timeout', 'Success', 'Connection refused'],
-      );
+    test(
+      'does not mark tracker as error when any tracker status contains Success',
+      () {
+        final torrent = _torrent(
+          trackerStatuses: const ['Timeout', 'Success', 'Connection refused'],
+        );
 
-      expect(torrent.hasSuccessfulTracker, isTrue);
-      expect(torrent.hasTrackerError, isFalse);
-      expect(torrent.isError, isFalse);
-    });
+        expect(torrent.hasSuccessfulTracker, isTrue);
+        expect(torrent.hasTrackerError, isFalse);
+        expect(torrent.isError, isFalse);
+      },
+    );
 
     test('uses qBittorrent numeric tracker status 2 as success', () {
       final torrent = _torrent(
@@ -85,13 +88,16 @@ void main() {
       expect(torrent.isError, isTrue);
     });
 
-    test('marks error and unknown states as errors even with successful tracker', () {
-      final errorTorrent = _torrent(state: TorrentState.error);
-      final unknownTorrent = _torrent(state: TorrentState.unknown);
+    test(
+      'marks error and unknown states as errors even with successful tracker',
+      () {
+        final errorTorrent = _torrent(state: TorrentState.error);
+        final unknownTorrent = _torrent(state: TorrentState.unknown);
 
-      expect(errorTorrent.isError, isTrue);
-      expect(unknownTorrent.isError, isTrue);
-    });
+        expect(errorTorrent.isError, isTrue);
+        expect(unknownTorrent.isError, isTrue);
+      },
+    );
   });
 
   group('Torrent activity classification', () {

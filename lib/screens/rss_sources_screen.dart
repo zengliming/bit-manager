@@ -21,7 +21,10 @@ class RssSourcesScreen extends StatelessWidget {
                 children: [
                   const Icon(Icons.rss_feed, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
-                  Text('还没有添加 RSS 订阅源', style: TextStyle(color: Colors.grey[600])),
+                  Text(
+                    '还没有添加 RSS 订阅源',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
                 ],
               ),
             );
@@ -37,9 +40,12 @@ class RssSourcesScreen extends StatelessWidget {
                 return RssSourceTile(
                   source: source,
                   itemCount: provider.getItems(source.id).length,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => RssItemsScreen(source: source),
-                  )),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RssItemsScreen(source: source),
+                    ),
+                  ),
                 );
               },
             ),
@@ -48,7 +54,10 @@ class RssSourcesScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RssSourceFormScreen())),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RssSourceFormScreen()),
+        ),
       ),
     );
   }

@@ -43,12 +43,25 @@ class _FakeStatsService implements ITorrentClientService {
   Future<void> pauseTorrent(ClientConfig config, String hash) async {}
 
   @override
+  Future<void> pauseTorrents(ClientConfig config, List<String> hashes) async {}
+
+  @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {}
+
+  @override
+  Future<void> resumeTorrents(ClientConfig config, List<String> hashes) async {}
 
   @override
   Future<void> deleteTorrent(
     ClientConfig config,
     String hash, {
+    bool deleteFiles = false,
+  }) async {}
+
+  @override
+  Future<void> deleteTorrents(
+    ClientConfig config,
+    List<String> hashes, {
     bool deleteFiles = false,
   }) async {}
 
@@ -127,58 +140,56 @@ void main() {
     ServiceFactory.getService(ClientType.transmission);
   });
 
-  test(
-    'activeTorrents counts a torrent with both downloadSpeed>0 and'
-    ' uploadSpeed>0 once after refreshStats',
-    () async {
-      final provider = StatsProvider();
-      final client = _client('c1');
-      final torrent = _torrent(
-        clientId: client.id,
-        downloadSpeed: 100,
-        uploadSpeed: 50,
-      );
+  test('activeTorrents counts a torrent with both downloadSpeed>0 and'
+      ' uploadSpeed>0 once after refreshStats', () async {
+    final provider = StatsProvider();
+    final client = _client('c1');
+    final torrent = _torrent(
+      clientId: client.id,
+      downloadSpeed: 100,
+      uploadSpeed: 50,
+    );
 
-      await provider.refreshStats([client], [torrent], {client.id: false});
+    await provider.refreshStats([client], [torrent], {client.id: false});
 
-      final stats = provider.globalStats;
-      expect(stats.downloadingCount, 1);
-      expect(stats.uploadingCount, 1);
-      expect(stats.activeTorrents, 1,
-          reason: 'activeTorrents should count the torrent once even though'
-              ' it has both downloadSpeed>0 and uploadSpeed>0');
-    },
-  );
+    final stats = provider.globalStats;
+    expect(stats.downloadingCount, 1);
+    expect(stats.uploadingCount, 1);
+    expect(
+      stats.activeTorrents,
+      1,
+      reason:
+          'activeTorrents should count the torrent once even though'
+          ' it has both downloadSpeed>0 and uploadSpeed>0',
+    );
+  });
 
-  test(
-    'refreshStats keeps totals and client stats after typed aggregation;'
-    ' offline client one torrent',
-    () async {
-      final provider = StatsProvider();
-      final client = _client('c1');
-      final torrent = _torrent(
-        clientId: client.id,
-        downloadSpeed: 200,
-        uploadSpeed: 100,
-        downloaded: 5000,
-        uploaded: 3000,
-        totalSize: 8000,
-      );
+  test('refreshStats keeps totals and client stats after typed aggregation;'
+      ' offline client one torrent', () async {
+    final provider = StatsProvider();
+    final client = _client('c1');
+    final torrent = _torrent(
+      clientId: client.id,
+      downloadSpeed: 200,
+      uploadSpeed: 100,
+      downloaded: 5000,
+      uploaded: 3000,
+      totalSize: 8000,
+    );
 
-      await provider.refreshStats([client], [torrent], {client.id: false});
+    await provider.refreshStats([client], [torrent], {client.id: false});
 
-      final stats = provider.globalStats;
-      // Client has torrents, so clientOnline becomes true.
-      // The fake service.getStats returns 0 speeds, but
-      // torrent-level totals (downloaded, uploaded, totalSize)
-      // are accumulated from the torrent loop.
-      expect(stats.downloadSpeed, 0);
-      expect(stats.uploadSpeed, 0);
-      expect(stats.totalDownloaded, torrent.downloaded);
-      expect(stats.totalUploaded, torrent.uploaded);
-      expect(stats.totalSizeOnDisk, torrent.totalSize);
-      expect(stats.clientStatsList.length, 1);
-      expect(stats.clientStatsList.single.clientId, client.id);
-    },
-  );
+    final stats = provider.globalStats;
+    // Client has torrents, so clientOnline becomes true.
+    // The fake service.getStats returns 0 speeds, but
+    // torrent-level totals (downloaded, uploaded, totalSize)
+    // are accumulated from the torrent loop.
+    expect(stats.downloadSpeed, 0);
+    expect(stats.uploadSpeed, 0);
+    expect(stats.totalDownloaded, torrent.downloaded);
+    expect(stats.totalUploaded, torrent.uploaded);
+    expect(stats.totalSizeOnDisk, torrent.totalSize);
+    expect(stats.clientStatsList.length, 1);
+    expect(stats.clientStatsList.single.clientId, client.id);
+  });
 }

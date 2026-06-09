@@ -13,10 +13,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bit Manager'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Bit Manager'), centerTitle: true),
       body: Consumer2<StatsProvider, ClientProvider>(
         builder: (context, stats, clients, _) {
           if (clients.clients.isEmpty) {
@@ -44,18 +41,27 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       '客户端 (${clients.clients.length})',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700],
+                      ),
                     ),
                     const Spacer(),
                     TextButton(
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ClientListScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const ClientListScreen(),
+                        ),
                       ),
                       child: const Text('管理', style: TextStyle(fontSize: 13)),
                     ),
@@ -65,10 +71,12 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 // ── Client list (full-width rows) ──
-                ...gs.clientStatsList.map((cs) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: ClientTile(stats: cs),
-                )),
+                ...gs.clientStatsList.map(
+                  (cs) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ClientTile(stats: cs),
+                  ),
+                ),
               ],
             ),
           );
@@ -88,7 +96,11 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               '还没有添加客户端',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
             ),
             const SizedBox(height: 8),
             Text(

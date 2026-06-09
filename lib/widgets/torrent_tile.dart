@@ -26,7 +26,8 @@ class TorrentTile extends StatelessWidget {
     final colors = statusColors(torrent.state);
 
     // Border width: 1.5px for active states, 0.75px for others
-    final isActiveState = torrent.state == TorrentState.downloading ||
+    final isActiveState =
+        torrent.state == TorrentState.downloading ||
         torrent.state == TorrentState.seeding ||
         torrent.state == TorrentState.paused ||
         torrent.state == TorrentState.error;
@@ -77,14 +78,21 @@ class TorrentTile extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(right: 8, top: 2),
                               child: Icon(
-                                isSelected ? Icons.check_box : Icons.check_box_outline_blank,
-                                color: isSelected ? theme.colorScheme.primary : null,
+                                isSelected
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank,
+                                color: isSelected
+                                    ? theme.colorScheme.primary
+                                    : null,
                               ),
                             ),
                           Expanded(
                             child: Text(
                               torrent.name,
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -113,22 +121,35 @@ class TorrentTile extends StatelessWidget {
                           if (torrent.downloadSpeed > 0)
                             Text(
                               '⬇ ${formatBytes(torrent.downloadSpeed)}/s',
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF4CAF50)),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF4CAF50),
+                              ),
                             ),
-                          if (torrent.downloadSpeed > 0 && torrent.uploadSpeed > 0)
+                          if (torrent.downloadSpeed > 0 &&
+                              torrent.uploadSpeed > 0)
                             const SizedBox(width: 8),
                           if (torrent.uploadSpeed > 0)
                             Text(
                               '⬆ ${formatBytes(torrent.uploadSpeed)}/s',
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF2196F3)),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF2196F3),
+                              ),
                             ),
-                          if ((torrent.downloadSpeed > 0 || torrent.uploadSpeed > 0) &&
-                              (torrent.seedsConnected > 0 || torrent.seedsTotal > 0))
+                          if ((torrent.downloadSpeed > 0 ||
+                                  torrent.uploadSpeed > 0) &&
+                              (torrent.seedsConnected > 0 ||
+                                  torrent.seedsTotal > 0))
                             const SizedBox(width: 8),
-                          if (torrent.seedsConnected > 0 || torrent.seedsTotal > 0)
+                          if (torrent.seedsConnected > 0 ||
+                              torrent.seedsTotal > 0)
                             Text(
                               '做种 ${torrent.seedsConnected}/${torrent.seedsTotal}',
-                              style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           if ((torrent.downloadSpeed > 0 ||
                                   torrent.uploadSpeed > 0 ||
@@ -139,7 +160,10 @@ class TorrentTile extends StatelessWidget {
                           if (torrent.totalSize > 0)
                             Text(
                               formatBytes(torrent.totalSize),
-                              style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           if ((torrent.downloadSpeed > 0 ||
                                   torrent.uploadSpeed > 0 ||
@@ -151,7 +175,10 @@ class TorrentTile extends StatelessWidget {
                           if (torrent.addedAt != null)
                             Text(
                               formatDateTime(torrent.addedAt, pattern: 'MM-dd'),
-                              style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
                         ],
                       ),
@@ -164,8 +191,11 @@ class TorrentTile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
                             value: torrent.progress,
-                            minHeight: torrent.state == TorrentState.downloading ? 6 : 4,
-                            backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                            minHeight: torrent.state == TorrentState.downloading
+                                ? 6
+                                : 4,
+                            backgroundColor:
+                                theme.colorScheme.surfaceContainerHighest,
                             color: colors.progress,
                           ),
                         ),

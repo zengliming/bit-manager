@@ -70,16 +70,22 @@ class Torrent {
     }
     return trackerStatuses.any((status) => status.contains('Success'));
   }
+
   bool get hasTrackerError => !hasSuccessfulTracker;
   bool get isActivelyUploading => uploadSpeed > 0;
   bool get isActivelyDownloading => downloadSpeed > 0;
   bool get isChecking => state == TorrentState.checking;
   bool get isWaiting => state == TorrentState.queued;
 
-  bool get isDownloading => state == TorrentState.downloading || state == TorrentState.metaDL;
+  bool get isDownloading =>
+      state == TorrentState.downloading || state == TorrentState.metaDL;
   bool get isSeeding => state == TorrentState.seeding;
   bool get isPaused => state == TorrentState.paused;
   bool get isComplete => progress >= 1.0;
-  bool get isError => state == TorrentState.error || state == TorrentState.unknown || hasTrackerError;
-  bool get isActive => isActivelyDownloading || isActivelyUploading || isChecking;
+  bool get isError =>
+      state == TorrentState.error ||
+      state == TorrentState.unknown ||
+      hasTrackerError;
+  bool get isActive =>
+      isActivelyDownloading || isActivelyUploading || isChecking;
 }

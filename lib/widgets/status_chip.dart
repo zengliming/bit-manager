@@ -12,13 +12,13 @@ class StatusChip extends StatelessWidget {
     final colors = statusColors(state);
     final (IconData icon, String label) = switch (state) {
       TorrentState.downloading => (Icons.download, '下载中'),
-      TorrentState.metaDL      => (Icons.downloading, '获取元数据'),
-      TorrentState.seeding     => (Icons.arrow_upward, '做种中'),
-      TorrentState.paused      => (Icons.pause, '已暂停'),
-      TorrentState.checking    => (Icons.hourglass_bottom, '校验中'),
-      TorrentState.queued      => (Icons.hourglass_empty, '队列中'),
-      TorrentState.error       => (Icons.error, '出错'),
-      TorrentState.unknown     => (Icons.help, '未知'),
+      TorrentState.metaDL => (Icons.downloading, '获取元数据'),
+      TorrentState.seeding => (Icons.arrow_upward, '做种中'),
+      TorrentState.paused => (Icons.pause, '已暂停'),
+      TorrentState.checking => (Icons.hourglass_bottom, '校验中'),
+      TorrentState.queued => (Icons.hourglass_empty, '队列中'),
+      TorrentState.error => (Icons.error, '出错'),
+      TorrentState.unknown => (Icons.help, '未知'),
     };
 
     return Container(
@@ -33,7 +33,14 @@ class StatusChip extends StatelessWidget {
         children: [
           Icon(icon, size: 10, color: colors.border),
           const SizedBox(width: 4),
-          Text(label, style: TextStyle(color: colors.border, fontSize: 11, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              color: colors.border,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

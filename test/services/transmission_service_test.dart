@@ -1,10 +1,11 @@
-﻿import 'package:bit_manager/models/client_config.dart';
+import 'package:bit_manager/models/client_config.dart';
 import 'package:bit_manager/services/transmission_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _TestTransmissionService extends TransmissionService {
   @override
-  Future<String?> debugGetSessionIdForTest(ClientConfig config) async => 'test-sid';
+  Future<String?> debugGetSessionIdForTest(ClientConfig config) async =>
+      'test-sid';
 
   @override
   Future<Map<String, dynamic>> debugRpcCallForTest(
@@ -28,12 +29,12 @@ class _TestTransmissionService extends TransmissionService {
 
 void main() {
   ClientConfig config() => ClientConfig(
-        id: 'tr',
-        name: 'Transmission',
-        type: ClientType.transmission,
-        host: '127.0.0.1',
-        port: 9091,
-      );
+    id: 'tr',
+    name: 'Transmission',
+    type: ClientType.transmission,
+    host: '127.0.0.1',
+    port: 9091,
+  );
 
   test(
     'pauseTorrents throws when not all hashes resolve to Transmission ids',

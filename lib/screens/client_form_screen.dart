@@ -32,10 +32,16 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
     final c = widget.client;
     _nameCtrl = TextEditingController(text: c?.name ?? '');
     _hostCtrl = TextEditingController(text: c?.host ?? '');
-    _portCtrl = TextEditingController(text: c?.port.toString() ?? (c?.type == ClientType.qBittorrent ? '8080' : '9091'));
+    _portCtrl = TextEditingController(
+      text:
+          c?.port.toString() ??
+          (c?.type == ClientType.qBittorrent ? '8080' : '9091'),
+    );
     _usernameCtrl = TextEditingController(text: c?.username ?? '');
     _passwordCtrl = TextEditingController(text: c?.password ?? '');
-    _timeoutCtrl = TextEditingController(text: (c?.timeoutSeconds ?? 10).toString());
+    _timeoutCtrl = TextEditingController(
+      text: (c?.timeoutSeconds ?? 10).toString(),
+    );
     _savePathCtrl = TextEditingController(text: c?.defaultSavePath ?? '');
     _type = c?.type ?? ClientType.qBittorrent;
     _useSsl = c?.useSsl ?? false;
@@ -66,21 +72,33 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
               TextFormField(
                 controller: _nameCtrl,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: '名称', hintText: '例如: NAS-4T'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? '请输入名称' : null,
+                decoration: const InputDecoration(
+                  labelText: '名称',
+                  hintText: '例如: NAS-4T',
+                ),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? '请输入名称' : null,
               ),
               const SizedBox(height: 16),
               SegmentedButton<ClientType>(
                 segments: const [
-                  ButtonSegment(value: ClientType.qBittorrent, label: Text('qBittorrent')),
-                  ButtonSegment(value: ClientType.transmission, label: Text('Transmission')),
+                  ButtonSegment(
+                    value: ClientType.qBittorrent,
+                    label: Text('qBittorrent'),
+                  ),
+                  ButtonSegment(
+                    value: ClientType.transmission,
+                    label: Text('Transmission'),
+                  ),
                 ],
                 selected: {_type},
                 onSelectionChanged: (v) {
                   setState(() {
                     _type = v.first;
                     if (!isEditing) {
-                      _portCtrl.text = _type == ClientType.qBittorrent ? '8080' : '9091';
+                      _portCtrl.text = _type == ClientType.qBittorrent
+                          ? '8080'
+                          : '9091';
                     }
                   });
                 },
@@ -88,8 +106,12 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _hostCtrl,
-                decoration: const InputDecoration(labelText: '地址', hintText: 'IP 或域名'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? '请输入地址' : null,
+                decoration: const InputDecoration(
+                  labelText: '地址',
+                  hintText: 'IP 或域名',
+                ),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? '请输入地址' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -160,11 +182,17 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
       type: _type,
       host: _hostCtrl.text.trim(),
       port: int.parse(_portCtrl.text.trim()),
-      username: _usernameCtrl.text.trim().isEmpty ? null : _usernameCtrl.text.trim(),
-      password: _passwordCtrl.text.trim().isEmpty ? null : _passwordCtrl.text.trim(),
+      username: _usernameCtrl.text.trim().isEmpty
+          ? null
+          : _usernameCtrl.text.trim(),
+      password: _passwordCtrl.text.trim().isEmpty
+          ? null
+          : _passwordCtrl.text.trim(),
       useSsl: _useSsl,
       timeoutSeconds: int.tryParse(_timeoutCtrl.text.trim()) ?? 10,
-      defaultSavePath: _savePathCtrl.text.trim().isEmpty ? null : _savePathCtrl.text.trim(),
+      defaultSavePath: _savePathCtrl.text.trim().isEmpty
+          ? null
+          : _savePathCtrl.text.trim(),
     );
 
     if (isEditing) {

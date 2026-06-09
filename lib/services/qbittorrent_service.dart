@@ -48,8 +48,12 @@ class QBittorrentService implements ITorrentClientService {
   }
 
   /// 携带 SID Cookie 的 GET 请求
-  Future<Response> _get(ClientConfig config, String path,
-      {Map<String, dynamic>? params, String? sid}) async {
+  Future<Response> _get(
+    ClientConfig config,
+    String path, {
+    Map<String, dynamic>? params,
+    String? sid,
+  }) async {
     final dio = HttpClientUtil.instance.createClientDio(config);
     try {
       return await dio.get(
@@ -66,8 +70,12 @@ class QBittorrentService implements ITorrentClientService {
   }
 
   /// 携带 SID Cookie 的 POST 请求
-  Future<Response> _post(ClientConfig config, String path,
-      {Map<String, dynamic>? data, String? sid}) async {
+  Future<Response> _post(
+    ClientConfig config,
+    String path, {
+    Map<String, dynamic>? data,
+    String? sid,
+  }) async {
     final dio = HttpClientUtil.instance.createClientDio(config);
     try {
       return await dio.post(
@@ -133,7 +141,9 @@ class QBittorrentService implements ITorrentClientService {
     for (final json in rawList) {
       final m = (json is Map<String, dynamic>) ? json : <String, dynamic>{};
       final hash = m['hash'] as String? ?? '';
-      final trackers = (m['tracker'] as String?) != null && (m['tracker'] as String).isNotEmpty
+      final trackers =
+          (m['tracker'] as String?) != null &&
+              (m['tracker'] as String).isNotEmpty
           ? [(m['tracker'] as String)]
           : <String>[];
       final trackerStatuses = <String>[];
@@ -142,41 +152,53 @@ class QBittorrentService implements ITorrentClientService {
           final trackerInfos = await getTrackers(config, hash);
           trackerStatuses.addAll(trackerInfos.map((tracker) => tracker.status));
           if (trackers.isEmpty) {
-            trackers.addAll(trackerInfos.map((tracker) => tracker.url).where((url) => url.isNotEmpty));
+            trackers.addAll(
+              trackerInfos
+                  .map((tracker) => tracker.url)
+                  .where((url) => url.isNotEmpty),
+            );
           }
         } catch (_) {}
       }
 
-      torrents.add(Torrent(
-        id: hash,
-        hash: hash,
-        name: m['name'] as String? ?? 'Unknown',
-        clientId: config.id,
-        clientType: config.type,
-        progress: (m['progress'] as num?)?.toDouble() ?? 0,
-        state: _mapState(m['state'] as String? ?? ''),
-        downloadSpeed: (m['dlspeed'] as num?)?.toInt() ?? 0,
-        uploadSpeed: (m['upspeed'] as num?)?.toInt() ?? 0,
-        downloaded: (m['downloaded'] as num?)?.toInt() ?? 0,
-        uploaded: (m['uploaded'] as num?)?.toInt() ?? 0,
-        totalSize: (m['total_size'] as num?)?.toInt() ?? 0,
-        ratio: (m['ratio'] as num?)?.toDouble() ?? 0,
-        peersConnected: (m['num_leechs'] as num?)?.toInt() ?? 0,
-        seedsConnected: (m['num_seeds'] as num?)?.toInt() ?? 0,
-        peersTotal: (m['num_incomplete'] as num?)?.toInt() ?? 0,
-        seedsTotal: (m['num_complete'] as num?)?.toInt() ?? 0,
-        eta: (m['eta'] as num?)?.toInt() ?? 0,
-        error: m['error'] as String?,
-        savePath: m['save_path'] as String?,
-        trackers: trackers,
-        trackerStatuses: trackerStatuses,
-        addedAt: (m['added_on'] as num?) != null
-            ? DateTime.fromMillisecondsSinceEpoch((m['added_on'] as int) * 1000)
-            : null,
-        completedAt: (m['completion_on'] as num?) != null && (m['completion_on'] as int) > 0
-            ? DateTime.fromMillisecondsSinceEpoch((m['completion_on'] as int) * 1000)
-            : null,
-      ));
+      torrents.add(
+        Torrent(
+          id: hash,
+          hash: hash,
+          name: m['name'] as String? ?? 'Unknown',
+          clientId: config.id,
+          clientType: config.type,
+          progress: (m['progress'] as num?)?.toDouble() ?? 0,
+          state: _mapState(m['state'] as String? ?? ''),
+          downloadSpeed: (m['dlspeed'] as num?)?.toInt() ?? 0,
+          uploadSpeed: (m['upspeed'] as num?)?.toInt() ?? 0,
+          downloaded: (m['downloaded'] as num?)?.toInt() ?? 0,
+          uploaded: (m['uploaded'] as num?)?.toInt() ?? 0,
+          totalSize: (m['total_size'] as num?)?.toInt() ?? 0,
+          ratio: (m['ratio'] as num?)?.toDouble() ?? 0,
+          peersConnected: (m['num_leechs'] as num?)?.toInt() ?? 0,
+          seedsConnected: (m['num_seeds'] as num?)?.toInt() ?? 0,
+          peersTotal: (m['num_incomplete'] as num?)?.toInt() ?? 0,
+          seedsTotal: (m['num_complete'] as num?)?.toInt() ?? 0,
+          eta: (m['eta'] as num?)?.toInt() ?? 0,
+          error: m['error'] as String?,
+          savePath: m['save_path'] as String?,
+          trackers: trackers,
+          trackerStatuses: trackerStatuses,
+          addedAt: (m['added_on'] as num?) != null
+              ? DateTime.fromMillisecondsSinceEpoch(
+                  (m['added_on'] as int) * 1000,
+                )
+              : null,
+          completedAt:
+              (m['completion_on'] as num?) != null &&
+                  (m['completion_on'] as int) > 0
+              ? DateTime.fromMillisecondsSinceEpoch(
+                  (m['completion_on'] as int) * 1000,
+                )
+              : null,
+        ),
+      );
     }
     return torrents;
   }
@@ -186,8 +208,11 @@ class QBittorrentService implements ITorrentClientService {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
 
-    final transferResp =
-        await _get(config, AppConstants.qbTransferInfo, sid: sid);
+    final transferResp = await _get(
+      config,
+      AppConstants.qbTransferInfo,
+      sid: sid,
+    );
     final transfer = transferResp.data as Map<String, dynamic>;
 
     return ClientStats(
@@ -220,11 +245,19 @@ class QBittorrentService implements ITorrentClientService {
     final sid = await _login(config);
     if (sid == null) return [0, 0];
     try {
-      final dlResp = await _get(config, '/api/v2/transfer/downloadLimit', sid: sid);
+      final dlResp = await _get(
+        config,
+        '/api/v2/transfer/downloadLimit',
+        sid: sid,
+      );
       final dlData = dlResp.data as Map<String, dynamic>? ?? {};
       final dlLimit = (dlData['limit'] as num?)?.toInt() ?? 0;
 
-      final ulResp = await _get(config, '/api/v2/transfer/uploadLimit', sid: sid);
+      final ulResp = await _get(
+        config,
+        '/api/v2/transfer/uploadLimit',
+        sid: sid,
+      );
       final ulData = ulResp.data as Map<String, dynamic>? ?? {};
       final ulLimit = (ulData['limit'] as num?)?.toInt() ?? 0;
 
@@ -236,10 +269,10 @@ class QBittorrentService implements ITorrentClientService {
 
   @override
   Future<void> addTorrentFromUrl(
-      ClientConfig config, {
-        required String url,
-        String? savePath,
-      }) async {
+    ClientConfig config, {
+    required String url,
+    String? savePath,
+  }) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
     final dio = HttpClientUtil.instance.createClientDio(config);
@@ -256,8 +289,11 @@ class QBittorrentService implements ITorrentClientService {
   }
 
   @override
-  Future<void> addTorrentFile(ClientConfig config,
-      {required String filePath, String? savePath}) async {
+  Future<void> addTorrentFile(
+    ClientConfig config, {
+    required String filePath,
+    String? savePath,
+  }) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
     final dio = HttpClientUtil.instance.createClientDio(config);
@@ -276,8 +312,12 @@ class QBittorrentService implements ITorrentClientService {
   Future<void> pauseTorrent(ClientConfig config, String hash) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, AppConstants.qbTorrentPause,
-        data: {'hashes': hash}, sid: sid);
+    await _post(
+      config,
+      AppConstants.qbTorrentPause,
+      data: {'hashes': hash},
+      sid: sid,
+    );
   }
 
   @override
@@ -285,16 +325,24 @@ class QBittorrentService implements ITorrentClientService {
     if (hashes.isEmpty) return;
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, AppConstants.qbTorrentPause,
-        data: {'hashes': hashes.join('|')}, sid: sid);
+    await _post(
+      config,
+      AppConstants.qbTorrentPause,
+      data: {'hashes': hashes.join('|')},
+      sid: sid,
+    );
   }
 
   @override
   Future<void> resumeTorrent(ClientConfig config, String hash) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, AppConstants.qbTorrentResume,
-        data: {'hashes': hash}, sid: sid);
+    await _post(
+      config,
+      AppConstants.qbTorrentResume,
+      data: {'hashes': hash},
+      sid: sid,
+    );
   }
 
   @override
@@ -302,46 +350,63 @@ class QBittorrentService implements ITorrentClientService {
     if (hashes.isEmpty) return;
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, AppConstants.qbTorrentResume,
-        data: {'hashes': hashes.join('|')}, sid: sid);
+    await _post(
+      config,
+      AppConstants.qbTorrentResume,
+      data: {'hashes': hashes.join('|')},
+      sid: sid,
+    );
   }
 
   @override
-  Future<void> deleteTorrent(ClientConfig config, String hash,
-      {bool deleteFiles = false}) async {
+  Future<void> deleteTorrent(
+    ClientConfig config,
+    String hash, {
+    bool deleteFiles = false,
+  }) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, AppConstants.qbTorrentDelete,
-        data: {
-          'hashes': hash,
-          'deleteFiles': deleteFiles ? 'true' : 'false'
-        },
-        sid: sid);
+    await _post(
+      config,
+      AppConstants.qbTorrentDelete,
+      data: {'hashes': hash, 'deleteFiles': deleteFiles ? 'true' : 'false'},
+      sid: sid,
+    );
   }
 
   @override
-  Future<void> deleteTorrents(ClientConfig config, List<String> hashes,
-      {bool deleteFiles = false}) async {
+  Future<void> deleteTorrents(
+    ClientConfig config,
+    List<String> hashes, {
+    bool deleteFiles = false,
+  }) async {
     if (hashes.isEmpty) return;
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, AppConstants.qbTorrentDelete,
-        data: {
-          'hashes': hashes.join('|'),
-          'deleteFiles': deleteFiles ? 'true' : 'false'
-        },
-        sid: sid);
+    await _post(
+      config,
+      AppConstants.qbTorrentDelete,
+      data: {
+        'hashes': hashes.join('|'),
+        'deleteFiles': deleteFiles ? 'true' : 'false',
+      },
+      sid: sid,
+    );
   }
 
   @override
   Future<List<TrackerInfo>> getTrackers(
-      ClientConfig config, String hash) async {
+    ClientConfig config,
+    String hash,
+  ) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
     final resp = await _get(
-        config, AppConstants.qbTorrentTrackers,
-        params: {'hash': hash},
-        sid: sid);
+      config,
+      AppConstants.qbTorrentTrackers,
+      params: {'hash': hash},
+      sid: sid,
+    );
     final List<dynamic> rawList = resp.data;
     return rawList.map((json) {
       final m = json as Map<String, dynamic>;
@@ -355,11 +420,17 @@ class QBittorrentService implements ITorrentClientService {
 
   @override
   Future<List<TorrentFile>> getTorrentFiles(
-      ClientConfig config, String hash) async {
+    ClientConfig config,
+    String hash,
+  ) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    final resp = await _get(config, '/api/v2/torrents/files',
-        params: {'hash': hash}, sid: sid);
+    final resp = await _get(
+      config,
+      '/api/v2/torrents/files',
+      params: {'hash': hash},
+      sid: sid,
+    );
     final List<dynamic> rawList = resp.data;
     return rawList.map((json) {
       final m = json as Map<String, dynamic>;
@@ -383,29 +454,50 @@ class QBittorrentService implements ITorrentClientService {
 
   @override
   Future<void> replaceTracker(
-      ClientConfig config, String hash, String oldUrl, String newUrl) async {
+    ClientConfig config,
+    String hash,
+    String oldUrl,
+    String newUrl,
+  ) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, '/api/v2/torrents/editTracker',
-        data: {'hash': hash, 'origUrl': oldUrl, 'newUrl': newUrl},
-        sid: sid);
+    await _post(
+      config,
+      '/api/v2/torrents/editTracker',
+      data: {'hash': hash, 'origUrl': oldUrl, 'newUrl': newUrl},
+      sid: sid,
+    );
   }
 
   @override
   Future<void> addTracker(
-      ClientConfig config, String hash, String trackerUrl) async {
+    ClientConfig config,
+    String hash,
+    String trackerUrl,
+  ) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, '/api/v2/torrents/addTrackers',
-        data: {'hash': hash, 'urls': trackerUrl}, sid: sid);
+    await _post(
+      config,
+      '/api/v2/torrents/addTrackers',
+      data: {'hash': hash, 'urls': trackerUrl},
+      sid: sid,
+    );
   }
 
   @override
   Future<void> removeTracker(
-      ClientConfig config, String hash, String trackerUrl) async {
+    ClientConfig config,
+    String hash,
+    String trackerUrl,
+  ) async {
     final sid = await _login(config);
     if (sid == null) throw Exception('Login failed');
-    await _post(config, '/api/v2/torrents/removeTrackers',
-        data: {'hash': hash, 'urls': trackerUrl}, sid: sid);
+    await _post(
+      config,
+      '/api/v2/torrents/removeTrackers',
+      data: {'hash': hash, 'urls': trackerUrl},
+      sid: sid,
+    );
   }
 }

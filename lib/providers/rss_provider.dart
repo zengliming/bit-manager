@@ -8,7 +8,8 @@ import '../services/torrent_client.dart';
 import '../utils/storage.dart';
 
 typedef RssServiceFactory = RssService Function();
-typedef RssTorrentServiceResolver = ITorrentClientService Function(ClientType type);
+typedef RssTorrentServiceResolver =
+    ITorrentClientService Function(ClientType type);
 
 class RssProvider extends ChangeNotifier {
   List<RssSource> _sources = [];
@@ -23,8 +24,8 @@ class RssProvider extends ChangeNotifier {
   RssProvider({
     RssServiceFactory? rssServiceFactory,
     RssTorrentServiceResolver? serviceResolver,
-  })  : _rssServiceFactory = rssServiceFactory ?? RssService.new,
-        _serviceResolver = serviceResolver ?? ServiceFactory.getService;
+  }) : _rssServiceFactory = rssServiceFactory ?? RssService.new,
+       _serviceResolver = serviceResolver ?? ServiceFactory.getService;
 
   List<RssSource> get sources => List.unmodifiable(_sources);
   bool get loading => _loading;
@@ -43,7 +44,10 @@ class RssProvider extends ChangeNotifier {
       _sources = rawList.map((json) => RssSource.fromJson(json)).toList();
       final downloadedRaw = await storage.getString('rss_downloaded_guids');
       if (downloadedRaw != null) {
-        _downloadedGuids = downloadedRaw.split(',').where((s) => s.isNotEmpty).toSet();
+        _downloadedGuids = downloadedRaw
+            .split(',')
+            .where((s) => s.isNotEmpty)
+            .toSet();
       }
     } finally {
       _loading = false;
@@ -53,7 +57,10 @@ class RssProvider extends ChangeNotifier {
 
   Future<void> _saveSources() async {
     final storage = await LocalStorage.getInstance();
-    await storage.saveJsonList('rss_sources', _sources.map((s) => s.toJson()).toList());
+    await storage.saveJsonList(
+      'rss_sources',
+      _sources.map((s) => s.toJson()).toList(),
+    );
   }
 
   Future<void> _saveDownloadedGuids() async {
@@ -88,17 +95,21 @@ class RssProvider extends ChangeNotifier {
   // ---- 查重 ----
 
   /// 批量预取所有活跃客户端的种子列表，返回本次操作的局部快照
-  Future<Map<String, List<Torrent>>> _prefetchTorrents(List<ClientConfig> clients) async {
+  Future<Map<String, List<Torrent>>> _prefetchTorrents(
+    List<ClientConfig> clients,
+  ) async {
     final cache = <String, List<Torrent>>{};
-    await Future.wait(clients.map((client) async {
-      try {
-        final service = _serviceResolver(client.type);
-        final torrents = await service.getTorrents(client);
-        cache[client.id] = torrents;
-      } catch (_) {
-        cache[client.id] = [];
-      }
-    }));
+    await Future.wait(
+      clients.map((client) async {
+        try {
+          final service = _serviceResolver(client.type);
+          final torrents = await service.getTorrents(client);
+          cache[client.id] = torrents;
+        } catch (_) {
+          cache[client.id] = [];
+        }
+      }),
+    );
     return cache;
   }
 
@@ -113,10 +124,12 @@ class RssProvider extends ChangeNotifier {
     final link = item.link!;
     for (final client in clients) {
       final torrents = torrentsCache[client.id] ?? [];
-      final exists = torrents.any((t) =>
-          t.name == item.title ||
-          (link.startsWith('magnet:') && link.contains(t.hash)) ||
-          (link.contains(t.hash)));
+      final exists = torrents.any(
+        (t) =>
+            t.name == item.title ||
+            (link.startsWith('magnet:') && link.contains(t.hash)) ||
+            (link.contains(t.hash)),
+      );
       if (exists) return true;
     }
     return false;
@@ -124,11 +137,17 @@ class RssProvider extends ChangeNotifier {
 
   // ---- 获取条目 ----
 
-  Future<List<RssItem>> fetchItems(String sourceId, {List<ClientConfig>? clients}) async {
+  Future<List<RssItem>> fetchItems(
+    String sourceId, {
+    List<ClientConfig>? clients,
+  }) async {
     final source = _sources.firstWhere((s) => s.id == sourceId);
     final rssService = _rssServiceFactory();
     try {
-      final items = await rssService.fetchItems(source, since: source.lastFetchedAt);
+      final items = await rssService.fetchItems(
+        source,
+        since: source.lastFetchedAt,
+      );
       if (clients != null && clients.isNotEmpty) {
         // 一次性预取所有客户端的种子列表
         final torrentsCache = await _prefetchTorrents(clients);
@@ -179,22 +198,33 @@ class RssProvider extends ChangeNotifier {
     final downloadedKeysInCurrentPass = <String>{};
     for (final source in _sources) {
       if (!source.autoDownload || source.assignedClientId == null) continue;
-      final targetClient = clients.where((c) => c.id == source.assignedClientId).firstOrNull;
+      final targetClient = clients
+          .where((c) => c.id == source.assignedClientId)
+          .firstOrNull;
       if (targetClient == null) continue;
       try {
-        final items = await rssService.fetchItems(source, since: source.lastFetchedAt);
+        final items = await rssService.fetchItems(
+          source,
+          since: source.lastFetchedAt,
+        );
         for (final item in items) {
           if (_downloadedGuids.contains(item.guid)) continue;
           if (item.link == null) continue;
-          if (source.enableRegex && source.filterRegex != null &&
+          if (source.enableRegex &&
+              source.filterRegex != null &&
               !rssService.matchesFilter(item.title, source.filterRegex)) {
             continue;
           }
-          if (_isDuplicateInCurrentPass(item, downloadedKeysInCurrentPass)) continue;
+          if (_isDuplicateInCurrentPass(item, downloadedKeysInCurrentPass))
+            continue;
           if (_isDuplicateFromCache(item, clients, torrentsCache)) continue;
           final service = _serviceResolver(targetClient.type);
           try {
-            await service.addTorrentFromUrl(targetClient, url: item.link!, savePath: source.savePath);
+            await service.addTorrentFromUrl(
+              targetClient,
+              url: item.link!,
+              savePath: source.savePath,
+            );
             _downloadedGuids.add(item.guid);
             _markDownloadedInCurrentPass(item, downloadedKeysInCurrentPass);
             await _saveDownloadedGuids();
@@ -208,7 +238,11 @@ class RssProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> downloadItem(String link, ClientConfig client, {String? savePath}) async {
+  Future<bool> downloadItem(
+    String link,
+    ClientConfig client, {
+    String? savePath,
+  }) async {
     try {
       final service = ServiceFactory.getService(client.type);
       await service.addTorrentFromUrl(client, url: link, savePath: savePath);
