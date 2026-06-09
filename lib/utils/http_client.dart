@@ -5,7 +5,11 @@ class HttpClientUtil {
   static HttpClientUtil? _instance;
   late Dio _dio;
 
-  /// 按 baseUrl 缓存的客户端 Dio 实例，复用连接池
+  /// 生成缓存键（baseUrl + timeout），确保不同超时配置的 Dio 实例不会互相复用
+  String _clientDioCacheKey(ClientConfig config) =>
+      '${config.baseUrl}|timeout=${config.timeoutSeconds}';
+
+  /// 按连接配置（baseUrl + timeout）缓存的客户端 Dio 实例，复用连接池
   final Map<String, Dio> _clientDioCache = {};
 
   HttpClientUtil._() {
@@ -29,11 +33,11 @@ class HttpClientUtil {
 
   Dio get dio => _dio;
 
-  /// 获取或创建为特定客户端配置的 Dio 实例（按 baseUrl 缓存复用）
-  /// 同一个客户端地址共享连接池，避免重复 TLS 握手
+  /// 获取或创建为特定客户端配置的 Dio 实例（按连接配置缓存复用）
+  /// 同一个客户端地址+超时共享连接池，避免重复 TLS 握手
   Dio createClientDio(ClientConfig config) {
     return _clientDioCache.putIfAbsent(
-      config.baseUrl,
+      _clientDioCacheKey(config),
       () => Dio(BaseOptions(
         baseUrl: config.baseUrl,
         connectTimeout: Duration(seconds: config.timeoutSeconds),
