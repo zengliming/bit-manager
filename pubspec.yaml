@@ -36,8 +36,7 @@ dependencies:
   uuid: ^4.5.1
   intl: ^0.19.0
   flutter_secure_storage: ^9.2.4
-
-dev_dependencies:
+  webview_flutter: ^4.10.0
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
@@ -52,6 +51,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/sites/presets.json
+    - assets/sites/icons/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
