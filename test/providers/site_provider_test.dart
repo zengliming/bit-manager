@@ -1,6 +1,5 @@
 import 'package:bit_manager/models/site_config.dart';
 import 'package:bit_manager/providers/site_provider.dart';
-import 'package:bit_manager/services/site_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

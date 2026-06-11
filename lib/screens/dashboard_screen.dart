@@ -8,15 +8,15 @@ import '../widgets/speed_hero_card.dart';
 import 'client_form_screen.dart';
 import 'client_list_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class DashboardScreen extends StatelessWidget {
   final VoidCallback? onNavigateToTorrents;
 
-  const HomeScreen({super.key, this.onNavigateToTorrents});
+  const DashboardScreen({super.key, this.onNavigateToTorrents});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bit Manager'), centerTitle: true),
+      appBar: AppBar(title: const Text('下载器管理'), centerTitle: true),
       body: Consumer2<StatsProvider, ClientProvider>(
         builder: (context, stats, clients, _) {
           if (clients.clients.isEmpty) {

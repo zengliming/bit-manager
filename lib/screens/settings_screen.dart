@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/client_provider.dart';
-import 'client_list_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -13,22 +10,6 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 客户端管理入口
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.dns),
-              title: const Text('客户端管理'),
-              subtitle: Consumer<ClientProvider>(
-                builder: (_, cp, __) => Text('${cp.clients.length} 个客户端'),
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ClientListScreen()),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
           // 关于
           const Card(
             child: ListTile(

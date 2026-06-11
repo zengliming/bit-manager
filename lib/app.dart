@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'providers/client_provider.dart';
 import 'providers/torrent_provider.dart';
 import 'providers/stats_provider.dart';
+import 'providers/site_provider.dart';
 import 'services/refresh_service.dart';
-import 'screens/home_screen.dart';
+import 'screens/dashboard_screen.dart';
+import 'screens/site_list_screen.dart';
 import 'screens/torrent_list_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/status_border.dart';
@@ -38,7 +40,9 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
     final clientProvider = context.read<ClientProvider>();
     final torrentProvider = context.read<TorrentProvider>();
     final statsProvider = context.read<StatsProvider>();
+    final siteProvider = context.read<SiteProvider>();
     await clientProvider.loadClients();
+    await siteProvider.loadSites();
 
     _refreshService = RefreshService(
       clientProvider: clientProvider,
@@ -77,7 +81,8 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
         body: IndexedStack(
           index: _currentIndex,
           children: [
-            HomeScreen(onNavigateToTorrents: () => setState(() => _currentIndex = 1)),
+            const SiteListScreen(),
+            DashboardScreen(onNavigateToTorrents: () => setState(() => _currentIndex = 2)),
             const TorrentListScreen(),
             const SettingsScreen(),
           ],
@@ -107,9 +112,14 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
                 indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                 destinations: const [
                   NavigationDestination(
-                    icon: Icon(Icons.dashboard_outlined),
-                    selectedIcon: Icon(Icons.dashboard),
-                    label: '概览',
+                    icon: Icon(Icons.language_outlined),
+                    selectedIcon: Icon(Icons.language),
+                    label: '站点',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.dns_outlined),
+                    selectedIcon: Icon(Icons.dns),
+                    label: '下载器',
                   ),
                   NavigationDestination(
                     icon: Icon(Icons.download_outlined),

@@ -98,7 +98,6 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                     onChanged: (_) => _applyFilters(),
                   ),
                 ),
-
                 // 分类筛选
                 SizedBox(
                   height: 40,
@@ -124,7 +123,8 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                         label: Text(cat),
                         selected: _categoryFilter == cat,
                         onSelected: (_) {
-                          _categoryFilter = _categoryFilter == cat ? null : cat;
+                          _categoryFilter =
+                              _categoryFilter == cat ? null : cat;
                           _applyFilters();
                         },
                         visualDensity: VisualDensity.compact,
@@ -132,9 +132,7 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                     },
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
                 // 预设列表
                 Expanded(
                   child: ListView.builder(
@@ -155,7 +153,9 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                           preset.name,
                           style: TextStyle(
                             color: isImported
-                                ? Theme.of(context).colorScheme.onSurfaceVariant
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant
                                 : null,
                           ),
                         ),
@@ -199,7 +199,6 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                 ),
               ],
             ),
-      ),
       bottomNavigationBar: _selectedIds.isNotEmpty
           ? SafeArea(
               child: Padding(

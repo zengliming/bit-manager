@@ -43,11 +43,11 @@ class _SiteCookieScreenState extends State<SiteCookieScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text('${site.name} · Cookie')),
-      body: _webViewVisible ? _buildWebView() : _buildForm(hasCookie),
+      body: _webViewVisible ? _buildWebView() : _buildForm(provider, hasCookie),
     );
   }
 
-  Widget _buildForm(bool hasCookie) {
+  Widget _buildForm(SiteProvider provider, bool hasCookie) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -186,11 +186,11 @@ class _SiteCookieScreenState extends State<SiteCookieScreen> {
         NavigationDelegate(
           onPageFinished: (url) async {
             try {
+              final provider = context.read<SiteProvider>();
               final result = await _webViewCtrl!
                   .runJavaScriptReturningResult('document.cookie');
               final cookie = result.toString();
               if (cookie.isNotEmpty && cookie != 'null') {
-                final provider = context.read<SiteProvider>();
                 await provider.saveCookie(site.id, cookie);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(

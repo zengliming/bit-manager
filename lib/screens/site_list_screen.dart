@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/site_config.dart';
 import '../providers/site_provider.dart';
 import '../widgets/site_tile.dart';
 import '../widgets/empty_state.dart';
