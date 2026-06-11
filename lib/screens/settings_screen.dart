@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/client_provider.dart';
-import '../providers/rss_provider.dart';
 import 'client_list_screen.dart';
-import 'rss_sources_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -27,22 +25,6 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ClientListScreen()),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // RSS 订阅源管理
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.rss_feed, color: Colors.orange),
-              title: const Text('RSS 订阅源'),
-              subtitle: Consumer<RssProvider>(
-                builder: (_, rp, __) => Text('${rp.sources.length} 个订阅源'),
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const RssSourcesScreen()),
               ),
             ),
           ),

@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/stats_provider.dart';
 import '../providers/client_provider.dart';
+import '../providers/torrent_provider.dart';
 import '../widgets/client_tile.dart';
 import '../widgets/speed_hero_card.dart';
 import 'client_form_screen.dart';
 import 'client_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onNavigateToTorrents;
+
+  const HomeScreen({super.key, this.onNavigateToTorrents});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +77,13 @@ class HomeScreen extends StatelessWidget {
                 ...gs.clientStatsList.map(
                   (cs) => Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: ClientTile(stats: cs),
+                    child: ClientTile(
+                      stats: cs,
+                      onTap: () {
+                        context.read<TorrentProvider>().setClientFilter(cs.clientId);
+                        onNavigateToTorrents?.call();
+                      },
+                    ),
                   ),
                 ),
               ],

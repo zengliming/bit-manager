@@ -2,7 +2,6 @@ import 'package:bit_manager/models/client_config.dart';
 import 'package:bit_manager/models/stats.dart';
 import 'package:bit_manager/models/torrent.dart';
 import 'package:bit_manager/providers/client_provider.dart';
-import 'package:bit_manager/providers/rss_provider.dart';
 import 'package:bit_manager/providers/stats_provider.dart';
 import 'package:bit_manager/providers/torrent_provider.dart';
 import 'package:bit_manager/services/refresh_service.dart';
@@ -120,12 +119,10 @@ void main() {
         serviceResolver: (_) => _EmptyTorrentService(),
       );
       final statsProvider = StatsProvider();
-      final rssProvider = RssProvider();
       final refreshService = RefreshService(
         clientProvider: clientProvider,
         torrentProvider: torrentProvider,
         statsProvider: statsProvider,
-        rssProvider: rssProvider,
       );
 
       await clientProvider.addClient(

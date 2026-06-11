@@ -24,17 +24,25 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 64, color: Colors.grey[400]),
+            Icon(icon, size: 56, color: const Color(0xFFC7C7CC)),
             const SizedBox(height: 16),
             Text(
               title,
-              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF8E8E93),
+              ),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),
               Text(
                 subtitle!,
-                style: TextStyle(color: Colors.grey[500]),
+                style: const TextStyle(
+                  color: Color(0xFFC7C7CC),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],

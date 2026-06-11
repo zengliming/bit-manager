@@ -21,40 +21,37 @@ class SpeedHeroCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.12),
-            theme.colorScheme.primary.withValues(alpha: 0.04),
+            theme.colorScheme.primary.withValues(alpha: 0.10),
+            theme.colorScheme.primary.withValues(alpha: 0.03),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.15),
-        ),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
           Expanded(
             child: _SpeedColumn(
               icon: Icons.arrow_downward,
-              iconColor: const Color(0xFF4CAF50),
+              iconColor: const Color(0xFF34C759),
               label: '下载',
               speed: downloadSpeed,
-              textColor: const Color(0xFF2E7D32),
+              textColor: const Color(0xFF248A3D),
             ),
           ),
           Container(
             width: 1,
-            height: 60,
-            color: Colors.grey.withValues(alpha: 0.2),
+            height: 56,
+            color: theme.dividerColor,
           ),
           Expanded(
             child: _SpeedColumn(
               icon: Icons.arrow_upward,
-              iconColor: const Color(0xFF2196F3),
+              iconColor: const Color(0xFF007AFF),
               label: '上传',
               speed: uploadSpeed,
-              textColor: const Color(0xFF1565C0),
+              textColor: const Color(0xFF0056CC),
             ),
           ),
         ],
@@ -86,23 +83,27 @@ class _SpeedColumn extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: iconColor),
-            const SizedBox(width: 6),
+            Icon(icon, size: 16, color: iconColor),
+            const SizedBox(width: 4),
             Text(
               label,
-              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF8E8E93),
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         RichText(
           text: TextSpan(
             children: [
               TextSpan(
                 text: _formatSpeed(speed),
                 style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
                   color: textColor,
                 ),
               ),

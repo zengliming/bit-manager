@@ -8,6 +8,23 @@ import '../services/torrent_client.dart';
 typedef TorrentServiceResolver =
     ITorrentClientService Function(ClientType type);
 
+/// 排序字段
+enum TorrentSortField {
+  addedAt,
+  downloadSpeed,
+  uploadSpeed,
+  ratio,
+  uploaded,
+  downloaded,
+  totalSize,
+  progress,
+  eta,
+  lastActivity,
+  seedsConnected,
+  leechers,
+  multiSource,
+}
+
 class TorrentProvider extends ChangeNotifier {
   final TorrentServiceResolver _serviceResolver;
   List<Torrent> _allTorrents = [];
@@ -24,8 +41,15 @@ class TorrentProvider extends ChangeNotifier {
   final Set<String> _selectedHashes = {};
   int _stateTabIndex = 0;
 
+  /// 排序
+  TorrentSortField _sortField = TorrentSortField.addedAt;
+  bool _sortAsc = false;
+
   /// 缓存的错误种子计数，避免每次 UI 重建时 O(n) 遍历
   int _errorCount = 0;
+
+  /// 缓存的异常原因统计（按数量降序），避免每次 UI 重建时 O(n log n) 重建
+  List<MapEntry<String, int>> _errorReasonsCache = const [];
 
   /// 搜索防抖定时器：用户停止输入 200ms 后才触发筛选
   Timer? _searchDebounce;
@@ -35,9 +59,40 @@ class TorrentProvider extends ChangeNotifier {
 
   List<Torrent> get allTorrents => List.unmodifiable(_allTorrents);
 
+  TorrentSortField get sortField => _sortField;
+  bool get sortAsc => _sortAsc;
+
+  void setSortField(TorrentSortField field) {
+    if (_sortField == field) {
+      _sortAsc = !_sortAsc;
+    } else {
+      _sortField = field;
+      _sortAsc = false;
+    }
+    notifyListeners();
+  }
+
+  int _sortValue(Torrent t, TorrentSortField field) {
+    return switch (field) {
+      TorrentSortField.addedAt => t.addedAt?.millisecondsSinceEpoch ?? 0,
+      TorrentSortField.downloadSpeed => t.downloadSpeed,
+      TorrentSortField.uploadSpeed => t.uploadSpeed,
+      TorrentSortField.ratio => (t.ratio * 1000000).round(),
+      TorrentSortField.uploaded => t.uploaded,
+      TorrentSortField.downloaded => t.downloaded,
+      TorrentSortField.totalSize => t.totalSize,
+      TorrentSortField.progress => (t.progress * 1000000).round(),
+      TorrentSortField.eta => t.eta,
+      TorrentSortField.lastActivity => t.lastActivity?.millisecondsSinceEpoch ?? 0,
+      TorrentSortField.seedsConnected => t.seedsConnected,
+      TorrentSortField.leechers => t.leechers,
+      TorrentSortField.multiSource => t.multiSource,
+    };
+  }
+
   /// 单次遍历过滤：所有筛选条件在一次迭代中完成，避免链式 .where().toList() 创建多个中间列表
   List<Torrent> get filteredTorrents {
-    return _allTorrents.where((t) {
+    var result = _allTorrents.where((t) {
       if (_stateFilter != null &&
           _stateFilter!.isNotEmpty &&
           !_stateFilter!.contains(t.state))
@@ -54,6 +109,14 @@ class TorrentProvider extends ChangeNotifier {
         return false;
       return true;
     }).toList();
+
+    result.sort((a, b) {
+      final va = _sortValue(a, _sortField);
+      final vb = _sortValue(b, _sortField);
+      return _sortAsc ? va.compareTo(vb) : vb.compareTo(va);
+    });
+
+    return result;
   }
 
   /// 缓存的搜索查询小写，避免每次筛选时重复转换
@@ -83,6 +146,10 @@ class TorrentProvider extends ChangeNotifier {
   ].length;
 
   int get errorCount => _errorCount;
+
+  /// 按异常原因聚合计数，供筛选面板展示
+  /// 仅返回有异常原因的种子，按数量降序排列
+  List<MapEntry<String, int>> get errorReasons => _errorReasonsCache;
 
   // ---- 筛选 ----
 
@@ -169,6 +236,8 @@ class TorrentProvider extends ChangeNotifier {
     _siteFilter = null;
     _searchQuery = '';
     _searchQueryLowerCase = '';
+    _sortField = TorrentSortField.addedAt;
+    _sortAsc = false;
     notifyListeners();
   }
 
@@ -237,6 +306,35 @@ class TorrentProvider extends ChangeNotifier {
       _lastRefreshOnlineStatus
         ..clear()
         ..addAll(onlineStatus);
+
+      // 按保存路径+名称计算辅种数：相同路径下同名种子的数量 - 1（自身），即真正的 cross-seed 数
+      final groupCounts = <String, int>{};
+      for (final t in allTorrents) {
+        if (t.savePath != null && t.savePath!.isNotEmpty) {
+          final key = '${t.savePath}::${t.name}';
+          groupCounts[key] = (groupCounts[key] ?? 0) + 1;
+        }
+      }
+      for (final t in _allTorrents) {
+        if (t.savePath != null && t.savePath!.isNotEmpty) {
+          final key = '${t.savePath}::${t.name}';
+          final count = groupCounts[key] ?? 0;
+          t.multiSource = count > 0 ? count - 1 : 0;
+        } else {
+          t.multiSource = 0;
+        }
+      }
+
+      // 计算并缓存异常原因统计（按数量降序）
+      final reasonCounts = <String, int>{};
+      for (final t in allTorrents) {
+        if (t.error != null && t.error!.isNotEmpty) {
+          reasonCounts[t.error!] = (reasonCounts[t.error!] ?? 0) + 1;
+        }
+      }
+      final reasonEntries = reasonCounts.entries.toList();
+      reasonEntries.sort((a, b) => b.value.compareTo(a.value));
+      _errorReasonsCache = reasonEntries;
     } catch (e) {
       _error = e.toString();
     } finally {

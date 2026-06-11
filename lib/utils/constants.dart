@@ -3,14 +3,11 @@ class AppConstants {
 
   // 默认刷新间隔
   static const int defaultPollIntervalSeconds = 10;
-  static const int defaultRssRefreshMinutes = 15;
   static const int defaultTimeoutSeconds = 10;
   static const int maxRetryCount = 3;
 
   // 存储 Key
   static const String storageKeyClients = 'clients';
-  static const String storageKeyRssSources = 'rss_sources';
-  static const String storageKeyRssDownloaded = 'rss_downloaded_guids';
   static const String storageKeyThemeMode = 'theme_mode';
   static const String storageKeyPollInterval = 'poll_interval';
 

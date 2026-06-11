@@ -18,34 +18,34 @@ class StatusColors {
 StatusColors statusColors(TorrentState state) {
   return switch (state) {
     TorrentState.downloading => const StatusColors(
-      border: Color(0xFF4CAF50),
-      background: Color(0x0D4CAF50),
-      progress: Color(0xFF4CAF50),
+      border: Color(0xFF34C759),
+      background: Color(0x0D34C759),
+      progress: Color(0xFF34C759),
     ),
     TorrentState.seeding => const StatusColors(
-      border: Color(0xFF2196F3),
-      background: Color(0x0D2196F3),
-      progress: Color(0xFF2196F3),
+      border: Color(0xFF007AFF),
+      background: Color(0x0D007AFF),
+      progress: Color(0xFF007AFF),
     ),
     TorrentState.paused => const StatusColors(
-      border: Color(0xFFFF9800),
-      background: Color(0x0DFF9800),
-      progress: Color(0xFFFF9800),
+      border: Color(0xFFFF9500),
+      background: Color(0x0DFF9500),
+      progress: Color(0xFFFF9500),
     ),
     TorrentState.error => const StatusColors(
-      border: Color(0xFFE53935),
-      background: Color(0x0DE53935),
-      progress: Color(0xFFE53935),
+      border: Color(0xFFFF3B30),
+      background: Color(0x0DFF3B30),
+      progress: Color(0xFFFF3B30),
     ),
     TorrentState.unknown => const StatusColors(
-      border: Color(0xFFE53935),
-      background: Color(0x0DE53935),
-      progress: Color(0xFFE53935),
+      border: Color(0xFFFF3B30),
+      background: Color(0x0DFF3B30),
+      progress: Color(0xFFFF3B30),
     ),
     _ => const StatusColors(
-      border: Color(0xFF9E9E9E),
+      border: Color(0xFF8E8E93),
       background: Colors.transparent,
-      progress: Color(0xFF9E9E9E),
+      progress: Color(0xFF8E8E93),
     ),
   };
 }

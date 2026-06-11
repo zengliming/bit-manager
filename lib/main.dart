@@ -4,7 +4,6 @@ import 'app.dart';
 import 'providers/client_provider.dart';
 import 'providers/torrent_provider.dart';
 import 'providers/stats_provider.dart';
-import 'providers/rss_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +20,6 @@ class BitManagerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ClientProvider()),
         ChangeNotifierProvider(create: (_) => TorrentProvider()),
         ChangeNotifierProvider(create: (_) => StatsProvider()),
-        ChangeNotifierProvider(create: (_) => RssProvider()),
       ],
       child: const AppShell(),
     );

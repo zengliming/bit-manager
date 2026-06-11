@@ -33,6 +33,12 @@ class TorrentListScreen extends StatelessWidget {
             ),
           ),
           IconButton(
+            icon: const Icon(Icons.sort),
+            onPressed: () {
+              _showSortSheet(context);
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               context.read<TorrentProvider>().refreshTorrents(
@@ -56,7 +62,7 @@ class TorrentListScreen extends StatelessWidget {
             return const EmptyState(
               icon: Icons.inbox,
               title: '暂无种子',
-              subtitle: '通过 RSS 订阅添加种子',
+              subtitle: '添加种子开始下载',
             );
           }
 
@@ -75,13 +81,15 @@ class TorrentListScreen extends StatelessWidget {
                     itemCount:
                         tp.filteredTorrents.length + (tp.loading ? 1 : 0),
                     itemBuilder: (context, index) {
-                      if (index == 0 && tp.loading) {
+                      if (tp.loading && index == 0) {
                         return const Padding(
                           padding: EdgeInsets.all(16),
                           child: Center(child: CircularProgressIndicator()),
                         );
                       }
-                      final t = tp.filteredTorrents[index];
+                      final t = tp.loading
+                          ? tp.filteredTorrents[index - 1]
+                          : tp.filteredTorrents[index];
                       return TorrentTile(
                         torrent: t,
                         selectMode: tp.selectMode,
@@ -346,7 +354,8 @@ class TorrentListScreen extends StatelessWidget {
                                 tp.stateFilter == null ||
                                 tp.stateFilter!.isEmpty,
                             onSelected: (_) {
-                              tp.setStateFilter(null);
+                              // setStateTabIndex(0) 内部已清空 _stateFilter，
+                              // 单次 notifyListeners 避免双 rebuild 闪烁
                               tp.setStateTabIndex(0);
                               setSheetState(() {});
                             },
@@ -415,59 +424,45 @@ class TorrentListScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // ── 错误过滤 ──
-                      SwitchListTile(
-                        title: const Text('仅显示有错误的种子'),
-                        value: tp.errorOnly,
-                        contentPadding: EdgeInsets.zero,
-                        onChanged: (v) {
-                          tp.setErrorOnly(v);
-                          tp.setErrorFilter(null);
-                          setSheetState(() {});
-                        },
+                      // ── 异常原因筛选 ──
+                      Text(
+                        '异常原因',
+                        style: Theme.of(context).textTheme.titleSmall,
                       ),
-                      if (tp.errorOnly) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          '错误类型',
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: [
-                            FilterChip(
-                              label: const Text('全部'),
-                              selected: tp.errorFilter == null,
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          ...tp.errorReasons.map(
+                            (entry) => FilterChip(
+                              label: Text(
+                                '${entry.key} (${entry.value})',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              selected: tp.errorFilter == entry.key,
                               onSelected: (_) {
-                                tp.setErrorFilter(null);
+                                tp.setErrorFilter(
+                                  tp.errorFilter == entry.key ? null : entry.key,
+                                );
                                 setSheetState(() {});
                               },
                             ),
-                            ...tp.allTorrents
-                                .map((t) => t.error)
-                                .where((e) => e != null && e.isNotEmpty)
-                                .toSet()
-                                .map(
-                                  (err) => FilterChip(
-                                    label: Text(
-                                      err!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    selected: tp.errorFilter == err,
-                                    onSelected: (_) {
-                                      tp.setErrorFilter(
-                                        tp.errorFilter == err ? null : err,
-                                      );
-                                      setSheetState(() {});
-                                    },
-                                  ),
+                          ),
+                          if (tp.errorReasons.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(
+                                '暂无异常种子',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
-                          ],
-                        ),
-                      ],
+                              ),
+                            ),
+                        ],
+                      ),
                       const SizedBox(height: 8),
                       // ── 应用按钮 ──
                       SizedBox(
@@ -475,6 +470,76 @@ class TorrentListScreen extends StatelessWidget {
                         child: FilledButton(
                           onPressed: () => Navigator.pop(context),
                           child: const Text('应用'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showSortSheet(BuildContext context) {
+    final tp = context.read<TorrentProvider>();
+    final fields = <(TorrentSortField, String)>[
+      (TorrentSortField.addedAt, '添加时间'),
+      (TorrentSortField.downloadSpeed, '下载速度'),
+      (TorrentSortField.uploadSpeed, '上传速度'),
+      (TorrentSortField.ratio, '分享率'),
+      (TorrentSortField.uploaded, '总计上传'),
+      (TorrentSortField.downloaded, '总计下载'),
+      (TorrentSortField.totalSize, '种子大小'),
+      (TorrentSortField.progress, '种子进度'),
+      (TorrentSortField.eta, '剩余时间'),
+      (TorrentSortField.lastActivity, '活动时间'),
+      (TorrentSortField.seedsConnected, '做种人数'),
+      (TorrentSortField.leechers, '下载人数'),
+      (TorrentSortField.multiSource, '辅种数量'),
+    ];
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '排序',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 12),
+                      ...fields.map(
+                        (f) => RadioListTile<TorrentSortField>(
+                          title: Row(
+                            children: [
+                              Text(f.$2),
+                              if (tp.sortField == f.$1)
+                                Icon(
+                                  tp.sortAsc
+                                      ? Icons.arrow_upward
+                                      : Icons.arrow_downward,
+                                  size: 16,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                            ],
+                          ),
+                          value: f.$1,
+                          groupValue: tp.sortField,
+                          onChanged: (v) {
+                            tp.setSortField(v!);
+                            Navigator.pop(context);
+                          },
+                          contentPadding: EdgeInsets.zero,
                         ),
                       ),
                     ],

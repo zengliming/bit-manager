@@ -1,12 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/client_provider.dart';
-import 'providers/rss_provider.dart';
 import 'providers/torrent_provider.dart';
 import 'providers/stats_provider.dart';
 import 'services/refresh_service.dart';
 import 'screens/home_screen.dart';
-import 'screens/rss_sources_screen.dart';
 import 'screens/torrent_list_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/status_border.dart';
@@ -37,17 +36,14 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
 
   Future<void> _init() async {
     final clientProvider = context.read<ClientProvider>();
-    final rssProvider = context.read<RssProvider>();
     final torrentProvider = context.read<TorrentProvider>();
     final statsProvider = context.read<StatsProvider>();
     await clientProvider.loadClients();
-    await rssProvider.loadSources();
 
     _refreshService = RefreshService(
       clientProvider: clientProvider,
       torrentProvider: torrentProvider,
       statsProvider: statsProvider,
-      rssProvider: rssProvider,
     );
     _refreshService!.start();
   }
@@ -80,214 +76,266 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       home: Scaffold(
         body: IndexedStack(
           index: _currentIndex,
-          children: const [
-            HomeScreen(),
-            TorrentListScreen(),
-            RssSourcesScreen(),
-            SettingsScreen(),
+          children: [
+            HomeScreen(onNavigateToTorrents: () => setState(() => _currentIndex = 1)),
+            const TorrentListScreen(),
+            const SettingsScreen(),
           ],
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (i) => setState(() => _currentIndex = i),
-          indicatorColor: Theme.of(context).colorScheme.primaryContainer,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 2,
-          shadowColor: Colors.black26,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard),
-              label: '概览',
+        bottomNavigationBar: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
+                border: Border(
+                  top: BorderSide(
+                    color: Theme.of(context).dividerColor,
+                    width: 0.5,
+                  ),
+                ),
+              ),
+              child: NavigationBar(
+                selectedIndex: _currentIndex,
+                onDestinationSelected: (i) => setState(() => _currentIndex = i),
+                elevation: 0,
+                surfaceTintColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                indicatorShape: const StadiumBorder(),
+                indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.dashboard_outlined),
+                    selectedIcon: Icon(Icons.dashboard),
+                    label: '概览',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.download_outlined),
+                    selectedIcon: Icon(Icons.download),
+                    label: '种子',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.settings_outlined),
+                    selectedIcon: Icon(Icons.settings),
+                    label: '设置',
+                  ),
+                ],
+              ),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.download_outlined),
-              selectedIcon: Icon(Icons.download),
-              label: '种子',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.rss_feed_outlined),
-              selectedIcon: Icon(Icons.rss_feed),
-              label: 'RSS',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings),
-              label: '设置',
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
   ThemeData _buildLightTheme() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF1A5C8A),
+    const colorScheme = ColorScheme(
       brightness: Brightness.light,
+      primary: Color(0xFF007AFF),
+      onPrimary: Color(0xFFFFFFFF),
+      primaryContainer: Color(0xFF007AFF),
+      onPrimaryContainer: Color(0xFFFFFFFF),
+      secondary: Color(0xFF5856D6),
+      onSecondary: Color(0xFFFFFFFF),
+      surface: Color(0xFFFFFFFF),
+      onSurface: Color(0xFF1C1C1E),
+      surfaceContainerHighest: Color(0xFFF2F2F7),
+      onSurfaceVariant: Color(0xFF8E8E93),
+      outline: Color(0xFFE5E5EA),
+      outlineVariant: Color(0xFFE5E5EA),
+      error: Color(0xFFFF3B30),
+      onError: Color(0xFFFFFFFF),
+      errorContainer: Color(0x0DFF3B30),
+      shadow: Color(0x0F000000),
     );
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: const Color(0xFFF5F7FA),
-      appBarTheme: AppBarTheme(
+      fontFamily:
+          'Inter, -apple-system, BlinkMacSystemFont, .SF Pro Text, Roboto, Segoe UI, sans-serif',
+      scaffoldBackgroundColor: const Color(0xFFF2F2F7),
+      appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        scrolledUnderElevation: 1,
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
+        scrolledUnderElevation: 0,
+        backgroundColor: Color(0xCCFFFFFF),
+        foregroundColor: Color(0xFF1C1C1E),
+        surfaceTintColor: Colors.transparent,
         titleTextStyle: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 18,
+          color: Color(0xFF1C1C1E),
+          fontSize: 17,
           fontWeight: FontWeight.w600,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 64,
+        indicatorShape: const StadiumBorder(),
+        surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return TextStyle(
-              fontSize: 12,
+            return const TextStyle(
+              fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: colorScheme.primary,
+              color: Color(0xFF007AFF),
             );
           }
-          return TextStyle(
-            fontSize: 12,
+          return const TextStyle(
+            fontSize: 11,
             fontWeight: FontWeight.w400,
-            color: colorScheme.onSurfaceVariant,
+            color: Color(0xFF8E8E93),
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return IconThemeData(size: 22, color: colorScheme.primary);
+            return const IconThemeData(size: 24, color: Color(0xFF007AFF));
           }
-          return IconThemeData(size: 22, color: colorScheme.onSurfaceVariant);
+          return const IconThemeData(size: 22, color: Color(0xFF8E8E93));
         }),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
+        color: const Color(0xFFFFFFFF),
+        surfaceTintColor: Colors.transparent,
+        shadowColor: const Color(0x0F000000),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
+          borderRadius: BorderRadius.circular(14),
         ),
         clipBehavior: Clip.antiAlias,
+        margin: EdgeInsets.zero,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(14),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(14),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
       ),
-      dividerTheme: DividerThemeData(
-        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+      dividerTheme: const DividerThemeData(
+        color: Color(0x1F3C3C43),
         thickness: 0.5,
       ),
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       ),
-      progressIndicatorTheme: ProgressIndicatorThemeData(
-        circularTrackColor: colorScheme.surfaceContainerHighest,
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        circularTrackColor: Color(0xFFE5E5EA),
       ),
     );
   }
 
   ThemeData _buildDarkTheme() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF4D9FD8),
+    const colorScheme = ColorScheme(
       brightness: Brightness.dark,
+      primary: Color(0xFF0A84FF),
+      onPrimary: Color(0xFFFFFFFF),
+      primaryContainer: Color(0xFF0A84FF),
+      onPrimaryContainer: Color(0xFFFFFFFF),
+      secondary: Color(0xFF5E5CE6),
+      onSecondary: Color(0xFFFFFFFF),
+      surface: Color(0xFF1C1C1E),
+      onSurface: Color(0xFFFFFFFF),
+      surfaceContainerHighest: Color(0xFF2C2C2E),
+      onSurfaceVariant: Color(0xFF98989D),
+      outline: Color(0xFF38383A),
+      outlineVariant: Color(0xFF38383A),
+      error: Color(0xFFFF453A),
+      onError: Color(0xFFFFFFFF),
+      errorContainer: Color(0x0DFF453A),
+      shadow: Color(0x0F000000),
     );
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: const Color(0xFF111318),
-      appBarTheme: AppBarTheme(
+      fontFamily:
+          'Inter, -apple-system, BlinkMacSystemFont, .SF Pro Text, Roboto, Segoe UI, sans-serif',
+      scaffoldBackgroundColor: const Color(0xFF000000),
+      appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        scrolledUnderElevation: 1,
-        backgroundColor: colorScheme.surface,
-        foregroundColor: colorScheme.onSurface,
+        scrolledUnderElevation: 0,
+        backgroundColor: Color(0xB31C1C1E),
+        foregroundColor: Color(0xFFFFFFFF),
+        surfaceTintColor: Colors.transparent,
         titleTextStyle: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 18,
+          color: Color(0xFFFFFFFF),
+          fontSize: 17,
           fontWeight: FontWeight.w600,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 64,
-        backgroundColor: colorScheme.surface,
-        indicatorColor: colorScheme.primaryContainer,
+        indicatorShape: const StadiumBorder(),
+        surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return TextStyle(
-              fontSize: 12,
+            return const TextStyle(
+              fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: colorScheme.primary,
+              color: Color(0xFF0A84FF),
             );
           }
-          return TextStyle(
-            fontSize: 12,
+          return const TextStyle(
+            fontSize: 11,
             fontWeight: FontWeight.w400,
-            color: colorScheme.onSurfaceVariant,
+            color: Color(0xFF98989D),
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return IconThemeData(size: 22, color: colorScheme.primary);
+            return const IconThemeData(size: 24, color: Color(0xFF0A84FF));
           }
-          return IconThemeData(size: 22, color: colorScheme.onSurfaceVariant);
+          return const IconThemeData(size: 22, color: Color(0xFF98989D));
         }),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
+        color: const Color(0xFF1C1C1E),
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-          ),
+          borderRadius: BorderRadius.circular(14),
         ),
         clipBehavior: Clip.antiAlias,
+        margin: EdgeInsets.zero,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(14),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(14),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
       ),
-      dividerTheme: DividerThemeData(
-        color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+      dividerTheme: const DividerThemeData(
+        color: Color(0x3338383A),
         thickness: 0.5,
       ),
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       ),
-      progressIndicatorTheme: ProgressIndicatorThemeData(
-        circularTrackColor: colorScheme.surfaceContainerHighest,
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        circularTrackColor: Color(0xFF2C2C2E),
       ),
     );
   }

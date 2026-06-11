@@ -29,11 +29,15 @@ class Torrent {
   int seedsConnected;
   int peersTotal;
   int seedsTotal;
+  int leechers;
   int eta;
+  int multiSource;
   String? error;
+  String? site;
   String? savePath;
   DateTime? addedAt;
   DateTime? completedAt;
+  DateTime? lastActivity;
   List<String> trackers;
   List<String> trackerStatuses;
 
@@ -55,11 +59,15 @@ class Torrent {
     this.seedsConnected = 0,
     this.peersTotal = 0,
     this.seedsTotal = 0,
+    this.leechers = 0,
     this.eta = 0,
+    this.multiSource = 0,
     this.error,
+    this.site,
     this.savePath,
     this.addedAt,
     this.completedAt,
+    this.lastActivity,
     this.trackers = const [],
     this.trackerStatuses = const [],
   });

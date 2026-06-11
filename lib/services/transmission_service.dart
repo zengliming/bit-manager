@@ -6,6 +6,7 @@ import '../models/client_config.dart';
 import '../models/torrent.dart';
 import '../models/stats.dart';
 import '../utils/constants.dart';
+import '../utils/helpers.dart';
 import '../utils/http_client.dart';
 import 'torrent_client.dart';
 
@@ -153,6 +154,7 @@ class TransmissionService implements ITorrentClientService {
           'downloadDir',
           'addedDate',
           'doneDate',
+          'activityDate',
           'trackerList',
           'trackerStats',
         ],
@@ -185,8 +187,11 @@ class TransmissionService implements ITorrentClientService {
         ratio: (m['uploadRatio'] as num?)?.toDouble() ?? 0,
         peersConnected: (m['peersConnected'] as num?)?.toInt() ?? 0,
         seedsConnected: (m['peersSendingToUs'] as num?)?.toInt() ?? 0,
-        peersTotal: (m['peersConnected'] as num?)?.toInt() ?? 0,
-        seedsTotal: (m['peersSendingToUs'] as num?)?.toInt() ?? 0,
+        // Transmission 标准接口不返回 swarm 总做种/下载者数，置 0 避免给出错误的同源值
+        peersTotal: 0,
+        seedsTotal: 0,
+        // leechers 字段映射到已连接下载者数（peersGettingFromUs）
+        leechers: (m['peersGettingFromUs'] as num?)?.toInt() ?? 0,
         eta: (m['eta'] as num?)?.toInt() ?? 0,
         error: m['errorString'] as String?,
         savePath: m['downloadDir'] as String?,
@@ -199,6 +204,13 @@ class TransmissionService implements ITorrentClientService {
             (m['doneDate'] as num?) != null && (m['doneDate'] as int) > 0
             ? DateTime.fromMillisecondsSinceEpoch((m['doneDate'] as int) * 1000)
             : null,
+        lastActivity: (m['activityDate'] as num?) != null &&
+                (m['activityDate'] as int) > 0
+            ? DateTime.fromMillisecondsSinceEpoch((m['activityDate'] as int) * 1000)
+            : null,
+        site: extractSiteFromUrl(
+          _parseTrackerList(m['trackerList'] as String? ?? '').firstOrNull,
+        ),
         trackers: _parseTrackerList(m['trackerList'] as String? ?? ''),
         trackerStatuses: _parseTrackerStatuses(m['trackerStats']),
       );

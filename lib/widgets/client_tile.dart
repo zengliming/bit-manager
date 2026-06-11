@@ -20,30 +20,26 @@ class ClientTile extends StatelessWidget {
       opacity: _isOffline ? 0.55 : 1.0,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           border: _hasErrors
               ? const Border(
-                  left: BorderSide(color: Color(0xFFE53935), width: 4),
+                  left: BorderSide(color: Color(0xFFFF3B30), width: 4),
                 )
-              : Border.all(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.5,
-                  ),
-                ),
+              : null,
           color: theme.cardColor,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: theme.colorScheme.shadow.withValues(alpha: 0.06),
               blurRadius: 4,
-              offset: const Offset(0, 2),
+              offset: const Offset(0, 1),
             ),
           ],
         ),
         child: Material(
           color: Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
             onTap: _isOffline ? null : onTap,
             child: Padding(
               padding: const EdgeInsets.all(14),
@@ -67,8 +63,8 @@ class ClientTile extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: stats.online
-                                        ? const Color(0xFF4CAF50)
-                                        : const Color(0xFFE53935),
+                                        ? const Color(0xFF34C759)
+                                        : const Color(0xFFFF3B30),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -86,7 +82,8 @@ class ClientTile extends StatelessWidget {
                               '${stats.host}:${stats.port}',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[500],
+                                fontWeight: FontWeight.w400,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -103,7 +100,7 @@ class ClientTile extends StatelessWidget {
                                 Icon(
                                   Icons.arrow_downward,
                                   size: 14,
-                                  color: const Color(0xFF4CAF50),
+                                  color: const Color(0xFF34C759),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -111,7 +108,7 @@ class ClientTile extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xFF2E7D32),
+                                    color: Color(0xFF248A3D),
                                   ),
                                 ),
                               ],
@@ -123,7 +120,7 @@ class ClientTile extends StatelessWidget {
                                 Icon(
                                   Icons.arrow_upward,
                                   size: 14,
-                                  color: const Color(0xFF2196F3),
+                                  color: const Color(0xFF007AFF),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -131,7 +128,7 @@ class ClientTile extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xFF1565C0),
+                                    color: Color(0xFF0056CC),
                                   ),
                                 ),
                               ],
@@ -143,7 +140,7 @@ class ClientTile extends StatelessWidget {
                           '离线',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[400],
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -161,49 +158,49 @@ class ClientTile extends StatelessWidget {
                         _StatPill(
                           label: '做种',
                           value: stats.seedingCount.toString(),
-                          color: const Color(0xFF2196F3),
+                          color: const Color(0xFF007AFF),
                         ),
                         _StatPill(
                           label: '下载',
                           value: stats.downloadingCount.toString(),
-                          color: const Color(0xFF4CAF50),
+                          color: const Color(0xFF34C759),
                         ),
                         _StatPill(
                           label: '上传',
                           value: stats.uploadingCount.toString(),
-                          color: const Color(0xFF2196F3),
+                          color: const Color(0xFF007AFF),
                         ),
                         _StatPill(
                           label: '错误',
                           value: stats.errorCount.toString(),
                           color: stats.errorCount > 0
-                              ? const Color(0xFFE53935)
-                              : Colors.grey,
+                              ? const Color(0xFFFF3B30)
+                              : const Color(0xFF8E8E93),
                         ),
                         _StatPill(
                           label: '校验',
                           value: stats.checkingCount.toString(),
-                          color: const Color(0xFF9C27B0),
+                          color: const Color(0xFFAF52DE),
                         ),
                         _StatPill(
                           label: '等待',
                           value: stats.waitingCount.toString(),
-                          color: const Color(0xFF607D8B),
+                          color: const Color(0xFF8E8E93),
                         ),
                         _StatPill(
                           label: '暂停上传',
                           value: stats.pausedUpCount.toString(),
-                          color: Colors.grey,
+                          color: const Color(0xFF8E8E93),
                         ),
                         _StatPill(
                           label: '暂停下载',
                           value: stats.pausedDlCount.toString(),
-                          color: Colors.grey,
+                          color: const Color(0xFF8E8E93),
                         ),
                         _StatPill(
                           label: '剩余空间',
                           value: _formatBytes(stats.freeSpace),
-                          color: Colors.grey,
+                          color: const Color(0xFF8E8E93),
                         ),
                       ],
                     ),
@@ -257,7 +254,11 @@ class _StatPill extends StatelessWidget {
         children: [
           Text(
             '$label ',
-            style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           Text(
             value,

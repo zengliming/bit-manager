@@ -27,7 +27,7 @@ class LocalStorage {
     _initialized = true;
   }
 
-  // --- JSON 数组操作（用于客户端列表、RSS 源列表） ---
+  // --- JSON 数组操作（用于客户端列表） ---
 
   Future<List<Map<String, dynamic>>> getJsonList(String key) async {
     final raw = _prefs.getString(key);

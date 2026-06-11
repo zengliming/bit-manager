@@ -3,6 +3,7 @@ import '../models/client_config.dart';
 import '../models/torrent.dart';
 import '../models/stats.dart';
 import '../utils/constants.dart';
+import '../utils/helpers.dart';
 import '../utils/http_client.dart';
 import 'torrent_client.dart';
 
@@ -138,28 +139,35 @@ class QBittorrentService implements ITorrentClientService {
     final rawData = resp.data;
     final List<dynamic> rawList = (rawData is List) ? rawData : [];
     final torrents = <Torrent>[];
+
+    // 并行获取所有种子的 tracker 信息，避免 N+1 串行查询
+    final trackerResults = await Future.wait(
+      rawList.where((j) => (j is Map) && ((j['hash'] as String?)?.isNotEmpty ?? false)).map(
+        (json) async {
+          final hash = (json as Map<String, dynamic>)['hash'] as String;
+          try {
+            final infos = await getTrackers(config, hash);
+            return MapEntry(hash, infos);
+          } catch (_) {
+            return MapEntry(hash, <TrackerInfo>[]);
+          }
+        },
+      ),
+    );
+    final trackerByHash = <String, List<TrackerInfo>>{
+      for (final entry in trackerResults) entry.key: entry.value,
+    };
+
     for (final json in rawList) {
       final m = (json is Map<String, dynamic>) ? json : <String, dynamic>{};
       final hash = m['hash'] as String? ?? '';
-      final trackers =
-          (m['tracker'] as String?) != null &&
-              (m['tracker'] as String).isNotEmpty
-          ? [(m['tracker'] as String)]
-          : <String>[];
-      final trackerStatuses = <String>[];
-      if (hash.isNotEmpty) {
-        try {
-          final trackerInfos = await getTrackers(config, hash);
-          trackerStatuses.addAll(trackerInfos.map((tracker) => tracker.status));
-          if (trackers.isEmpty) {
-            trackers.addAll(
-              trackerInfos
-                  .map((tracker) => tracker.url)
-                  .where((url) => url.isNotEmpty),
-            );
-          }
-        } catch (_) {}
-      }
+      // 始终使用完整 tracker 列表（多 tracker 支持）
+      final trackerInfos = trackerByHash[hash] ?? const <TrackerInfo>[];
+      final trackers = trackerInfos
+          .map((t) => t.url)
+          .where((url) => url.isNotEmpty)
+          .toList();
+      final trackerStatuses = trackerInfos.map((t) => t.status).toList();
 
       torrents.add(
         Torrent(
@@ -180,8 +188,14 @@ class QBittorrentService implements ITorrentClientService {
           seedsConnected: (m['num_seeds'] as num?)?.toInt() ?? 0,
           peersTotal: (m['num_incomplete'] as num?)?.toInt() ?? 0,
           seedsTotal: (m['num_complete'] as num?)?.toInt() ?? 0,
+          // num_leechs 在 qB API 中实际是 swarm 中"未完成"的总下载者数；
+          // 已连接 peer 数应使用 num_leechs（已包含做种+下载者的连接数）。
+          // 真正 swarm 中下载者总数来自 num_incomplete，与 peersTotal 同源。
+          // leechers 字段对用户展示 swarw 中下载者总数，与 num_incomplete 同值。
+          leechers: (m['num_incomplete'] as num?)?.toInt() ?? 0,
           eta: (m['eta'] as num?)?.toInt() ?? 0,
           error: m['error'] as String?,
+          site: extractSiteFromUrl(m['tracker'] as String?),
           savePath: m['save_path'] as String?,
           trackers: trackers,
           trackerStatuses: trackerStatuses,
@@ -195,6 +209,12 @@ class QBittorrentService implements ITorrentClientService {
                   (m['completion_on'] as int) > 0
               ? DateTime.fromMillisecondsSinceEpoch(
                   (m['completion_on'] as int) * 1000,
+                )
+              : null,
+          lastActivity: (m['last_activity'] as num?) != null &&
+                  (m['last_activity'] as int) > 0
+              ? DateTime.fromMillisecondsSinceEpoch(
+                  (m['last_activity'] as int) * 1000,
                 )
               : null,
         ),
