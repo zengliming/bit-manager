@@ -56,6 +56,8 @@ void main() {
         'name': 'M-Team',
         'baseUrl': 'https://m-team.cc',
         'tags': ['电影', '综合'],
+        'aka': ['馒头', 'MTeam'],
+        'description': '综合性网站，有分享率要求',
         'iconAsset': 'assets/sites/icons/m-team.ico',
         'category': '影视',
       };
@@ -65,6 +67,8 @@ void main() {
       expect(preset.name, 'M-Team');
       expect(preset.baseUrl, 'https://m-team.cc');
       expect(preset.tags, ['电影', '综合']);
+      expect(preset.aka, ['馒头', 'MTeam']);
+      expect(preset.description, '综合性网站，有分享率要求');
       expect(preset.iconAsset, 'assets/sites/icons/m-team.ico');
       expect(preset.category, '影视');
     });

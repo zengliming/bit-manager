@@ -1,2872 +1,4347 @@
 [
     {
         "id":  "0magnet",
-        "name":  "0Magnet",
+        "baseUrl":  "https://16mag.net/",
         "tags":  [
-
+                     "成人",
+                     "XXX"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/0magnet.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "0Magnet",
+        "description":  "ØMagnet 是一个专注于高清电影和电视剧的私人种子站点，提供高质量的影视资源下载服务。",
+        "aka":  [
+                    "ØMagnet",
+                    "无极磁链"
+                ],
+        "iconAsset":  "assets/sites/icons/0magnet.ico"
     },
     {
         "id":  "1337x",
-        "name":  "1337x",
+        "baseUrl":  "https://1337x.is/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/1337x.ico",
-        "category":  "综合"
+        "category":  "公网",
+        "name":  "1337x",
+        "description":  "1337X is a Public torrent site that offers verified torrent downloads",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/1337x.ico"
     },
     {
         "id":  "13city",
-        "name":  "13city",
+        "baseUrl":  "https://13city.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/13city.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "13city",
+        "description":  "一切美好源于分享",
+        "aka":  [
+                    "13城"
+                ],
+        "iconAsset":  "assets/sites/icons/13city.ico"
     },
     {
         "id":  "1ptba",
-        "name":  "1PTBar",
+        "baseUrl":  "https://1ptba.com/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/1ptba.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "1PTBar",
+        "description":  "分享互联，收获快乐",
+        "aka":  [
+                    "壹PT"
+                ],
+        "iconAsset":  "assets/sites/icons/1ptba.ico"
     },
     {
         "id":  "2xfree",
-        "name":  "2xFree",
+        "baseUrl":  "https://pt.2xfree.org/",
         "tags":  [
-
+                     "综合",
+                     "VR",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/2xfree.png",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "2xFree",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/2xfree.png"
     },
     {
         "id":  "52movie",
-        "name":  "52movie",
+        "baseUrl":  "https://www.52movie.top/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "影视"
+        "category":  "影视",
+        "name":  "52movie",
+        "description":  "The Ultimate File Sharing Experience",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "52pt",
-        "name":  "52PT",
+        "baseUrl":  "https://52pt.site/",
         "tags":  [
-
+                     "高清",
+                     "电影",
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/52pt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "52PT",
+        "description":  "低调地在这个PT校园快乐成长 快乐分享",
+        "aka":  [
+                    "我爱PT"
+                ],
+        "iconAsset":  "assets/sites/icons/52pt.ico"
     },
     {
         "id":  "acgrip",
-        "name":  "ACG.RIP",
+        "baseUrl":  "https://acg.rip/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/acgrip.ico",
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "ACG.RIP",
+        "description":  "与动漫花园类似的日漫资源站点",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/acgrip.ico"
     },
     {
         "id":  "afun",
-        "name":  "Afun",
+        "baseUrl":  "https://www.ptlover.cc/",
         "tags":  [
-
+                     "综合",
+                     "电影",
+                     "电视剧",
+                     "纪录片",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/afun.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Afun",
+        "description":  "希望都能找到各自的兴趣、爱好、欢喜",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/afun.ico"
     },
     {
         "id":  "agsvpt",
-        "name":  "AGSVPT",
+        "baseUrl":  "https://pt.agsvpt.cn/",
         "tags":  [
-
+                     "综合",
+                     "短剧",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/agsvpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "AGSVPT",
+        "description":  "Arctic Global Seed Vault",
+        "aka":  [
+                    "末日种子库"
+                ],
+        "iconAsset":  "assets/sites/icons/agsvpt.png"
     },
     {
         "id":  "aidoruonline",
-        "name":  ") + td\"] },\r\n      joinTime: {\r\n        selector: [\"td.prof-lbl:contains(",
+        "baseUrl":  "https://aidoru-online.me/",
         "tags":  [
-
+                     "偶像"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/aidoruonline.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "Aidoru!Online",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/aidoruonline.ico"
     },
     {
         "id":  "aither",
-        "name":  "Aither",
+        "baseUrl":  "https://aither.cc/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/aither.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Aither",
+        "description":  null,
+        "aka":  [
+                    "ATH"
+                ],
+        "iconAsset":  "assets/sites/icons/aither.ico"
     },
     {
         "id":  "alingpt",
-        "name":  "alingPT",
+        "baseUrl":  "https://pt.aling.de/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/alingpt.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "alingPT",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/alingpt.ico"
     },
     {
         "id":  "alpharatio",
-        "name":  "AlphaRatio",
+        "baseUrl":  "https://alpharatio.cc/",
         "tags":  [
-
+                     "综合",
+                     "0day"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/alpharatio.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "AlphaRatio",
+        "description":  "AlphaRatio (AR) is a Private Torrent Tracker for 0DAY / GENERAL",
+        "aka":  [
+                    "AR"
+                ],
+        "iconAsset":  "assets/sites/icons/alpharatio.ico"
     },
     {
         "id":  "animebytes",
-        "name":  "Free",
+        "baseUrl":  "https://animebytes.tv/",
         "tags":  [
-
+                     "Free",
+                     "img[alt="
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/animebytes.ico",
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "AnimeBytes",
+        "description":  "AnimeBytes is a Private site. Powered by Tentacles",
+        "aka":  [
+                    "AB"
+                ],
+        "iconAsset":  "assets/sites/icons/animebytes.ico"
     },
     {
         "id":  "animelovers",
-        "name":  "ANIMELOVERS",
+        "baseUrl":  "https://animelovers.club/",
         "tags":  [
-
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "动漫"
+        "category":  "动漫",
+        "name":  "ANIMELOVERS",
+        "description":  null,
+        "aka":  [
+                    "动漫爱好者"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "animetosho",
-        "name":  "AnimeTosho",
+        "baseUrl":  "https://animetosho.org/",
         "tags":  [
-
+                     "动画",
+                     "漫画"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "动漫"
+        "category":  "动漫",
+        "name":  "AnimeTosho",
+        "description":  "AnimeTosho (AT) is an automated service that provides torrent files, magnet links and DDL for all anime releases",
+        "aka":  [
+                    "AT",
+                    "アニメ等所"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "anirena",
-        "name":  "AniRena",
+        "baseUrl":  "https://www.anirena.com/",
         "tags":  [
-
+                     "Anime"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/anirena.ico",
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "AniRena",
+        "description":  "AniRena is a Public torrent tracker for the latest anime and Japanese related torrents",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/anirena.ico"
     },
     {
         "id":  "anisource",
-        "name":  "AniSource",
+        "baseUrl":  "https://asnet.pw/",
         "tags":  [
-
+                     "Anime"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/anisource.ico",
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "AniSource",
+        "description":  "Download anime for free. High quality HD raws from Raws-4U, スカーRaws team (4U-Project) and Leopard-Raws.",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/anisource.ico"
     },
     {
         "id":  "anthelion",
-        "name":  "Feature Film",
+        "baseUrl":  "https://anthelion.me/",
         "tags":  [
-
+                     "电影"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/anthelion.ico",
-        "category":  "影视"
+        "category":  "影视",
+        "name":  "Anthelion",
+        "description":  "Anthelion (ANT) is a Private site for MOVIES",
+        "aka":  [
+                    "ANT"
+                ],
+        "iconAsset":  "assets/sites/icons/anthelion.ico"
     },
     {
         "id":  "asiancinema",
-        "name":  "AsianCinema",
+        "baseUrl":  "https://eiga.moi/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/asiancinema.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "AsianCinema",
+        "description":  "综合",
+        "aka":  [
+                    "ACM"
+                ],
+        "iconAsset":  "assets/sites/icons/asiancinema.ico"
     },
     {
         "id":  "asmrpt",
-        "name":  "ASMR PT",
+        "baseUrl":  "https://www.asmrpt.org/",
         "tags":  [
-
+                     "视频",
+                     "ASMR"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/asmrpt.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "ASMR PT",
+        "description":  "致力于成为最全ASMR PT社区",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/asmrpt.png"
     },
     {
         "id":  "audiences",
-        "name":  "Audiences",
+        "baseUrl":  "https://audiences.me/",
         "tags":  [
-
+                     "综合",
+                     "影视",
+                     "音乐",
+                     "电子书",
+                     "有声书",
+                     "体育",
+                     "游戏"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/audiences.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "Audiences",
+        "description":  "观众",
+        "aka":  [
+                    "观众",
+                    "人人人"
+                ],
+        "iconAsset":  "assets/sites/icons/audiences.ico"
     },
     {
         "id":  "audiobookbay",
-        "name":  "(Post)apocalyptic",
+        "baseUrl":  "https://audiobookbay.lu/",
         "tags":  [
-
+                     "有声书"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/audiobookbay.png",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "AudioBook Bay",
+        "description":  "AudioBook Bay (ABB) is a Public Torrent Tracker for AUDIOBOOKS",
+        "aka":  [
+                    "ABB"
+                ],
+        "iconAsset":  "assets/sites/icons/audiobookbay.png"
     },
     {
         "id":  "audionews",
-        "name":  "AudioNews",
+        "baseUrl":  "https://audionews.org/",
         "tags":  [
-
+                     "软件",
+                     "0day",
+                     "素材",
+                     "学习",
+                     "音乐制作"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/audionews.ico",
-        "category":  "音乐"
+        "category":  "音乐",
+        "name":  "AudioNews",
+        "description":  "AudioNews (AN) is a Private Torrent Tracker for AUDIO SOFTWARE / SAMPLES / ETC",
+        "aka":  [
+                    "AN"
+                ],
+        "iconAsset":  "assets/sites/icons/audionews.ico"
     },
     {
         "id":  "avgv",
-        "name":  "鐖辫枃缃?,\r\n  aka: [",
+        "baseUrl":  "https://avgv.cc/",
         "tags":  [
-
+                     "成人",
+                     "AV",
+                     "GAY",
+                     "LES"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/avgv.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "爱薇网",
+        "description":  "新加坡华人PT站，很有特色。",
+        "aka":  [
+                    "AVGV"
+                ],
+        "iconAsset":  "assets/sites/icons/avgv.ico"
     },
     {
         "id":  "avistaz",
-        "name":  "AvistaZ",
+        "baseUrl":  "https://avistaz.to/",
         "tags":  [
-
+                     "电影",
+                     "电视剧",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/avistaz.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "AvistaZ",
+        "description":  "AvistaZ (AsiaTorrents) is a Private Torrent Tracker for ASIAN MOVIES / TV / GENERAL",
+        "aka":  [
+                    "Avz"
+                ],
+        "iconAsset":  "assets/sites/icons/avistaz.png"
     },
     {
         "id":  "awesomehd",
-        "name":  "Awesome-HD",
+        "baseUrl":  "https://awesome-hd.me/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/awesomehd.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Awesome-HD",
+        "description":  null,
+        "aka":  [
+                    "AHD"
+                ],
+        "iconAsset":  "assets/sites/icons/awesomehd.ico"
     },
     {
         "id":  "azusa",
-        "name":  "姊撳柕",
+        "baseUrl":  "https://azusa.wiki/",
         "tags":  [
-
+                     "漫画",
+                     "轻小说",
+                     "Galgame",
+                     "画集"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "梓喵",
+        "description":  null,
+        "aka":  [
+                    "Azusa"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "baconbits",
-        "name":  "baconBits",
+        "baseUrl":  "https://baconbits.org/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/baconbits.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "baconBits",
+        "description":  "bB is a Private Torrent Tracker for 0DAY / GENERAL",
+        "aka":  [
+                    "bB"
+                ],
+        "iconAsset":  "assets/sites/icons/baconbits.ico"
     },
     {
         "id":  "bakabt",
-        "name":  "BakaBT",
+        "baseUrl":  "https://bakabt.me/",
         "tags":  [
-
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/bakabt.png",
-        "category":  "教育"
+        "category":  "动漫",
+        "name":  "BakaBT",
+        "description":  "BakaBT is a Private site for the Anime Community",
+        "aka":  [
+                    "BBT"
+                ],
+        "iconAsset":  "assets/sites/icons/bakabt.png"
     },
     {
         "id":  "baozi",
-        "name":  "鍖呭瓙",
+        "baseUrl":  "https://p.t-baozi.cc/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/baozi.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "包子",
+        "description":  "包子PT。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/baozi.png"
     },
     {
         "id":  "beitai",
-        "name":  "澶囪儙",
+        "baseUrl":  "https://www.beitai.pt/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "备胎",
+        "description":  "找不到家时，接纳无家可归的人",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "beyondhd",
-        "name":  "BeyondHD",
+        "baseUrl":  "https://beyond-hd.me/",
         "tags":  [
-
+                     "电影",
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/beyondhd.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "BeyondHD",
+        "description":  "Beyond Your Imagination, BeyondHD is a community-built Movie/TV database.",
+        "aka":  [
+                    "BHD"
+                ],
+        "iconAsset":  "assets/sites/icons/beyondhd.ico"
     },
     {
         "id":  "bitporn",
-        "name":  "BitPorn",
+        "baseUrl":  "https://bitporn.eu/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/bitporn.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "BitPorn",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/bitporn.ico"
     },
     {
         "id":  "bitpt",
-        "name":  "鏋侀€熶箣鏄?,\r\n  description: ",
+        "baseUrl":  "https://bitpt.cn/",
         "tags":  [
-
+                     "教育网",
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/bitpt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "极速之星",
+        "description":  "极速之星IPV6资源交流平台",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/bitpt.ico"
     },
     {
         "id":  "blutopia",
-        "name":  "Blutopia",
+        "baseUrl":  "https://blutopia.cc/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/blutopia.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Blutopia",
+        "description":  null,
+        "aka":  [
+                    "BLU"
+                ],
+        "iconAsset":  "assets/sites/icons/blutopia.ico"
     },
     {
         "id":  "broadcasthenet",
-        "name":  "BroadcastTheNet",
+        "baseUrl":  "https://broadcasthe.net/",
         "tags":  [
-
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "BroadcastTheNet",
+        "description":  "BroadcastTheNet is a private tracker for TV shows.",
+        "aka":  [
+                    "BTN"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "brokenstones",
-        "name":  "MacOS Apps",
+        "baseUrl":  "https://brokenstones.is/",
         "tags":  [
-
+                     "软件",
+                     "游戏"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/brokenstones.ico",
-        "category":  "综合"
+        "category":  "软件",
+        "name":  "BrokenStones",
+        "description":  "Broken Stones is a Private site for MacOS and iOS APPS / GAMES",
+        "aka":  [
+                    "BRKs"
+                ],
+        "iconAsset":  "assets/sites/icons/brokenstones.ico"
     },
     {
         "id":  "btetree",
-        "name":  "BT.etree",
+        "baseUrl":  "https://bt.etree.org/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/btetree.ico",
-        "category":  "教育"
+        "category":  "音乐",
+        "name":  "BT.etree",
+        "description":  "BT.etree is a Public Tracker dedicated to Bootleg FLAC MUSIC",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/btetree.ico"
     },
     {
         "id":  "btschool",
-        "name":  "BTSCHOOL",
+        "baseUrl":  "https://pt.btschool.club/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "学习"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/btschool.ico",
-        "category":  "教育"
+        "category":  "影视",
+        "name":  "BTSCHOOL",
+        "description":  "汇聚每一个人的影响力",
+        "aka":  [
+                    "学校"
+                ],
+        "iconAsset":  "assets/sites/icons/btschool.ico"
     },
     {
         "id":  "byrbt",
-        "name":  "鍖楅偖浜?BYRBT",
+        "baseUrl":  "https://byr.pt/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/byrbt.ico",
-        "category":  "教育"
+        "category":  "影视",
+        "name":  "北邮人-BYRBT",
+        "description":  "著名教育网PT站点（仅支持ipv6访问与下载），有10大类资源，资源更新快，保种好。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/byrbt.ico"
     },
     {
         "id":  "capybarabr",
-        "name":  "CapybaraBR",
+        "baseUrl":  "https://capybarabr.com/",
         "tags":  [
-
+                     "巴西"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/capybarabr.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "CapybaraBR",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/capybarabr.ico"
     },
     {
         "id":  "carpt",
-        "name":  "CarPT",
+        "baseUrl":  "https://carpt.net/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "CarPT",
+        "description":  "=链接@分享=",
+        "aka":  [
+                    "车PT",
+                    "车站"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "cathoderaytube",
-        "name":  "Cathode-Ray.Tube",
+        "baseUrl":  "https://www.cathode-ray.tube/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cathoderaytube.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Cathode-Ray.Tube",
+        "description":  "Cathode-Ray.Tube (CRT) is a Private Torrent Tracker for CLASSIC MOVIES / TV",
+        "aka":  [
+                    "CRT"
+                ],
+        "iconAsset":  "assets/sites/icons/cathoderaytube.ico"
     },
     {
         "id":  "cbg",
-        "name":  "钘忓疂闃?,\r\n  aka: [",
+        "baseUrl":  "https://cangbao.ge/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "藏宝阁",
+        "description":  "开启藏宝阁，解锁你的光影世界，分享每一份热爱！",
+        "aka":  [
+                    "藏宝阁",
+                    "cbg",
+                    "CangBaoGe"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ccfbits",
-        "name":  "CCFBits",
+        "baseUrl":  "https://ccfbits.org/",
         "tags":  [
-
+                     "影视",
+                     "剧集",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ccfbits.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "CCFBits",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ccfbits.ico"
     },
     {
         "id":  "cdfile",
-        "name":  "CD File",
+        "baseUrl":  "https://pt.cdfile.org/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "CD File",
+        "description":  "专注于Blu-Ray、DVD、CD等高品质光盘镜像资源，致力于打造光盘档案室",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "cdy",
-        "name":  "浼犻亾闄?,\r\n  description: ",
+        "baseUrl":  "https://pt.cdy.skin/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "传道院",
+        "description":  "道可道，非常道，摆烂。",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "cgpeers",
-        "name":  "split",
+        "baseUrl":  "https://cgpeers.to/",
         "tags":  [
-
+                     "设计",
+                     "教育",
+                     "软件",
+                     "学习",
+                     "素材"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cgpeers.ico",
-        "category":  "综合"
+        "category":  "教育",
+        "name":  "CGPeers",
+        "description":  "CGPeers 是一个专注于计算机图形资源的私有站点",
+        "aka":  [
+                    "CGP"
+                ],
+        "iconAsset":  "assets/sites/icons/cgpeers.ico"
     },
     {
         "id":  "chdbits",
-        "name":  "CHDBits",
+        "baseUrl":  "https://ptchdbits.co/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/chdbits.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "CHDBits",
+        "description":  "彩虹岛",
+        "aka":  [
+                    "彩虹岛",
+                    "CHD"
+                ],
+        "iconAsset":  "assets/sites/icons/chdbits.ico"
     },
     {
         "id":  "cinemageddon",
-        "name":  "Cinemageddon",
+        "baseUrl":  "https://cinemageddon.net/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cinemageddon.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Cinemageddon",
+        "description":  "Cinemageddon is a Private Torrent Tracker for B-movies",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/cinemageddon.ico"
     },
     {
         "id":  "cinematik",
-        "name":  "Cinematik",
+        "baseUrl":  "https://cinematik.net/",
         "tags":  [
-
+                     "影视,原盘"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cinematik.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Cinematik",
+        "description":  null,
+        "aka":  [
+                    "tik"
+                ],
+        "iconAsset":  "assets/sites/icons/cinematik.ico"
     },
     {
         "id":  "cinemaz",
-        "name":  "CinemaZ",
+        "baseUrl":  "https://cinemaz.to/",
         "tags":  [
-
+                     "电影",
+                     "电视剧",
+                     "外语"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cinemaz.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "CinemaZ",
+        "description":  "CinemaZ is a Private Torrent Tracker for FOREIGN NON-ENGLISH MOVIES / TV / GENERAL",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/cinemaz.png"
     },
     {
         "id":  "clearjav",
-        "name":  "ClearJAV",
+        "baseUrl":  "https://clearjav.com/",
         "tags":  [
-
+                     "成人",
+                     "xxx"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "ClearJAV",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "cnlang",
-        "name":  "鍥借瑙嗙晫",
+        "baseUrl":  "https://cnlang.org/",
         "tags":  [
-
+                     "特效字幕",
+                     "国语音轨"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cnlang.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "国语视界",
+        "description":  "国语视界音轨组，特效字幕组官方首发论坛，国语音轨和特效字幕的分享基地，蓝光DIY和4K电影爱好者的乐园。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/cnlang.ico"
     },
     {
         "id":  "cnscg",
-        "name":  "鍦ｅ煄瀹跺洯PT",
+        "baseUrl":  "https://www.cnscg.club/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "圣城家园PT",
+        "description":  "hdscg，cnscg圣城家园PT站点",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "crabpt",
-        "name":  "CrabPt",
+        "baseUrl":  "https://crabpt.vip/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/crabpt.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "CrabPt",
+        "description":  null,
+        "aka":  [
+                    "蟹黄堡"
+                ],
+        "iconAsset":  "assets/sites/icons/crabpt.ico"
     },
     {
         "id":  "cspt",
-        "name":  "璐㈢",
+        "baseUrl":  "https://cspt.top/",
         "tags":  [
-
+                     "中文",
+                     "综合",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cspt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "财神",
+        "description":  "财神到，八方来财！",
+        "aka":  [
+                    "CSPT"
+                ],
+        "iconAsset":  "assets/sites/icons/cspt.ico"
     },
     {
         "id":  "cyanbug",
-        "name":  "CyanBug",
+        "baseUrl":  "https://cyanbug.net/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/cyanbug.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "CyanBug",
+        "description":  "大青虫们在此聚集",
+        "aka":  [
+                    "大青虫"
+                ],
+        "iconAsset":  "assets/sites/icons/cyanbug.ico"
     },
     {
         "id":  "dajiao",
-        "name":  "DAJIAO",
+        "baseUrl":  "https://dajiao.cyou/",
         "tags":  [
-
+                     "综合",
+                     "纪录片"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/dajiao.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "DAJIAO",
+        "description":  "打胶",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/dajiao.png"
     },
     {
         "id":  "desigaane",
-        "name":  "DesiGaane",
+        "baseUrl":  "https://desigaane.rocks/",
         "tags":  [
-
+                     "音楽",
+                     "印度音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "DesiGaane",
+        "description":  "DesiGaane is a private tracker focused on Indian music",
+        "aka":  [
+                    "DG"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "dhtclub",
-        "name":  "DHTCLUB PT",
+        "baseUrl":  "https://pt.dhtclub.com/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/dhtclub.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "DHTCLUB PT",
+        "description":  "The Ultimate File Sharing Experience",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/dhtclub.ico"
     },
     {
         "id":  "dicmusic",
-        "name":  "DICMusic",
+        "baseUrl":  "https://dicmusic.com/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "音乐"
+        "category":  "音乐",
+        "name":  "DICMusic",
+        "description":  "DICMusic 是一个专注于音乐的中文 Gazelle 站点",
+        "aka":  [
+                    "DIC",
+                    "海豚"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "digitalcore",
-        "name":  "split",
+        "baseUrl":  "https://digitalcore.club/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/digitalcore.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "DigitalCore",
+        "description":  "In a world of sharing, people make the difference.",
+        "aka":  [
+                    "DC",
+                    "DCC"
+                ],
+        "iconAsset":  "assets/sites/icons/digitalcore.ico"
     },
     {
         "id":  "discfan",
-        "name":  "DiscFan",
+        "baseUrl":  "https://discfan.net/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/discfan.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "DiscFan",
+        "description":  "碟粉",
+        "aka":  [
+                    "碟粉"
+                ],
+        "iconAsset":  "assets/sites/icons/discfan.ico"
     },
     {
         "id":  "dmhy",
-        "name":  "鍕曟极鑺卞湌璩囨簮缍?,\r\n  aka: [",
+        "baseUrl":  "https://share.dmhy.org/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "公网",
+        "name":  "動漫花園資源網",
+        "description":  "動漫花園資訊網是一個動漫愛好者交流的平台,提供最及時,最全面的動畫,漫畫,動漫音樂,動漫下載,BT,ED,動漫遊戲,資訊,分享,交流,讨论.",
+        "aka":  [
+                    "動漫花園",
+                    "DMHY"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "dragonhd",
-        "name":  "榫嶄箣瀹?,\r\n  aka: [",
+        "baseUrl":  "https://www.dragonhd.xyz/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/dragonhd.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "龍之家",
+        "description":  "龍之傳人皆兄弟",
+        "aka":  [
+                    "DragonHD"
+                ],
+        "iconAsset":  "assets/sites/icons/dragonhd.ico"
     },
     {
         "id":  "dstudio",
-        "name":  "Depth Studio",
+        "baseUrl":  "https://dstudio.me/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Depth Studio",
+        "description":  "本站主打海外WEB-DL追更",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "dubhe",
-        "name":  "澶╂灑",
+        "baseUrl":  "https://dubhe.site/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/dubhe.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "天枢",
+        "description":  "七星图，始于天枢",
+        "aka":  [
+                    "Dubhe"
+                ],
+        "iconAsset":  "assets/sites/icons/dubhe.ico"
     },
     {
         "id":  "dxdhd",
-        "name":  "DXDHD",
+        "baseUrl":  "https://dxdhd.com/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "DXDHD",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ecustpt",
-        "name":  "ECUSTPT",
+        "baseUrl":  "https://pt.ecust.pp.ua/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ecustpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "ECUSTPT",
+        "description":  "华东理工大学PT站，逢考必过",
+        "aka":  [
+                    "花梨月下"
+                ],
+        "iconAsset":  "assets/sites/icons/ecustpt.png"
     },
     {
         "id":  "ehentai",
-        "name":  "E-Hentai",
+        "baseUrl":  "https://e-hentai.org/",
         "tags":  [
-
+                     "漫画",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ehentai.ico",
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "E-Hentai",
+        "description":  "E-Hentai is a Public site for Hentai doujinshi, manga.",
+        "aka":  [
+                    "EH"
+                ],
+        "iconAsset":  "assets/sites/icons/ehentai.ico"
     },
     {
         "id":  "empornium",
-        "name":  "Empornium",
+        "baseUrl":  "https://emparadise.rs/",
         "tags":  [
-
+                     "成人",
+                     "XXX"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/empornium.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "Empornium",
+        "description":  "Empornium (EMP) is a Private Torrent Tracker for 3X.",
+        "aka":  [
+                    "EMP"
+                ],
+        "iconAsset":  "assets/sites/icons/empornium.ico"
     },
     {
         "id":  "exoticaz",
-        "name":  "ExoticaZ",
+        "baseUrl":  "https://exoticaz.to/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/exoticaz.png",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "ExoticaZ",
+        "description":  "ExoticaZ (YourExotic) is a Private Torrent Tracker of AvistaZ Network for porn",
+        "aka":  [
+                    "Exo",
+                    "YourExotic"
+                ],
+        "iconAsset":  "assets/sites/icons/exoticaz.png"
     },
     {
         "id":  "exttorrents",
-        "name":  "EXT Torrents",
+        "baseUrl":  "https://ext.to/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/exttorrents.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "EXT Torrents",
+        "description":  "EXT Torrents is a Public torrent site for MOVIES / TV / GENERAL",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/exttorrents.png"
     },
     {
         "id":  "fearnopeer",
-        "name":  "FearNoPeer",
+        "baseUrl":  "https://fearnopeer.com/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/fearnopeer.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "FearNoPeer",
+        "description":  "FearNoPear is a Private Torrent Tracker for MOVIES / TV / GENERAL",
+        "aka":  [
+                    "FNP"
+                ],
+        "iconAsset":  "assets/sites/icons/fearnopeer.ico"
     },
     {
         "id":  "filelist",
-        "name":  "FileList",
+        "baseUrl":  "https://filelist.io/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "FileList",
+        "description":  "罗马尼亚最大的站点",
+        "aka":  [
+                    "FL"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "filept",
-        "name":  "Filept",
+        "baseUrl":  "https://www.filept.com/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Filept",
+        "description":  "The Ultimate File Sharing Experience",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "freefarm",
-        "name":  "鑷敱鍐滃満",
+        "baseUrl":  "https://pt.0ff.cc/",
         "tags":  [
-
+                     "电视剧",
+                     "韩剧",
+                     "日剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/freefarm.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "自由农场",
+        "description":  "自由农场",
+        "aka":  [
+                    "FreeFarm",
+                    "Farmm"
+                ],
+        "iconAsset":  "assets/sites/icons/freefarm.ico"
     },
     {
         "id":  "fsm",
-        "name":  "灏佺鐢ㄦ埛",
+        "baseUrl":  "https://fsm.name/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/fsm.jpg",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "FSM",
+        "description":  "FSM（飞天拉面神教）是一家专注于R18内容的PT站点，需要配置搜索入口才可搜索",
+        "aka":  [
+                    "飞天拉面神教"
+                ],
+        "iconAsset":  "assets/sites/icons/fsm.jpg"
     },
     {
         "id":  "gainbound",
-        "name":  "涓愬府",
+        "baseUrl":  "https://gainbound.net/",
         "tags":  [
-
+                     "高清",
+                     "电影",
+                     "纪录片"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/gainbound.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "丐帮",
+        "description":  "降龙掌青竹杖 美酒佳肴来作伴",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/gainbound.ico"
     },
     {
         "id":  "gazellegames",
-        "name":  "GazelleGames",
+        "baseUrl":  "https://gazellegames.net/",
         "tags":  [
-
+                     "游戏"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/gazellegames.ico",
-        "category":  "游戏"
+        "category":  "游戏",
+        "name":  "GazelleGames",
+        "description":  "GazelleGames is a Private gaming tracker",
+        "aka":  [
+                    "GGn"
+                ],
+        "iconAsset":  "assets/sites/icons/gazellegames.ico"
     },
     {
         "id":  "gfxpeers",
-        "name":  "GFXPeers",
+        "baseUrl":  "https://gfxpeers.net/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/gfxpeers.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "GFXPeers",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/gfxpeers.ico"
     },
     {
         "id":  "ggpt",
-        "name":  "GGPT",
+        "baseUrl":  "https://www.gamegamept.com/",
         "tags":  [
-
+                     "游戏"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "游戏",
+        "name":  "GGPT",
+        "description":  "gamegamept.com",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "greatposterwall",
-        "name":  "75%",
+        "baseUrl":  "https://greatposterwall.com/",
         "tags":  [
-
+                     "电影"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/greatposterwall.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "GreatPosterWall",
+        "description":  "GPW 全名 Great Poster Wall，结合了长城（the Great Wall）、海报墙（Poster Wall）两个词，同时，「海报」谐音「海豹」，所以大家可以在 Logo 上看到一只萌萌的小海豹",
+        "aka":  [
+                    "海豹",
+                    "GPW"
+                ],
+        "iconAsset":  "assets/sites/icons/greatposterwall.png"
     },
     {
         "id":  "gtnet",
-        "name":  "Gay-Torrents.net",
+        "baseUrl":  "https://www.gay-torrents.net/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/gtnet.gif",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "Gay-Torrents.net",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/gtnet.gif"
     },
     {
         "id":  "gtorg",
-        "name":  "Gay-Torrents.Org",
+        "baseUrl":  "https://gay-torrents.org/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/gtorg.png",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "Gay-Torrents.Org",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/gtorg.png"
     },
     {
         "id":  "gtru",
-        "name":  "GayTorrent.ru",
+        "baseUrl":  "https://www.gaytor.rent/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/gtru.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "GayTorrent.ru",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/gtru.ico"
     },
     {
         "id":  "haidan",
-        "name":  "娴疯儐",
+        "baseUrl":  "https://www.haidan.cc/",
         "tags":  [
-
+                     "电影",
+                     "电视剧",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/haidan.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "海胆",
+        "description":  null,
+        "aka":  [
+                    "海胆之家",
+                    "HaiDan"
+                ],
+        "iconAsset":  "assets/sites/icons/haidan.png"
     },
     {
         "id":  "happyfappy",
-        "name":  "HappyFappy",
+        "baseUrl":  "https://www.happyfappy.net/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/happyfappy.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "HappyFappy",
+        "description":  null,
+        "aka":  [
+                    "HF"
+                ],
+        "iconAsset":  "assets/sites/icons/happyfappy.ico"
     },
     {
         "id":  "hares",
-        "name":  "HaresClub",
+        "baseUrl":  "https://club.hares.top/",
         "tags":  [
-
+                     "影视",
+                     "纪录片",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hares.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HaresClub",
+        "description":  "2160p/4k 及以上的高清资源站点",
+        "aka":  [
+                    "白兔",
+                    "白兔俱乐部"
+                ],
+        "iconAsset":  "assets/sites/icons/hares.png"
     },
     {
         "id":  "hd4fans",
-        "name":  "HD4FANS",
+        "baseUrl":  "https://pt.hd4fans.org/",
         "tags":  [
-
+                     "影视",
+                     "兽组"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HD4FANS",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hd4free",
-        "name":  "HD4Free",
+        "baseUrl":  "https://hd4.xyz/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hd4free.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HD4Free",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hd4free.ico"
     },
     {
         "id":  "hdai",
-        "name":  "HDAI",
+        "baseUrl":  "https://www.hd.ai/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdai.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDAI",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hdai.png"
     },
     {
         "id":  "hdarea",
-        "name":  "HDArea",
+        "baseUrl":  "https://hdarea.club/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDArea",
+        "description":  null,
+        "aka":  [
+                    "高清视界",
+                    "好大"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdatmos",
-        "name":  "HDATMOS",
+        "baseUrl":  "https://hdatmos.club/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDATMOS",
+        "description":  null,
+        "aka":  [
+                    "阿童木"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdbao",
-        "name":  "HDBao",
+        "baseUrl":  "https://hdbao.cc/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "HDBao",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdbits",
-        "name":  "HDBits",
+        "baseUrl":  "https://hdbits.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdbits.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDBits",
+        "description":  "HDBits is a Private site for the HighDefinition Bittorrent Community",
+        "aka":  [
+                    "HDB"
+                ],
+        "iconAsset":  "assets/sites/icons/hdbits.ico"
     },
     {
         "id":  "hdchina",
-        "name":  "HDChina",
+        "baseUrl":  "https://hdchina.org/",
         "tags":  [
-
+                     "影视",
+                     "音乐",
+                     "纪录片",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdchina.jpg",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "HDChina",
+        "description":  "高清影音人士分享乐园",
+        "aka":  [
+                    "瓷器"
+                ],
+        "iconAsset":  "assets/sites/icons/hdchina.jpg"
     },
     {
         "id":  "hdcity",
-        "name":  "澶╀娇",
+        "baseUrl":  "https://hdcity.city/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdcity.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDCity",
+        "description":  null,
+        "aka":  [
+                    "城市"
+                ],
+        "iconAsset":  "assets/sites/icons/hdcity.png"
     },
     {
         "id":  "hdclone",
-        "name":  "HDClone",
+        "baseUrl":  "https://pt.hdclone.top/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdclone.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "HDClone",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hdclone.ico"
     },
     {
         "id":  "hddisk",
-        "name":  "HDDisk",
+        "baseUrl":  "https://hddisk.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDDisk",
+        "description":  null,
+        "aka":  [
+                    "HDD"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hddolby",
-        "name":  "HD Dolby",
+        "baseUrl":  "https://www.hddolby.com/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hddolby.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HD Dolby",
+        "description":  "高清杜比",
+        "aka":  [
+                    "高清杜比"
+                ],
+        "iconAsset":  "assets/sites/icons/hddolby.ico"
     },
     {
         "id":  "hdfans",
-        "name":  "HDFans",
+        "baseUrl":  "https://hdfans.org/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDFans",
+        "description":  "与志同道合之人前行 分享更多值得珍藏的资源",
+        "aka":  [
+                    "红豆饭"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdhome",
-        "name":  "绂佽浆",
+        "baseUrl":  "https://hdhome.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDHome",
+        "description":  null,
+        "aka":  [
+                    "家园"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdkylin",
-        "name":  "HDKylin",
+        "baseUrl":  "https://www.hdkyl.in/",
         "tags":  [
-
+                     "综合",
+                     "电影",
+                     "电视剧",
+                     "纪录片"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdkylin.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDKylin",
+        "description":  "与志同道合之人前行 分享更多值得珍藏的资源",
+        "aka":  [
+                    "麒麟"
+                ],
+        "iconAsset":  "assets/sites/icons/hdkylin.png"
     },
     {
         "id":  "hdmayi",
-        "name":  "HDmayi",
+        "baseUrl":  "http://hdmayi.com/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdmayi.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDmayi",
+        "description":  "非商业,有电影情怀,真电影爱好者",
+        "aka":  [
+                    "小蚂蚁PT",
+                    "XiaoMayi"
+                ],
+        "iconAsset":  "assets/sites/icons/hdmayi.ico"
     },
     {
         "id":  "hdpost",
-        "name":  "HDPOST",
+        "baseUrl":  "https://pt.hdpost.top/",
         "tags":  [
-
+                     "电影",
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdpost.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDPOST",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hdpost.png"
     },
     {
         "id":  "hdpt",
-        "name":  "鏄庢暀",
+        "baseUrl":  "https://hdpt.xyz/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "明教",
+        "description":  "综合性的PT论坛    欢迎您的加入！",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdroute",
-        "name":  "HDRoute",
-        "tags":  [
-
-                 ],
         "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdroute.ico",
-        "category":  "综合"
+        "tags":  [
+                     "影视",
+                     "综合"
+                 ],
+        "category":  "影视",
+        "name":  "HDRoute",
+        "description":  "HDRoute - 高清影视资源站点",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hdroute.ico"
     },
     {
         "id":  "hdsky",
-        "name":  "User",
+        "baseUrl":  "https://hdsky.me/",
         "tags":  [
-
+                     "影视",
+                     "纪录片",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdsky.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDSky",
+        "description":  "高清发烧友后花园PT",
+        "aka":  [
+                    "HDS",
+                    "天空"
+                ],
+        "iconAsset":  "assets/sites/icons/hdsky.png"
     },
     {
         "id":  "hdspace",
-        "name":  "parseTime",
+        "baseUrl":  "https://hd-space.org/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdspace.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HD-Space",
+        "description":  "HD-Space (HDS) is a Private Torrent Tracker for HD MOVIES / TV",
+        "aka":  [
+                    "HD-S"
+                ],
+        "iconAsset":  "assets/sites/icons/hdspace.ico"
     },
     {
         "id":  "hdstreet",
-        "name":  "楂樻竻琛?,\r\n  description: ",
+        "baseUrl":  "https://hdstreet.club/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdstreet.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "高清街",
+        "description":  "高清街专注于华语影视俱乐部",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hdstreet.ico"
     },
     {
         "id":  "hdtime",
-        "name":  "HDTime",
+        "baseUrl":  "https://hdtime.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDTime",
+        "description":  "HDTime, time to forever!",
+        "aka":  [
+                    "时间",
+                    "时光"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdtorrents",
-        "name":  "HD-Torrents",
+        "baseUrl":  "https://hd-torrents.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdtorrents.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HD-Torrents",
+        "description":  "HD-Torrents is a private tracker for HD content.",
+        "aka":  [
+                    "HDT"
+                ],
+        "iconAsset":  "assets/sites/icons/hdtorrents.ico"
     },
     {
         "id":  "hdupt",
-        "name":  "HDU",
+        "baseUrl":  "https://pt.hdupt.com/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDU",
+        "description":  "这是一个尊重版权的私有资源PT分享站点HDU。高清有你，你有UPXIN",
+        "aka":  [
+                    "好多油"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hdvideo",
-        "name":  "HDVideo",
+        "baseUrl":  "https://hdvideo.top/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hdvideo.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "HDVideo",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hdvideo.png"
     },
     {
         "id":  "hdzone",
-        "name":  "HDZone",
+        "baseUrl":  "https://hdfun.me/",
         "tags":  [
-
+                     "电影"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HDZone",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "hhanclub",
-        "name":  "鎲ㄦ啫",
+        "baseUrl":  "https://hhanclub.net/",
         "tags":  [
-
+                     "电影",
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hhanclub.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "憨憨",
+        "description":  null,
+        "aka":  [
+                    "HHanClub"
+                ],
+        "iconAsset":  "assets/sites/icons/hhanclub.png"
     },
     {
         "id":  "hitpt",
-        "name":  "鐧惧窛PT",
+        "baseUrl":  "https://www.hitpt.com/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hitpt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "百川PT",
+        "description":  "校内10兆高速下载，优质高清资源共享！",
+        "aka":  [
+                    "百川PT"
+                ],
+        "iconAsset":  "assets/sites/icons/hitpt.ico"
     },
     {
         "id":  "hspt",
-        "name":  "鍥炲０PT",
+        "baseUrl":  "https://hspt.club/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hspt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "回声PT",
+        "description":  "近来可好？",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hspt.png"
     },
     {
         "id":  "htpt",
-        "name":  "娴锋PT",
+        "baseUrl":  "https://www.htpt.cc/",
         "tags":  [
-
+                     "曲艺",
+                     "小品",
+                     "有声小说"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/htpt.png",
-        "category":  "综合"
+        "category":  "电子书",
+        "name":  "海棠PT",
+        "description":  "主打曲艺、戏曲、相声、评书、小品、广播剧、有声小说等中国传统有声资源",
+        "aka":  [
+                    "海棠曲艺园",
+                    "海棠"
+                ],
+        "iconAsset":  "assets/sites/icons/htpt.png"
     },
     {
         "id":  "hudbt",
-        "name":  "铦磋澏-HUDBT",
+        "baseUrl":  "https://hudbt.hust.edu.cn/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hudbt.png",
-        "category":  "教育"
+        "category":  "影视",
+        "name":  "蝴蝶-HUDBT",
+        "description":  "HUDBT,教育网高速IPv6BT下载站。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/hudbt.png"
     },
     {
         "id":  "huno",
-        "name":  "HUNO",
+        "baseUrl":  "https://hawke.uno/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/huno.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "HUNO",
+        "description":  "HAWKE-UNO IS A HAWKE-ONE SERVICE POWERED BY UNIT3D.",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/huno.ico"
     },
     {
         "id":  "hxpt",
-        "name":  "濂藉",
+        "baseUrl":  "https://www.hxpt.org/",
         "tags":  [
-
+                     "学习"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/hxpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "好学",
+        "description":  "好学者如春苗，日有所长；心向学，梦有光！",
+        "aka":  [
+                    "HXPT"
+                ],
+        "iconAsset":  "assets/sites/icons/hxpt.png"
     },
     {
         "id":  "ianon",
-        "name":  "iAnon",
+        "baseUrl":  "https://ianon.app/",
         "tags":  [
-
+                     "Apple",
+                     "macOS",
+                     "软件"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ianon.ico",
-        "category":  "综合"
+        "category":  "软件",
+        "name":  "iAnon",
+        "description":  "iAnon is a Private MacOS software tracker",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ianon.ico"
     },
     {
         "id":  "icc2022",
-        "name":  "ICC",
+        "baseUrl":  "https://www.icc2022.com/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/icc2022.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "ICC",
+        "description":  "冰淇淋",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/icc2022.ico"
     },
     {
         "id":  "ihdbits",
-        "name":  "iHDBits",
+        "baseUrl":  "http://ihdbits.me/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "iHDBits",
+        "description":  "The Ultimate File Sharing Experience",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ilolicon",
-        "name":  "ilolicon",
+        "baseUrl":  "https://mua.xloli.cc/",
         "tags":  [
-
+                     "萝莉",
+                     "动漫",
+                     "成人",
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ilolicon.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "ilolicon",
+        "description":  "主打动漫，追番和萝莉资源，兼顾热门国漫和爆款剧集的连载，设有影视对比区和专业级画质对比bbcode的站点。",
+        "aka":  [
+                    "爱萝莉"
+                ],
+        "iconAsset":  "assets/sites/icons/ilolicon.ico"
     },
     {
         "id":  "iptorrents",
-        "name":  "IPTorrents",
+        "baseUrl":  "https://iptorrents.com/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/iptorrents.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "IPTorrents",
+        "description":  "IPTorrents - #1 Private Tracker",
+        "aka":  [
+                    "IPT"
+                ],
+        "iconAsset":  "assets/sites/icons/iptorrents.ico"
     },
     {
         "id":  "itzmx",
-        "name":  "PT鍒嗕韩绔?,\r\n  description: ",
+        "baseUrl":  "https://pt.itzmx.com/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PT分享站",
+        "description":  "PT分享",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "joyhd",
-        "name":  "JoyHD",
+        "baseUrl":  "https://www.joyhd.net/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/joyhd.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "JoyHD",
+        "description":  "JoyHD成立於2013年，發佈藍光原碟，藍光DIY和原抓音樂。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/joyhd.png"
     },
     {
         "id":  "jpopsuki",
-        "name":  "Class:",
+        "baseUrl":  "https://jpopsuki.eu/",
         "tags":  [
-
+                     "音乐",
+                     "日韩"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/jpopsuki.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "JPopSuki",
+        "description":  "JPopSuki是一个专注于日本音乐的音乐PT站点",
+        "aka":  [
+                    "JPS",
+                    "JPOP"
+                ],
+        "iconAsset":  "assets/sites/icons/jpopsuki.ico"
     },
     {
         "id":  "jptv4us",
-        "name":  "JPTV4us",
+        "baseUrl":  "https://jptv4.us/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "JPTV4us",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "jptvclub",
-        "name":  "JPTVClub",
+        "baseUrl":  "https://jptv.club/",
         "tags":  [
-
+                     "影视",
+                     "剧集",
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "JPTVClub",
+        "description":  "JPTV.club 是一个专注于日本电视剧、电影和 FANRES（粉丝录像）资源的私有高清种子社区库",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "kamept",
-        "name":  "KamePT",
+        "baseUrl":  "https://kamept.com/",
         "tags":  [
-
+                     "成人",
+                     "COS",
+                     "动漫",
+                     "音乐",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/kamept.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "KamePT",
+        "description":  "主打二次元同人AV的站点",
+        "aka":  [
+                    "龟站"
+                ],
+        "iconAsset":  "assets/sites/icons/kamept.ico"
     },
     {
         "id":  "karagarga",
-        "name":  "Movie",
+        "baseUrl":  "https://karagarga.in/",
         "tags":  [
-
+                     "电影",
+                     "音乐",
+                     "文学"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "影视"
+        "category":  "音乐",
+        "name":  "KaraGarga",
+        "description":  "KaraGarga is a private tracker for non-mainstream movies, music and literature.",
+        "aka":  [
+                    "KG"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "keepfrds",
-        "name":  "PT@KEEPFRDS",
+        "baseUrl":  "https://pt.keepfrds.com/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/keepfrds.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PT@KEEPFRDS",
+        "description":  "KEEP FRIENDS 专注于小而美的分享，给大家带来更多更优的视听体验。 Let us keep friends forever!",
+        "aka":  [
+                    "FRDS",
+                    "朋友"
+                ],
+        "iconAsset":  "assets/sites/icons/keepfrds.png"
     },
     {
         "id":  "kelu",
-        "name":  "Kelu",
+        "baseUrl":  "https://our.kelu.one/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "Kelu",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "kimoji",
-        "name":  "KIMOJI",
+        "baseUrl":  "https://kimoji.club/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/kimoji.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "KIMOJI",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/kimoji.ico"
     },
     {
         "id":  "kufei",
-        "name":  "搴撻潪",
+        "baseUrl":  "https://kufei.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "库非",
+        "description":  "库非资源下载分享",
+        "aka":  [
+                    "Kufei"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "kufirc",
-        "name":  "kufirc",
+        "baseUrl":  "https://kufirc.com/",
         "tags":  [
-
+                     "成人",
+                     "XXX"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/kufirc.png",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "kufirc",
+        "description":  "XXX Animal",
+        "aka":  [
+                    "kf"
+                ],
+        "iconAsset":  "assets/sites/icons/kufirc.png"
     },
     {
         "id":  "kunlun",
-        "name":  "鏄嗕粦",
+        "baseUrl":  "https://www.yhpp.cc/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "昆仑",
+        "description":  "生生不息，相伴永恒",
+        "aka":  [
+                    "Kunlun",
+                    "YHPP"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "lajidui",
-        "name":  "lajidui",
+        "baseUrl":  "https://pt.lajidui.top/",
         "tags":  [
-
+                     "综合",
+                     "影视综艺",
+                     "游戏软件",
+                     "电子书"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/lajidui.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "lajidui",
+        "description":  "极致文件共享体验",
+        "aka":  [
+                    "垃圾堆"
+                ],
+        "iconAsset":  "assets/sites/icons/lajidui.ico"
     },
     {
         "id":  "latteam",
-        "name":  "LAT-Team",
+        "baseUrl":  "https://lat-team.com/",
         "tags":  [
-
+                     "西班牙语"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/latteam.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "LAT-Team",
+        "description":  "LAT-Team is a UNIT3D Private Torrent Tracker for Latin content.",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/latteam.ico"
     },
     {
         "id":  "lemonhd",
-        "name":  "LemonHD",
+        "baseUrl":  "https://lemonhd.club/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "LemonHD",
+        "description":  "柠檬不酸",
+        "aka":  [
+                    "柠檬不酸"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "lemonhdnet",
-        "name":  "鏌犳涓嶇敎",
+        "baseUrl":  "https://lemonhd.net/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "柠檬不甜",
+        "description":  "柠檬不甜",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "lemonhdorg",
-        "name":  "LemonHD",
+        "baseUrl":  "https://lemonhd.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/lemonhdorg.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "LemonHD",
+        "description":  "LemonHD（原名 LeagueHD）是一个专注于高清资源的中文私密种子分享站点，主要提供电影、电视剧以及综合类别内容。",
+        "aka":  [
+                    "柠檬"
+                ],
+        "iconAsset":  "assets/sites/icons/lemonhdorg.ico"
     },
     {
         "id":  "longpt",
-        "name":  "LongPT",
+        "baseUrl":  "https://longpt.org/",
         "tags":  [
-
+                     "综合",
+                     "影视",
+                     "动漫",
+                     "有声书"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/longpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "LongPT",
+        "description":  "长长久久，平平安安！",
+        "aka":  [
+                    "LongPT",
+                    "龙PT"
+                ],
+        "iconAsset":  "assets/sites/icons/longpt.png"
     },
     {
         "id":  "lst",
-        "name":  "LST",
+        "baseUrl":  "https://lst.gg/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/lst.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "LST",
+        "description":  "Something cool",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/lst.ico"
     },
     {
         "id":  "luckpt",
-        "name":  "LuckPT",
+        "baseUrl":  "https://pt.luckpt.de/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "LuckPT",
+        "description":  "汇聚多元精彩，启程旋律之旅。",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "luminarr",
-        "name":  "Luminarr",
+        "baseUrl":  "https://luminarr.me/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/luminarr.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Luminarr",
+        "description":  "Luminarr is a Private Torrent Tracker for MOVIES / TV",
+        "aka":  [
+                    "LUME"
+                ],
+        "iconAsset":  "assets/sites/icons/luminarr.ico"
     },
     {
         "id":  "march",
-        "name":  "March-Media",
+        "baseUrl":  "https://duckboobee.org/",
         "tags":  [
-
+                     "WEB",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/march.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "March-Media",
+        "description":  "分享所爱，开放交流",
+        "aka":  [
+                    "三月传媒"
+                ],
+        "iconAsset":  "assets/sites/icons/march.png"
     },
     {
         "id":  "milkie",
-        "name":  "Milkie",
+        "baseUrl":  "https://milkie.cc/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/milkie.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "Milkie",
+        "description":  "Milkie.cc (ME) is Private Torrent Tracker for 0DAY / GENERAL",
+        "aka":  [
+                    "ME",
+                    "奶昔"
+                ],
+        "iconAsset":  "assets/sites/icons/milkie.png"
     },
     {
         "id":  "minept",
-        "name":  "MINE.pt",
+        "baseUrl":  "https://mine.pt/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/minept.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "MINE.pt",
+        "description":  "国内首个使用meanTorrent架构站点",
+        "aka":  [
+                    "MINE",
+                    "地雷站",
+                    "矿站"
+                ],
+        "iconAsset":  "assets/sites/icons/minept.ico"
     },
     {
         "id":  "moecat",
-        "name":  "MoeCat",
+        "baseUrl":  "https://moecat.best/",
         "tags":  [
-
+                     "动漫",
+                     "电影",
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/moecat.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "MoeCat",
+        "description":  "让我成为你的双眼，把那世界万千，描绘在你面前。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/moecat.ico"
     },
     {
         "id":  "momentpt",
-        "name":  "MomentPT",
+        "baseUrl":  "https://www.momentpt.top/",
         "tags":  [
-
+                     "摄影",
+                     "图片",
+                     "艺术"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/momentpt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "MomentPT",
+        "description":  "Moment 是摄影爱好者的净土。只有影像与心灵的对话，故本站禁止发布影视资源，望谅解",
+        "aka":  [
+                    "瞬间"
+                ],
+        "iconAsset":  "assets/sites/icons/momentpt.ico"
     },
     {
         "id":  "monikadesign",
-        "name":  "Monikadesign",
+        "baseUrl":  "https://monikadesign.uk/",
         "tags":  [
-
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/monikadesign.ico",
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "Monikadesign",
+        "description":  null,
+        "aka":  [
+                    "MDU",
+                    "莫妮卡"
+                ],
+        "iconAsset":  "assets/sites/icons/monikadesign.ico"
     },
     {
         "id":  "mooko",
-        "name":  "parseTime",
+        "baseUrl":  "https://mooko.org/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/mooko.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "MooKo",
+        "description":  "MooKo is a CHINESE Private Torrent Tracker for MOVIES / TV / GENERAL",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/mooko.png"
     },
     {
         "id":  "morethantv",
-        "name":  "Movies/All",
+        "baseUrl":  "https://www.morethantv.me/",
         "tags":  [
-
+                     "电视剧",
+                     "剧集",
+                     "电影"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/morethantv.ico",
-        "category":  "影视"
+        "category":  "影视",
+        "name":  "MoreThanTV",
+        "description":  "MoreThanTV is a Private Torrent Tracker for TV / MOVIES",
+        "aka":  [
+                    "MTV"
+                ],
+        "iconAsset":  "assets/sites/icons/morethantv.ico"
     },
     {
         "id":  "mteam",
-        "name":  "闆诲奖/SD",
+        "baseUrl":  "https://kp.m-team.cc/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/mteam.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "M-Team - TP",
+        "description":  "综合性网站，有分享率要求",
+        "aka":  [
+                    "MTeam",
+                    "馒头"
+                ],
+        "iconAsset":  "assets/sites/icons/mteam.ico"
     },
     {
         "id":  "musopia",
-        "name":  "闊充箰涔屾墭閭?,\r\n  description: ",
+        "baseUrl":  "https://www.musopia.vip/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "音乐乌托邦",
+        "description":  "汇聚每一个人的影响力，让音乐流行起来吧！",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "muxuege",
-        "name":  "鎱曢洩闃?,\r\n  description: ",
+        "baseUrl":  "https://pt.muxuege.org/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "慕雪阁",
+        "description":  "慕雪阁 - 有一峰名清静峰，峰内有一阁，名为慕雪阁，阁主慕雪，阁内有大量高阶功法！",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "myanonamouse",
-        "name":  "AudioBooks - Action/Adventure",
+        "baseUrl":  "https://www.myanonamouse.net/",
         "tags":  [
-
+                     "电子书",
+                     "有声书"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/myanonamouse.ico",
-        "category":  "音乐"
+        "category":  "电子书",
+        "name":  "MyAnonamouse",
+        "description":  "Friendliness, Warmth and Sharing",
+        "aka":  [
+                    "MAM"
+                ],
+        "iconAsset":  "assets/sites/icons/myanonamouse.ico"
     },
     {
         "id":  "mypt",
-        "name":  "MyPT",
+        "baseUrl":  "https://cc.mypt.cc/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/mypt.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "MyPT",
+        "description":  "我的PT(CC) | 人類資源庫",
+        "aka":  [
+                    "我的PT"
+                ],
+        "iconAsset":  "assets/sites/icons/mypt.ico"
     },
     {
         "id":  "nanyangpt",
-        "name":  "鍗楁磱PT",
+        "baseUrl":  "https://nanyangpt.com/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/nanyangpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "南洋PT",
+        "description":  "网站由西安交通大学学生自主创建与管理，汇集学习资料、纪录片、电影、剧集等各类优质资源",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/nanyangpt.png"
     },
     {
         "id":  "ncore",
-        "name":  "nCore",
+        "baseUrl":  "https://ncore.pro/",
         "tags":  [
-
+                     "匈牙利"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ncore.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "nCore",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ncore.ico"
     },
     {
         "id":  "nebulance",
-        "name":  "Nebulance",
+        "baseUrl":  "https://nebulance.io/",
         "tags":  [
-
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/nebulance.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "Nebulance",
+        "description":  "Nebulance is a Private site. At Nebulance we will change the way you think about TV.",
+        "aka":  [
+                    "NBL"
+                ],
+        "iconAsset":  "assets/sites/icons/nebulance.png"
     },
     {
         "id":  "nekobt",
-        "name":  "L0 - Official",
+        "baseUrl":  "https://nekobt.to/",
         "tags":  [
-
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/nekobt.webp",
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "nekoBT",
+        "description":  "nekoBT is a Public Torrent Tracker for ANIME",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/nekobt.webp"
     },
     {
         "id":  "neu6",
-        "name":  "鍏淮绌洪棿",
+        "baseUrl":  "http://bt.neu6.edu.cn/",
         "tags":  [
-
+                     "教育网",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/neu6.png",
-        "category":  "综合"
+        "category":  "教育",
+        "name":  "六维空间",
+        "description":  "东北大学ipv6资源分享平台",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/neu6.png"
     },
     {
         "id":  "nexushd",
-        "name":  "NexusHD",
+        "baseUrl":  "https://v6.nexushd.org/",
         "tags":  [
-
+                     "教育网"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "教育",
+        "name":  "NexusHD",
+        "description":  "国内第一个创建并使用NexusPHP架构的PT站",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "nicept",
-        "name":  "NicePT",
+        "baseUrl":  "https://www.nicept.net/",
         "tags":  [
-
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "NicePT",
+        "description":  "老师",
+        "aka":  [
+                    "老师"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "njtupt",
-        "name":  "娴﹀洯",
+        "baseUrl":  "https://njtupt.top/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "浦园",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "nordicbytes",
-        "name":  "NordicBytes",
+        "baseUrl":  "https://nordicbytes.org/",
         "tags":  [
-
+                     "北欧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/nordicbytes.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "NordicBytes",
+        "description":  "NordicBytes is a Private Torrent Tracker for NORDIC content",
+        "aka":  [
+                    "NBy",
+                    "DanishBytes"
+                ],
+        "iconAsset":  "assets/sites/icons/nordicbytes.png"
     },
     {
         "id":  "nordicquality",
-        "name":  "NordicQuality",
+        "baseUrl":  "https://nordicq.org/",
         "tags":  [
-
+                     "北欧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/nordicquality.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "NordicQuality",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/nordicquality.ico"
     },
     {
         "id":  "novahd",
-        "name":  "NovaHD",
+        "baseUrl":  "https://pt.novahd.top/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/novahd.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "NovaHD",
+        "description":  null,
+        "aka":  [
+                    "星云"
+                ],
+        "iconAsset":  "assets/sites/icons/novahd.ico"
     },
     {
         "id":  "npupt",
-        "name":  "NPUBits",
+        "baseUrl":  "https://npupt.com/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/npupt.ico",
-        "category":  "综合"
+        "category":  "教育",
+        "name":  "NPUBits",
+        "description":  "界面独具一格的教育网站点",
+        "aka":  [
+                    "蒲公英"
+                ],
+        "iconAsset":  "assets/sites/icons/npupt.ico"
     },
     {
         "id":  "nwsuaf6",
-        "name":  "楹︾敯PT",
+        "baseUrl":  "https://pt.nwsuaf6.edu.cn/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/nwsuaf6.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "麦田PT",
+        "description":  "西北农林科技大学ipv6资源分享平台",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/nwsuaf6.ico"
     },
     {
         "id":  "nyaa",
-        "name":  "Nyaa",
+        "baseUrl":  "https://nyaa.si/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/nyaa.png",
-        "category":  "综合"
+        "category":  "公网",
+        "name":  "Nyaa",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/nyaa.png"
     },
     {
         "id":  "okpt",
-        "name":  "OKPT",
+        "baseUrl":  "https://www.okpt.net/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/okpt.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "OKPT",
+        "description":  "做你最好的新手村",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/okpt.png"
     },
     {
         "id":  "oldtoonsworld",
-        "name":  "OldToonsWorld",
+        "baseUrl":  "https://oldtoons.world/",
         "tags":  [
-
+                     "动画",
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/oldtoonsworld.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "OldToonsWorld",
+        "description":  "Old Toons World (OTW) is a Private Torrent Tracker for ANIMATED MOVIES / TV",
+        "aka":  [
+                    "OTW"
+                ],
+        "iconAsset":  "assets/sites/icons/oldtoonsworld.png"
     },
     {
         "id":  "onlyencodes",
-        "name":  "OnlyEncodes+",
+        "baseUrl":  "https://onlyencodes.cc/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/onlyencodes.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "OnlyEncodes+",
+        "description":  "Encodes Live Here, Now with More!",
+        "aka":  [
+                    "OE"
+                ],
+        "iconAsset":  "assets/sites/icons/onlyencodes.ico"
     },
     {
         "id":  "opencd",
-        "name":  "OpenCD",
+        "baseUrl":  "https://open.cd/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/opencd.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "OpenCD",
+        "description":  "皇后，专一的音乐类PT站，是目前国内最大的无损音乐PT",
+        "aka":  [
+                    "皇后"
+                ],
+        "iconAsset":  "assets/sites/icons/opencd.ico"
     },
     {
         "id":  "oppaiti",
-        "name":  "Oppaitime",
+        "baseUrl":  "https://oppaiti.me/",
         "tags":  [
-
+                     "动画",
+                     "漫画",
+                     "游戏",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/oppaiti.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Oppaitime",
+        "description":  "成人动漫站",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/oppaiti.ico"
     },
     {
         "id":  "orpheus",
-        "name":  "Orpheus",
+        "baseUrl":  "https://orpheus.network/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "Orpheus",
+        "description":  "Orpheus is a music-focused private tracker, successor to RED",
+        "aka":  [
+                    "OPS"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "oshenpt",
-        "name":  "OshenPT",
+        "baseUrl":  "https://www.oshen.win/",
         "tags":  [
-
+                     "综合",
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "OshenPT",
+        "description":  "我为人人，人人为我，只为分享不为盈利",
+        "aka":  [
+                    "奥申"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ourbits",
-        "name":  "OurBits",
+        "baseUrl":  "https://ourbits.club/",
         "tags":  [
-
+                     "影视",
+                     "动漫",
+                     "纪录片",
+                     "综艺"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ourbits.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "OurBits",
+        "description":  "综合性网站，有分享率要求",
+        "aka":  [
+                    "我堡",
+                    "OB"
+                ],
+        "iconAsset":  "assets/sites/icons/ourbits.ico"
     },
     {
         "id":  "pandapt",
-        "name":  "PandaPT",
+        "baseUrl":  "https://pandapt.net/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pandapt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PandaPT",
+        "description":  "熊猫高清",
+        "aka":  [
+                    "熊猫高清"
+                ],
+        "iconAsset":  "assets/sites/icons/pandapt.png"
     },
     {
         "id":  "passthepopcorn",
-        "name":  "PassThePopcorn",
+        "baseUrl":  "https://passthepopcorn.me/",
         "tags":  [
-
+                     "电影"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PassThePopcorn",
+        "description":  "PassThePopcorn (PTP) is a Private site for MOVIES",
+        "aka":  [
+                    "PTP"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "piggo",
-        "name":  "Piggo",
+        "baseUrl":  "https://piggo.me/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "少儿"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/piggo.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Piggo",
+        "description":  "猪猪网",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/piggo.ico"
     },
     {
         "id":  "pixelcove",
-        "name":  "PixelCove",
+        "baseUrl":  "https://www.pixelcove.me/",
         "tags":  [
-
+                     "游戏"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pixelcove.png",
-        "category":  "综合"
+        "category":  "游戏",
+        "name":  "PixelCove",
+        "description":  "PixelCove (Ultimate Gamer) is a Private Torrent Tracker for GAMES",
+        "aka":  [
+                    "PxC"
+                ],
+        "iconAsset":  "assets/sites/icons/pixelcove.png"
     },
     {
         "id":  "playletpt",
-        "name":  "PlayLet",
+        "baseUrl":  "https://playletpt.xyz/",
         "tags":  [
-
+                     "短剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/playletpt.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "PlayLet",
+        "description":  "微而精，短而美",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/playletpt.ico"
     },
     {
         "id":  "pornbay",
-        "name":  "Pornbay",
+        "baseUrl":  "https://pornbay.org/",
         "tags":  [
-
+                     "成人",
+                     "XXX"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pornbay.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "Pornbay",
+        "description":  null,
+        "aka":  [
+                    "PB"
+                ],
+        "iconAsset":  "assets/sites/icons/pornbay.ico"
     },
     {
         "id":  "pornbits",
-        "name":  "Pornbits",
+        "baseUrl":  "https://pornbits.net/",
         "tags":  [
-
+                     "Adult"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pornbits.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "Pornbits",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/pornbits.ico"
     },
     {
         "id":  "pornolab",
-        "name":  "PornoLab",
+        "baseUrl":  "https://pornolab.net/",
         "tags":  [
-
+                     "成人",
+                     "XXX"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pornolab.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "PornoLab",
+        "description":  "PornoLab is a Semi-Private Russian site for 3X",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/pornolab.ico"
     },
     {
         "id":  "portugas",
-        "name":  "Portugas",
+        "baseUrl":  "https://portugas.org/",
         "tags":  [
-
+                     "葡萄牙"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/portugas.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "Portugas",
+        "description":  "Portugas is a UNIT3D Private Torrent Tracker for Portuguese content.",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/portugas.ico"
     },
     {
         "id":  "privatehd",
-        "name":  "PrivateHD",
+        "baseUrl":  "https://privatehd.to/",
         "tags":  [
-
+                     "电影",
+                     "高清"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/privatehd.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PrivateHD",
+        "description":  "PrivateHD is a Private Torrent Tracker of AvistaZ Network",
+        "aka":  [
+                    "PHD"
+                ],
+        "iconAsset":  "assets/sites/icons/privatehd.png"
     },
     {
         "id":  "pt99",
-        "name":  "PT99",
+        "baseUrl":  "https://pt.j99.info/",
         "tags":  [
-
+                     "综合",
+                     "记录片",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PT99",
+        "description":  "An Average PT",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ptcafe",
-        "name":  "鍜栧暋",
+        "baseUrl":  "https://ptcafe.club/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptcafe.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "咖啡",
+        "description":  "热爱生活·享受咖啡",
+        "aka":  [
+                    "PTCafe",
+                    "咖啡PT"
+                ],
+        "iconAsset":  "assets/sites/icons/ptcafe.ico"
     },
     {
         "id":  "ptchina",
-        "name":  "PTChina",
+        "baseUrl":  "https://ptchina.org/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "PTChina",
+        "description":  "PT新手的梦想之家，PT老鸟的黄埔军校",
+        "aka":  [
+                    "铂金学院"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ptdream",
-        "name":  "PTDream",
+        "baseUrl":  "https://www.ptdream.net/",
         "tags":  [
-
+                     "剧集",
+                     "电影",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptdream.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTDream",
+        "description":  null,
+        "aka":  [
+                    "PT梦想"
+                ],
+        "iconAsset":  "assets/sites/icons/ptdream.ico"
     },
     {
         "id":  "pter",
-        "name":  "PTer",
+        "baseUrl":  "https://pterclub.net/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTer",
+        "description":  "ＰＴ之友俱乐部",
+        "aka":  [
+                    "PTerClub",
+                    "猫站"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ptfans",
-        "name":  "PTFans",
+        "baseUrl":  "https://ptfans.cc/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptfans.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTFans",
+        "description":  "追随你的激情，共享PT乐趣！",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ptfans.ico"
     },
     {
         "id":  "ptgtk",
-        "name":  "PT GTK",
+        "baseUrl":  "https://pt.gtkpw.xyz/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PT GTK",
+        "description":  "分享好看的电影剧集",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "pthome",
-        "name":  "PTHome",
+        "baseUrl":  "https://pthome.net/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pthome.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTHome",
+        "description":  "分享至美 高清之家",
+        "aka":  [
+                    "PT之家",
+                    "铂金家"
+                ],
+        "iconAsset":  "assets/sites/icons/pthome.ico"
     },
     {
         "id":  "ptlao",
-        "name":  "PTLAO",
+        "baseUrl":  "https://ptlao.top/",
         "tags":  [
-
+                     "成人",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "PTLAO",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ptlgs",
-        "name":  "PTLGS",
+        "baseUrl":  "https://ptlgs.org/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptlgs.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTLGS",
+        "description":  "PTLGS(劳改所)，黑奴的最终归宿",
+        "aka":  [
+                    "劳改所"
+                ],
+        "iconAsset":  "assets/sites/icons/ptlgs.png"
     },
     {
         "id":  "ptlsp",
-        "name":  "PTLSP",
+        "baseUrl":  "https://www.ptlsp.com/",
         "tags":  [
-
+                     "综合",
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptlsp.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "PTLSP",
+        "description":  "PTLSP是一个集刮削音乐专辑、影视、剧集、游戏、纪录片、动漫、MV等众多资源为一体的综合PT站，本站旗下有着独家音乐专辑刮削制作小组以及独家压制小组",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ptlsp.ico"
     },
     {
         "id":  "ptmsg",
-        "name":  "PTMSG",
+        "baseUrl":  "https://pt.msg.vg/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptmsg.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "PTMSG",
+        "description":  "The Ultimate File Sharing Experience",
+        "aka":  [
+                    "马杀鸡"
+                ],
+        "iconAsset":  "assets/sites/icons/ptmsg.ico"
     },
     {
         "id":  "ptneko",
-        "name":  "瓒呯瀛T鍠?,\r\n  description: ",
+        "baseUrl":  "https://ptneko.com/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "超科学PT喵",
+        "description":  "这里什么也没有",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ptsbao",
-        "name":  "PTSBao",
+        "baseUrl":  "https://ptsbao.club/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptsbao.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTSBao",
+        "description":  "烧包 - 扬帆远航 风雨同路",
+        "aka":  [
+                    "烧包",
+                    "骚包"
+                ],
+        "iconAsset":  "assets/sites/icons/ptsbao.png"
     },
     {
         "id":  "ptskit",
-        "name":  "PTSkit",
+        "baseUrl":  "https://www.ptskit.org/",
         "tags":  [
-
+                     "短剧",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptskit.png",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "PTSkit",
+        "description":  "短的是时间 长的是热爱",
+        "aka":  [
+                    "拾刻"
+                ],
+        "iconAsset":  "assets/sites/icons/ptskit.png"
     },
     {
         "id":  "pttime",
-        "name":  "PTTime",
+        "baseUrl":  "https://www.pttime.org/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pttime.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTTime",
+        "description":  "PT时间",
+        "aka":  [
+                    "PT时间"
+                ],
+        "iconAsset":  "assets/sites/icons/pttime.ico"
     },
     {
         "id":  "ptvicomo",
-        "name":  "璞″矝",
+        "baseUrl":  "https://ptvicomo.net/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ptvicomo.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "象岛",
+        "description":  "大象自中虚，中虚真不渝！",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ptvicomo.png"
     },
     {
         "id":  "ptzone",
-        "name":  "PTzone",
+        "baseUrl":  "https://ptzone.xyz/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "PTzone",
+        "description":  "分享地带！",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "pussytorrents",
-        "name":  "Pussytorrents",
+        "baseUrl":  "https://pussytorrents.org/",
         "tags":  [
-
+                     "XXX"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/pussytorrents.ico",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "Pussytorrents",
+        "description":  "PussyTorrents is a Semi-Private Torrent Tracker for 3X",
+        "aka":  [
+                    "PT"
+                ],
+        "iconAsset":  "assets/sites/icons/pussytorrents.ico"
     },
     {
         "id":  "qingwa",
-        "name":  "Peasant",
+        "baseUrl":  "https://www.qingwapt.com/",
         "tags":  [
-
+                     "综合",
+                     "影视",
+                     "动漫",
+                     "儿童区",
+                     "纪录片"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/qingwa.svg",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Peasant",
+        "description":  "慈善性质的非盈利的资源分享网站。",
+        "aka":  [
+                    "青蛙PT"
+                ],
+        "iconAsset":  "assets/sites/icons/qingwa.svg"
     },
     {
         "id":  "qingyingpt",
-        "name":  "娓呭奖PT",
+        "baseUrl":  "https://hitpt.org/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/qingyingpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "清影PT",
+        "description":  "哈尔滨工业大学维护的PT站",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/qingyingpt.png"
     },
     {
         "id":  "railgunpt",
-        "name":  "RailgunPT",
+        "baseUrl":  "https://bilibili.download/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "RailgunPT",
+        "description":  "B站PT",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "raingfh",
-        "name":  "闆?,\r\n  description: ",
+        "baseUrl":  "https://raingfh.top/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/raingfh.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "雨",
+        "description":  "与你相逢，就是奇迹",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/raingfh.ico"
     },
     {
         "id":  "redacted",
-        "name":  "Redacted",
+        "baseUrl":  "https://redacted.sh/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/redacted.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "Redacted",
+        "description":  "Redacted is a music-focused private tracker",
+        "aka":  [
+                    "RED",
+                    "红"
+                ],
+        "iconAsset":  "assets/sites/icons/redacted.ico"
     },
     {
         "id":  "redleaves",
-        "name":  "绾㈠彾",
+        "baseUrl":  "https://leaves.red/",
         "tags":  [
-
+                     "有声书",
+                     "综合",
+                     "影视",
+                     "游戏"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/redleaves.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "红叶",
+        "description":  "红叶成立于2022年10月，主打有声小说，有综合区。目前站内设立有声官组,资源产出稳定。喜欢有声内容的朋友，欢迎你的加入！",
+        "aka":  [
+                    "RedLeaves"
+                ],
+        "iconAsset":  "assets/sites/icons/redleaves.png"
     },
     {
         "id":  "reelflix",
-        "name":  "ReelFliX",
+        "baseUrl":  "https://reelflix.cc/",
         "tags":  [
-
+                     "电影"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/reelflix.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "ReelFliX",
+        "description":  "Keep it Reel",
+        "aka":  [
+                    "RFX"
+                ],
+        "iconAsset":  "assets/sites/icons/reelflix.ico"
     },
     {
         "id":  "retroflix",
-        "name":  "RetroFlix",
+        "baseUrl":  "https://retroflix.net/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/retroflix.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "RetroFlix",
+        "description":  "RetroFlix is a Private site for Classic Movies / TV / General Releases",
+        "aka":  [
+                    "RF"
+                ],
+        "iconAsset":  "assets/sites/icons/retroflix.ico"
     },
     {
         "id":  "rousi",
-        "name":  "Rousi",
+        "baseUrl":  "https://rousi.zip/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/rousi.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Rousi",
+        "description":  "你也喜欢 Rousi 对吧？",
+        "aka":  [
+                    "肉丝"
+                ],
+        "iconAsset":  "assets/sites/icons/rousi.ico"
     },
     {
         "id":  "rousipro",
-        "name":  "Rousi Pro",
+        "baseUrl":  "https://rousi.pro/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/rousipro.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "Rousi Pro",
+        "description":  null,
+        "aka":  [
+                    "Rousi",
+                    "肉丝"
+                ],
+        "iconAsset":  "assets/sites/icons/rousipro.ico"
     },
     {
         "id":  "rs",
-        "name":  "鐫挎€?,\r\n  aka: [",
+        "baseUrl":  "https://resource.xidian.edu.cn/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "睿思",
+        "description":  "西电睿思PT",
+        "aka":  [
+                    "西电睿思"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "rutracker",
-        "name":  "RuTracker.org",
+        "baseUrl":  "https://rutracker.org/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/rutracker.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "RuTracker.org",
+        "description":  "RuTracker.org is a RUSSIAN Semi-Private site with a thriving file-sharing community",
+        "aka":  [
+                    "RUT"
+                ],
+        "iconAsset":  "assets/sites/icons/rutracker.ico"
     },
     {
         "id":  "sanpro",
-        "name":  "浼?,\r\n  description: ",
+        "baseUrl":  "https://sanpro.pw/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sanpro.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "伞",
+        "description":  "欢迎来到伞",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/sanpro.png"
     },
     {
         "id":  "sbpt",
-        "name":  "SBPT",
+        "baseUrl":  "https://sbpt.link/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "SBPT",
+        "description":  "SBPT is a CHINESE Private Torrent Tracker for MOVIES / TV / GENERAL",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "sdbits",
-        "name":  "SDBits",
+        "baseUrl":  "https://sdbits.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sdbits.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "SDBits",
+        "description":  "SDB, HDB姊妹站",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/sdbits.png"
     },
     {
         "id":  "secretcinema",
-        "name":  "Secret Cinema",
+        "baseUrl":  "https://secret-cinema.pw/",
         "tags":  [
-
+                     "电影",
+                     "电子书",
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/secretcinema.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "Secret Cinema",
+        "description":  "Secret Cinema is a Private ratioless site for rare MOVIES.",
+        "aka":  [
+                    "SC"
+                ],
+        "iconAsset":  "assets/sites/icons/secretcinema.ico"
     },
     {
         "id":  "seedpool",
-        "name":  "seedpool",
+        "baseUrl":  "https://seedpool.org/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/seedpool.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "seedpool",
+        "description":  null,
+        "aka":  [
+                    "SP"
+                ],
+        "iconAsset":  "assets/sites/icons/seedpool.ico"
     },
     {
         "id":  "sewerpt",
-        "name":  "涓嬫按閬?,\r\n  description: ",
+        "baseUrl":  "https://sewerpt.com/",
         "tags":  [
-
+                     "冷门",
+                     "低分",
+                     "粤语",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sewerpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "下水道",
+        "description":  "再小众的热爱，也值得被世界看见",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/sewerpt.png"
     },
     {
         "id":  "shareisland",
-        "name":  "ShareIsland",
+        "baseUrl":  "https://shareisland.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/shareisland.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "ShareIsland",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/shareisland.png"
     },
     {
         "id":  "sharkpt",
-        "name":  "椴ㄩ奔PT",
+        "baseUrl":  "https://sharkpt.net/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sharkpt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "鲨鱼PT",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/sharkpt.ico"
     },
     {
         "id":  "siqi",
-        "name":  "鎬濋綈",
+        "baseUrl":  "https://si-qi.xyz/",
         "tags":  [
-
+                     "图书"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/siqi.png",
-        "category":  "综合"
+        "category":  "电子书",
+        "name":  "思齐",
+        "description":  "见贤思齐！",
+        "aka":  [
+                    "SiQi"
+                ],
+        "iconAsset":  "assets/sites/icons/siqi.png"
     },
     {
         "id":  "sjtu",
-        "name":  "钁¤悇",
+        "baseUrl":  "https://pt.sjtu.edu.cn/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sjtu.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "葡萄",
+        "description":  "Free Share, Join us",
+        "aka":  [
+                    "PuTao",
+                    "SJTU"
+                ],
+        "iconAsset":  "assets/sites/icons/sjtu.png"
     },
     {
         "id":  "skyeysnow",
-        "name":  "SkyeySnow",
+        "baseUrl":  "https://www.skyey2.com/",
         "tags":  [
-
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "SkyeySnow",
+        "description":  "这是一个高清动漫的完全非盈利论坛，高清动漫是一个很小的圈子 论坛方向为DVD/BDRip和BDMV\u0026BDMV用字幕相关。",
+        "aka":  [
+                    "天雪"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "snakepop",
-        "name":  "Snakepop",
+        "baseUrl":  "https://snakepop.art/",
         "tags":  [
-
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "Snakepop",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "soulvoice",
-        "name":  "SoulVoice",
+        "baseUrl":  "https://pt.soulvoice.club/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "电子书",
+                     "有声书"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/soulvoice.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "SoulVoice",
+        "description":  "致力于建设一个有声资源，电子书为主，学习资料，影视资源为辅的PT分享站。",
+        "aka":  [
+                    "聆音"
+                ],
+        "iconAsset":  "assets/sites/icons/soulvoice.ico"
     },
     {
         "id":  "speedapp",
-        "name":  "SpeedApp",
+        "baseUrl":  "https://speedapp.io/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/speedapp.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "SpeedApp",
+        "description":  "SpeedApp is a ROMANIAN Private Torrent Tracker for MOVIES / TV / GENERAL",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/speedapp.ico"
     },
     {
         "id":  "sportscult",
-        "name":  "SportsCult",
+        "baseUrl":  "https://sportscult.org/",
         "tags":  [
-
+                     "运动"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sportscult.ico",
-        "category":  "体育"
+        "category":  "体育",
+        "name":  "SportsCult",
+        "description":  "SportsCult is a Private Torrent Tracker for SPORTS",
+        "aka":  [
+                    "SC"
+                ],
+        "iconAsset":  "assets/sites/icons/sportscult.ico"
     },
     {
         "id":  "springsunday",
-        "name":  "SpringSunday",
+        "baseUrl":  "https://springsunday.net/",
         "tags":  [
-
+                     "影视",
+                     "音乐",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/springsunday.png",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "SpringSunday",
+        "description":  "Classic Movie Compression Team",
+        "aka":  [
+                    "CMCT",
+                    "SSD",
+                    "春天"
+                ],
+        "iconAsset":  "assets/sites/icons/springsunday.png"
     },
     {
         "id":  "starspace",
-        "name":  "鏄熺┖",
+        "baseUrl":  "https://star-space.net/",
         "tags":  [
-
+                     "影视",
+                     "音乐",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/starspace.png",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "星空",
+        "description":  "We all have a dream.",
+        "aka":  [
+                    "StarSpace",
+                    "影"
+                ],
+        "iconAsset":  "assets/sites/icons/starspace.png"
     },
     {
         "id":  "stspt",
-        "name":  "STSPT",
+        "baseUrl":  "https://www.sts.tw/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "STSPT",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "sugoimusic",
-        "name":  "SugoiMusic",
+        "baseUrl":  "https://sugoimusic.me/",
         "tags":  [
-
+                     "音乐",
+                     "亚洲音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sugoimusic.png",
-        "category":  "音乐"
+        "category":  "音乐",
+        "name":  "SugoiMusic",
+        "description":  "SugoiMusic is a private tracker focused on Asian music: music, concerts, PVs, variety \u0026 drama shows, Blu-ray/DVDs, and pictures.",
+        "aka":  [
+                    "SM"
+                ],
+        "iconAsset":  "assets/sites/icons/sugoimusic.png"
     },
     {
         "id":  "sunnypt",
-        "name":  "Sunny",
+        "baseUrl":  "https://sunnypt.top/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/sunnypt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Sunny",
+        "description":  "The Ultimate File Sharing Experience",
+        "aka":  [
+                    "SunnyPT",
+                    "阳光"
+                ],
+        "iconAsset":  "assets/sites/icons/sunnypt.ico"
     },
     {
         "id":  "superbits",
-        "name":  "Superbits",
+        "baseUrl":  "https://superbits.org/",
         "tags":  [
-
+                     "综合",
+                     "影视",
+                     "瑞典"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/superbits.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Superbits",
+        "description":  "Sveriges största bittorrent tracker.",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/superbits.ico"
     },
     {
         "id":  "tangpt",
-        "name":  "韬哄钩",
+        "baseUrl":  "https://www.tangpt.top/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tangpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "躺平",
+        "description":  "无论你是老鸟还是新手，在这里都可以安心“躺平”，享受高效、清爽的PT。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/tangpt.png"
     },
     {
         "id":  "tccf",
-        "name":  "TorrentCCF",
+        "baseUrl":  "https://et8.org/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "学习"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tccf.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "TorrentCCF",
+        "description":  "兼有学习资源和软件资源的影视PT站点",
+        "aka":  [
+                    "TCCF",
+                    "ET8"
+                ],
+        "iconAsset":  "assets/sites/icons/tccf.png"
     },
     {
         "id":  "telly",
-        "name":  "Telly",
+        "baseUrl":  "https://telly.wtf/",
         "tags":  [
-
+                     "影视",
+                     "综合",
+                     "印度"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/telly.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Telly",
+        "description":  "印度影视综合站点",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/telly.ico"
     },
     {
         "id":  "tey",
-        "name":  "tey",
+        "baseUrl":  "https://pt.tey.cc/",
         "tags":  [
-
+                     "电视剧",
+                     "韩剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tey.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "tey",
+        "description":  "心不空则丹不结",
+        "aka":  [
+                    "太乙"
+                ],
+        "iconAsset":  "assets/sites/icons/tey.ico"
     },
     {
         "id":  "thegeeks",
-        "name":  "TheGeeks",
+        "baseUrl":  "https://thegeeks.click/",
         "tags":  [
-
+                     "学习"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/thegeeks.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "TheGeeks",
+        "description":  "The Geeks is a Private Torrent Tracker for Technology E-LEARNING",
+        "aka":  [
+                    "TG"
+                ],
+        "iconAsset":  "assets/sites/icons/thegeeks.ico"
     },
     {
         "id":  "thevault",
-        "name":  "TheVault",
+        "baseUrl":  "https://thevault.click/",
         "tags":  [
-
+                     "学习"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/thevault.ico",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "TheVault",
+        "description":  "TheVault (TVBZ) is a Private Torrent Tracker for BUSINESS / MARKETING E-LEARNING",
+        "aka":  [
+                    "TV"
+                ],
+        "iconAsset":  "assets/sites/icons/thevault.ico"
     },
     {
         "id":  "tjupt",
-        "name":  "鍖楁磱鍥璓T",
+        "baseUrl":  "https://tjupt.org/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tjupt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "北洋园PT",
+        "description":  "TJUPT是天津市首个、全国前列的校园Private Tracker，建立于2010年，",
+        "aka":  [
+                    "北洋园"
+                ],
+        "iconAsset":  "assets/sites/icons/tjupt.png"
     },
     {
         "id":  "tlfbits",
-        "name":  "TLFBits",
+        "baseUrl":  "https://pt.eastgame.org/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "TLFBits",
+        "description":  "水管虽小，坚持则大！宛如TLF，虽弱却奢华",
+        "aka":  [
+                    "TLF Bits",
+                    "The Last Fantasy",
+                    "TLF",
+                    "吐鲁番"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "tmpt",
-        "name":  "鍞愰棬",
+        "baseUrl":  "https://tmpt.top/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tmpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "唐门",
+        "description":  "欢迎来到唐门",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/tmpt.png"
     },
     {
         "id":  "tokyopt",
-        "name":  "Tokyo",
+        "baseUrl":  "https://www.tokyopt.xyz/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tokyopt.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "Tokyo",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/tokyopt.ico"
     },
     {
         "id":  "tokyotosho",
-        "name":  "Tokyo Toshokan",
+        "baseUrl":  "https://www.tokyotosho.info/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tokyotosho.png",
-        "category":  "综合"
+        "category":  "公网",
+        "name":  "Tokyo Toshokan",
+        "description":  "Tokyo Toshokan is a Public BitTorrent Library for JAPANESE Media",
+        "aka":  [
+                    "東京 図書館"
+                ],
+        "iconAsset":  "assets/sites/icons/tokyotosho.png"
     },
     {
         "id":  "torrenthub",
-        "name":  "TorrentHub",
+        "baseUrl":  "https://torrenthub.club/",
         "tags":  [
-
+                     "影视",
+                     "教育",
+                     "音乐"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/torrenthub.ico",
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "TorrentHub",
+        "description":  "分享每个人的力量",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/torrenthub.ico"
     },
     {
         "id":  "torrentleech",
-        "name":  "Movies :: Cam",
+        "baseUrl":  "https://www.torrentleech.org/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/torrentleech.ico",
-        "category":  "影视"
+        "category":  "综合",
+        "name":  "TorrentLeech",
+        "description":  "TorrentLeech (TL) is a Private Torrent Tracker for 0DAY / GENERAL. not here _ not scene",
+        "aka":  [
+                    "TL"
+                ],
+        "iconAsset":  "assets/sites/icons/torrentleech.ico"
     },
     {
         "id":  "torrentscsv",
-        "name":  "Torrents-CSV",
+        "baseUrl":  "https://torrents-csv.com/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/torrentscsv.ico",
-        "category":  "综合"
+        "category":  "公网",
+        "name":  "Torrents-CSV",
+        "description":  "Torrents.csv is a self-hostable, open source torrent search engine and database",
+        "aka":  [
+                    "TorrentsCSV"
+                ],
+        "iconAsset":  "assets/sites/icons/torrentscsv.ico"
     },
     {
         "id":  "torrentseeds",
-        "name":  "TorrentSeeds",
+        "baseUrl":  "https://www.torrentseeds.org/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "TorrentSeeds",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "tosky",
-        "name":  "ToSky",
+        "baseUrl":  "https://t.tosky.club/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/tosky.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "ToSky",
+        "description":  null,
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/tosky.png"
     },
     {
         "id":  "totheglory",
-        "name":  "ToTheGlory",
+        "baseUrl":  "https://totheglory.im/",
         "tags":  [
-
+                     "影视",
+                     "音乐",
+                     "游戏",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "音乐",
+        "name":  "ToTheGlory",
+        "description":  "ToTheGlory（TTG）是一个综合性PT站点，以高清电影、电视剧、音乐、动漫资源为主。",
+        "aka":  [
+                    "TTG",
+                    "套套哥",
+                    "听听歌"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "tu88",
-        "name":  "TU88",
+        "baseUrl":  "https://pt.tu88.men/",
         "tags":  [
-
+                     "漫画",
+                     "图集",
+                     "绘本",
+                     "成人"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "动漫",
+        "name":  "TU88",
+        "description":  "僅分享圖片,適合手機平板PT客戶端直接下載",
+        "aka":  [
+
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "u2",
-        "name":  "U2",
+        "baseUrl":  "https://u2.dmhy.org/",
         "tags":  [
-
+                     "影视",
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "U2",
+        "description":  null,
+        "aka":  [
+                    "幼儿园"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ubits",
-        "name":  "UBits",
+        "baseUrl":  "https://ubits.club/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ubits.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "UBits",
+        "description":  "原盘爱好者集散地",
+        "aka":  [
+                    "UB",
+                    "U堡"
+                ],
+        "iconAsset":  "assets/sites/icons/ubits.ico"
     },
     {
         "id":  "uhdbits",
-        "name":  "UHDBits",
+        "baseUrl":  "https://uhdbits.org/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "UHDBits",
+        "description":  null,
+        "aka":  [
+                    "UHD"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "ultrahd",
-        "name":  "UltraHD",
+        "baseUrl":  "https://ultrahd.net/",
         "tags":  [
-
+                     "电影",
+                     "电视剧",
+                     "综艺",
+                     "纪录片",
+                     "动漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ultrahd.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "UltraHD",
+        "description":  "专注韩语语种内容，包含韩影、韩剧、韩综、动漫以及纪录片",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ultrahd.png"
     },
     {
         "id":  "uploadcx",
-        "name":  "ULCX",
+        "baseUrl":  "https://upload.cx/",
         "tags":  [
-
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/uploadcx.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "ULCX",
+        "description":  "upload.cx",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/uploadcx.ico"
     },
     {
         "id":  "whupt",
-        "name":  "鐝炴ū-WHUPT",
+        "baseUrl":  "https://whu.pt/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/whupt.ico",
-        "category":  "综合"
+        "category":  "教育",
+        "name":  "珞樱-WHUPT",
+        "description":  "武汉大学自己的武汉大学网络中心提供硬件支持、由学生自主运行与管理的校园资源共享平台",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/whupt.ico"
     },
     {
         "id":  "wintersakura",
-        "name":  "WinterSakura",
+        "baseUrl":  "https://wintersakura.net/",
         "tags":  [
-
+                     "电影",
+                     "电视剧"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/wintersakura.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "WinterSakura",
+        "description":  null,
+        "aka":  [
+                    "冬樱"
+                ],
+        "iconAsset":  "assets/sites/icons/wintersakura.ico"
     },
     {
         "id":  "wukongwendao",
-        "name":  "鎮熺┖闂亾",
+        "baseUrl":  "https://wukongwendao.top/",
         "tags":  [
-
+                     "人工智能"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/wukongwendao.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "悟空问道",
+        "description":  "探索未知、持续学习",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/wukongwendao.png"
     },
     {
         "id":  "xauat6",
-        "name":  "婧锭鑽夊爞PT",
+        "baseUrl":  "http://pt.xauat6.edu.cn/",
         "tags":  [
-
+                     "教育网",
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/xauat6.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "溪涧草堂PT",
+        "description":  "以热播电影，热播剧集，热播综艺为主，纪录，动漫，GTV，资料等资源为辅，多方面地为用户提供丰富的资源下载",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/xauat6.png"
     },
     {
         "id":  "xingtan",
-        "name":  "鏉忓潧",
+        "baseUrl":  "https://xingtan.one/",
         "tags":  [
-
+                     "医学",
+                     "电子书",
+                     "学术"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/xingtan.ico",
-        "category":  "综合"
+        "category":  "电子书",
+        "name":  "杏坛",
+        "description":  "杏坛 - 积少成多，聚沙成塔。",
+        "aka":  [
+                    "杏林",
+                    "XingTan"
+                ],
+        "iconAsset":  "assets/sites/icons/xingtan.ico"
     },
     {
         "id":  "xingyunge",
-        "name":  "鏄熼櫒闃?,\r\n  description: ",
+        "baseUrl":  "https://pt.xingyungept.org/",
         "tags":  [
-
+                     "综合",
+                     "影视",
+                     "国漫"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/xingyunge.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "星陨阁",
+        "description":  "三十年河东，三十年河西！莫欺少年穷！",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/xingyunge.png"
     },
     {
         "id":  "ydypt",
-        "name":  "浼婄敻鍥?,\r\n  description: ",
+        "baseUrl":  "https://pt.hdbd.us/",
         "tags":  [
-
+                     "综合",
+                     "XXX"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/ydypt.jpg",
-        "category":  "综合"
+        "category":  "成人",
+        "name":  "伊甸园",
+        "description":  "这里是伊甸园 让我们赤裸坦诚相见",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/ydypt.jpg"
     },
     {
         "id":  "yemapt",
-        "name":  "涔辨皯",
+        "baseUrl":  "https://www.yemapt.org/",
         "tags":  [
-
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/yemapt.png",
-        "category":  "综合"
+        "category":  "综合",
+        "name":  "YemaPT",
+        "description":  "YemaPT 是一个由全新技术架构构建而来的综合类资源PT站点。有分享率和登录要求，可访问 wiki.yemapt.org 查看。",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/yemapt.png"
     },
     {
         "id":  "yingk",
-        "name":  "褰卞",
+        "baseUrl":  "https://yingk.com/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/yingk.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "影客",
+        "description":  null,
+        "aka":  [
+                    "影客PT",
+                    "YingkPT",
+                    "美盒子",
+                    "MeiHeZi"
+                ],
+        "iconAsset":  "assets/sites/icons/yingk.ico"
     },
     {
         "id":  "yinguskg",
-        "name":  "妯辫姳",
+        "baseUrl":  "https://pt.ying.us.kg/",
         "tags":  [
-
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "樱花",
+        "description":  "YingUSKG PT站点",
+        "aka":  [
+                    "YingUSKG",
+                    "ying.us.kg",
+                    "Ying"
+                ],
+        "iconAsset":  null
     },
     {
         "id":  "zhixing",
-        "name":  "鐭ヨPT",
+        "baseUrl":  "http://pt.zhixing.bjtu.edu.cn/",
         "tags":  [
-
+                     "教育网",
+                     "综合",
+                     "影视"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/zhixing.ico",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "知行PT",
+        "description":  "北京交通大学知行PT",
+        "aka":  [
+
+                ],
+        "iconAsset":  "assets/sites/icons/zhixing.ico"
     },
     {
         "id":  "zhuque",
-        "name":  "鏈遍泙",
+        "baseUrl":  "https://zhuque.in/",
         "tags":  [
-
+                     "影视",
+                     "综合"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/zhuque.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "朱雀",
+        "description":  "新架构的影视站点",
+        "aka":  [
+                    "Zhuque"
+                ],
+        "iconAsset":  "assets/sites/icons/zhuque.png"
     },
     {
         "id":  "zmpt",
-        "name":  "缁囨ⅵ",
+        "baseUrl":  "https://zmpt.cc/",
         "tags":  [
 
                  ],
-        "baseUrl":  null,
-        "iconAsset":  "assets/sites/icons/zmpt.png",
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "织梦",
+        "description":  "为爱启航，造就梦想！",
+        "aka":  [
+                    "织梦PT",
+                    "ZMPT"
+                ],
+        "iconAsset":  "assets/sites/icons/zmpt.png"
     },
     {
         "id":  "zrpt",
-        "name":  "ZRPT",
+        "baseUrl":  "https://zrpt.cc/",
         "tags":  [
-
+                     "纪录片",
+                     "自然",
+                     "教育"
                  ],
-        "baseUrl":  null,
-        "iconAsset":  null,
-        "category":  "综合"
+        "category":  "影视",
+        "name":  "ZRPT",
+        "description":  "探索自然之美，专注纪录片的PT站点",
+        "aka":  [
+                    "探索自然美",
+                    "专注纪录片"
+                ],
+        "iconAsset":  null
     }
 ]

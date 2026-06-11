@@ -19,6 +19,7 @@ class SiteService {
         options: Options(
           headers: {'Cookie': cookie},
           followRedirects: true,
+          responseType: ResponseType.plain,
           validateStatus: (s) => s != null && s < 500,
         ),
       );

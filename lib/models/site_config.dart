@@ -71,6 +71,8 @@ class SiteConfig {
 class SitePreset {
   final String id;
   final String name;
+  final List<String> aka;
+  final String? description;
   final String? baseUrl;
   final List<String> tags;
   final String? iconAsset;
@@ -79,6 +81,8 @@ class SitePreset {
   const SitePreset({
     required this.id,
     required this.name,
+    this.aka = const [],
+    this.description,
     this.baseUrl,
     this.tags = const [],
     this.iconAsset,
@@ -88,6 +92,8 @@ class SitePreset {
   factory SitePreset.fromJson(Map<String, dynamic> json) => SitePreset(
         id: json['id'] as String,
         name: json['name'] as String,
+        aka: (json['aka'] as List?)?.cast<String>() ?? [],
+        description: json['description'] as String?,
         baseUrl: json['baseUrl'] as String?,
         tags: (json['tags'] as List?)?.cast<String>() ?? [],
         iconAsset: json['iconAsset'] as String?,
