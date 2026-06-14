@@ -16,6 +16,9 @@ migrate_working_dir/
 .claude/
 .codegraph/
 
+# Superpowers skills local state (brainstorm server outputs etc.)
+.superpowers/
+
 *.iml
 *.ipr
 *.iws
