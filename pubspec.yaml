@@ -37,9 +37,17 @@ dependencies:
   intl: ^0.19.0
   flutter_secure_storage: ^9.2.4
   webview_flutter: ^4.10.0
+  webview_cookie_manager: ^2.0.6
+  path_provider: ^2.1.5
+  html: ^0.15.4
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
+# 本地 fork 修复 AGP 8 兼容性（namespace 缺失），原仓库 4 年未更新
+dependency_overrides:
+  webview_cookie_manager:
+    path: third_party/webview_cookie_manager
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -54,6 +62,7 @@ flutter:
 
   assets:
     - assets/sites/presets.json
+    - assets/sites/default_schema.json
     - assets/sites/icons/
 
   # To add assets to your application, add an assets section, like this:

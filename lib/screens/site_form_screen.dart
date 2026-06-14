@@ -19,6 +19,12 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
   late final TextEditingController _notesCtrl;
   late final TextEditingController _idCtrl;
 
+  // 解析覆写：用逗号分隔的标签词，对应 td.rowhead 单元格内文本
+  late final TextEditingController _bonusLabelsCtrl;
+  late final TextEditingController _levelLabelsCtrl;
+  late final TextEditingController _userDetailsPathCtrl;
+  bool _advancedExpanded = false;
+
   bool get isEditing => widget.site != null;
 
   @override
@@ -30,6 +36,15 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
     _urlCtrl = TextEditingController(text: s?.baseUrl ?? '');
     _tagsCtrl = TextEditingController(text: s?.tags.join(', ') ?? '');
     _notesCtrl = TextEditingController(text: s?.notes ?? '');
+
+    final schema = s?.parseSchema;
+    _bonusLabelsCtrl = TextEditingController(
+        text: schema?.bonusLabels?.join(', ') ?? '');
+    _levelLabelsCtrl = TextEditingController(
+        text: schema?.levelLabels?.join(', ') ?? '');
+    _userDetailsPathCtrl =
+        TextEditingController(text: schema?.userDetailsPath ?? '');
+    _advancedExpanded = schema != null;
   }
 
   @override
@@ -39,6 +54,9 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
     _urlCtrl.dispose();
     _tagsCtrl.dispose();
     _notesCtrl.dispose();
+    _bonusLabelsCtrl.dispose();
+    _levelLabelsCtrl.dispose();
+    _userDetailsPathCtrl.dispose();
     super.dispose();
   }
 
@@ -113,7 +131,46 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
                   hintText: '添加一些备注信息...',
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
+
+              // ── 高级：解析覆写（NexusPHP 二开站点适配）──
+              ExpansionTile(
+                title: const Text('高级：解析配置'),
+                subtitle: const Text(
+                    '建议去详情页用「解析规则」编辑器（更强大）。下方是旧版仅覆写标签词'),
+                initiallyExpanded: _advancedExpanded,
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: const EdgeInsets.symmetric(vertical: 8),
+                children: [
+                  TextFormField(
+                    controller: _bonusLabelsCtrl,
+                    decoration: const InputDecoration(
+                      labelText: '魔力值标签词',
+                      hintText: '啤酒瓶, 喵饼, 蝌蚪 ...',
+                      helperText: '用逗号分隔。默认已识别"魔力值/Karma Points/Bonus"等',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _levelLabelsCtrl,
+                    decoration: const InputDecoration(
+                      labelText: '等级标签词',
+                      hintText: '默认为"等级/等級/Class"',
+                      helperText: '可选；只有用别名的站点才需填写',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _userDetailsPathCtrl,
+                    decoration: const InputDecoration(
+                      labelText: '用户详情页路径',
+                      hintText: '/userdetails.php',
+                      helperText: '默认为 /userdetails.php，仅二开站点改路径时填',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
 
               SizedBox(
                 width: double.infinity,
@@ -140,6 +197,30 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
         .where((t) => t.isNotEmpty)
         .toList();
 
+    // 解析覆写：把逗号分隔的字符串拆成 List；全空则置 null
+    List<String>? splitLabels(TextEditingController c) {
+      final list = c.text
+          .split(',')
+          .map((t) => t.trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+      return list.isEmpty ? null : list;
+    }
+
+    final bonusLabels = splitLabels(_bonusLabelsCtrl);
+    final levelLabels = splitLabels(_levelLabelsCtrl);
+    final detailsPath = _userDetailsPathCtrl.text.trim();
+    final hasSchema = bonusLabels != null ||
+        levelLabels != null ||
+        detailsPath.isNotEmpty;
+    final schema = hasSchema
+        ? SiteParseSchema(
+            bonusLabels: bonusLabels,
+            levelLabels: levelLabels,
+            userDetailsPath: detailsPath.isEmpty ? null : detailsPath,
+          )
+        : null;
+
     final config = SiteConfig(
       id: id,
       name: _nameCtrl.text.trim(),
@@ -148,6 +229,7 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
       notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
       sortOrder: widget.site?.sortOrder ?? 0,
       addedAt: widget.site?.addedAt,
+      parseSchema: schema,
     );
 
     if (isEditing) {

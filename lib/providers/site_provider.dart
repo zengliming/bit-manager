@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import '../models/site_config.dart';
 import '../services/site_service.dart';
 import '../utils/storage.dart';
@@ -11,7 +12,9 @@ class SiteProvider extends ChangeNotifier {
   List<SiteConfig> _sites = [];
   final Map<String, SiteUserInfo> _userInfo = {};
   final Map<String, String> _cookies = {};
+  final Set<String> _refreshing = {};
   bool _loading = false;
+  bool _refreshingAll = false;
   String _searchQuery = '';
   String? _tagFilter;
 
@@ -20,6 +23,10 @@ class SiteProvider extends ChangeNotifier {
   List<SiteConfig> get sites => List.unmodifiable(_sites);
   Map<String, SiteUserInfo> get userInfo => Map.unmodifiable(_userInfo);
   bool get loading => _loading;
+  bool get refreshingAll => _refreshingAll;
+
+  /// 是否正在刷新指定站点的用户信息
+  bool isRefreshing(String siteId) => _refreshing.contains(siteId);
 
   String get searchQuery => _searchQuery;
   set searchQuery(String v) {
@@ -87,10 +94,30 @@ class SiteProvider extends ChangeNotifier {
           _userInfo[entry.key] = SiteUserInfo.fromJson(infoMap);
         }
       }
+
+      // 启动时自动用 preset 补齐缺失的 parseSchema
+      // （场景：preset 后来加了字段，或用户先添加了同 id 站点）
+      try {
+        final presets = await _loadBundledPresets();
+        if (presets.isNotEmpty) {
+          await syncParseSchemaFromPresets(presets);
+        }
+      } catch (_) {
+        // 加载预设失败不影响主流程
+      }
     } finally {
       _loading = false;
       notifyListeners();
     }
+  }
+
+  /// 从 assets 加载内置站点预设
+  Future<List<SitePreset>> _loadBundledPresets() async {
+    final jsonStr = await rootBundle.loadString('assets/sites/presets.json');
+    final list = jsonDecode(jsonStr) as List;
+    return list
+        .map((j) => SitePreset.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
 
   /// 持久化站点列表
@@ -100,6 +127,30 @@ class SiteProvider extends ChangeNotifier {
       _storageKey,
       _sites.map((s) => s.toJson()).toList(),
     );
+  }
+
+  /// 用 preset 列表补齐已有站点缺失的 parseSchema
+  ///
+  /// 场景：用户先导入了预设、之后预设新增了 parseSchema（比如我们补了 13city/cspt
+  /// 的 bonusLabels）；或者用户手动添加了 id 与某个预设相同的站点（importPresets
+  /// 会跳过已存在的 id，导致 parseSchema 不会被复制过来）。
+  ///
+  /// 只在 site.parseSchema 为 null 时复制；保留用户在站点表单里的自定义。
+  Future<int> syncParseSchemaFromPresets(List<SitePreset> presets) async {
+    final byId = {for (final p in presets) p.id: p};
+    int updated = 0;
+    for (final site in _sites) {
+      if (site.parseSchema != null) continue;
+      final preset = byId[site.id];
+      if (preset?.parseSchema == null) continue;
+      site.parseSchema = preset!.parseSchema;
+      updated++;
+    }
+    if (updated > 0) {
+      await _saveSites();
+      notifyListeners();
+    }
+    return updated;
   }
 
   /// 持久化用户信息
@@ -154,6 +205,7 @@ class SiteProvider extends ChangeNotifier {
         baseUrl: preset.baseUrl,
         tags: List.from(preset.tags),
         sortOrder: _sites.isEmpty ? 1 : _sites.last.sortOrder + 1,
+        parseSchema: preset.parseSchema,
       );
       _sites.add(config);
       count++;
@@ -214,6 +266,9 @@ class SiteProvider extends ChangeNotifier {
     final site = _sites[idx];
     final cookie = _cookies[siteId];
 
+    _refreshing.add(siteId);
+    notifyListeners();
+
     try {
       final info = await _siteService.fetchUserInfo(site, cookie);
       if (info != null) {
@@ -235,6 +290,43 @@ class SiteProvider extends ChangeNotifier {
       );
       await updateUserInfo(failedInfo);
       return false;
+    } finally {
+      _refreshing.remove(siteId);
+      notifyListeners();
     }
+  }
+
+  /// 批量刷新所有有 Cookie 的站点用户信息（最多 3 并发）
+  /// 返回 (成功数, 失败数)
+  Future<(int, int)> refreshAllUserInfo() async {
+    final targets = _sites
+        .where((s) => s.isActive && hasCookie(s.id))
+        .map((s) => s.id)
+        .toList();
+    if (targets.isEmpty) return (0, 0);
+
+    _refreshingAll = true;
+    notifyListeners();
+
+    int success = 0;
+    int failed = 0;
+    const concurrency = 3;
+    try {
+      for (var i = 0; i < targets.length; i += concurrency) {
+        final batch = targets.skip(i).take(concurrency);
+        final results = await Future.wait(batch.map(fetchUserInfo));
+        for (final ok in results) {
+          if (ok) {
+            success++;
+          } else {
+            failed++;
+          }
+        }
+      }
+    } finally {
+      _refreshingAll = false;
+      notifyListeners();
+    }
+    return (success, failed);
   }
 }

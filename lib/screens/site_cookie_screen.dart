@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import '../models/site_config.dart';
 import '../providers/site_provider.dart';
 
@@ -15,8 +16,10 @@ class SiteCookieScreen extends StatefulWidget {
 
 class _SiteCookieScreenState extends State<SiteCookieScreen> {
   final _cookieCtrl = TextEditingController();
+  final _cookieManager = WebviewCookieManager();
   bool _webViewVisible = false;
   WebViewController? _webViewCtrl;
+  String? _currentWebUrl;
 
   SiteConfig get site => widget.site;
 
@@ -184,24 +187,12 @@ class _SiteCookieScreenState extends State<SiteCookieScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (url) async {
-            try {
-              final provider = context.read<SiteProvider>();
-              final result = await _webViewCtrl!
-                  .runJavaScriptReturningResult('document.cookie');
-              final cookie = result.toString();
-              if (cookie.isNotEmpty && cookie != 'null') {
-                await provider.saveCookie(site.id, cookie);
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Cookie 已抓取'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                }
-              }
-            } catch (_) {}
+          onPageFinished: (url) {
+            // 仅记录当前页 URL，不在这里抓 cookie:
+            // 1) document.cookie 拿不到 HttpOnly（NexusPHP 鉴权 cookie 全是 HttpOnly）
+            // 2) 登录前的页面自动保存会把空/无效 cookie 覆盖掉真 cookie
+            // 改为用户点「完成登录」时调用 WebviewCookieManager.getCookies 拉取
+            _currentWebUrl = url;
           },
         ),
       )
@@ -220,7 +211,7 @@ class _SiteCookieScreenState extends State<SiteCookieScreen> {
               ),
               const Spacer(),
               FilledButton(
-                onPressed: () => setState(() => _webViewVisible = false),
+                onPressed: _captureCookieAndClose,
                 child: const Text('完成登录'),
               ),
             ],
@@ -228,6 +219,105 @@ class _SiteCookieScreenState extends State<SiteCookieScreen> {
         ),
         Expanded(child: WebViewWidget(controller: _webViewCtrl!)),
       ],
+    );
+  }
+
+  /// 用户点「完成登录」时触发：通过原生 CookieManager 抓 cookie（含 HttpOnly）
+  Future<void> _captureCookieAndClose() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final provider = context.read<SiteProvider>();
+
+    final url = _currentWebUrl ?? site.baseUrl!;
+    String? cookieString;
+    int cookieCount = 0;
+    String? warnHint;
+
+    // 优先：原生 CookieManager（能读 HttpOnly，NexusPHP 鉴权依赖这个）
+    try {
+      final cookies = await _cookieManager.getCookies(url);
+      final now = DateTime.now();
+      final parts = <String>[];
+      for (final c in cookies) {
+        if (c.expires != null && c.expires!.isBefore(now)) continue;
+        if (c.name.isEmpty) continue;
+        parts.add('${c.name}=${c.value}');
+      }
+      if (parts.isNotEmpty) {
+        cookieString = parts.join('; ');
+        cookieCount = parts.length;
+      }
+    } on Exception catch (e) {
+      // 常见：MissingPluginException — 加完插件后没重新构建就会报
+      warnHint = e.toString().contains('MissingPluginException')
+          ? '原生插件未加载（加完依赖后需要完整重启 app，而非热重载）'
+          : e.toString();
+    }
+
+    // 降级：document.cookie（只能拿到非 HttpOnly cookie）
+    // 防御：必须含至少一个 NexusPHP 鉴权关键词才接受 — 否则只 lang=en / theme=dark
+    // 之类的非鉴权 cookie 也会被误存为「已登录」状态，将来 fetchUserInfo 直接登出循环。
+    if (cookieString == null && _webViewCtrl != null) {
+      try {
+        final result = await _webViewCtrl!
+            .runJavaScriptReturningResult('document.cookie');
+        final raw = result.toString();
+        final cleaned = raw.startsWith('"') && raw.endsWith('"')
+            ? raw.substring(1, raw.length - 1)
+            : raw;
+        final hasAuthToken = RegExp(
+                r'\b(c_secure_(uid|pass|login|ssl)|uid|user_id|PHPSESSID|pass)=',
+                caseSensitive: false)
+            .hasMatch(cleaned);
+        if (cleaned.length > 10 && cleaned.contains('=') && hasAuthToken) {
+          cookieString = cleaned;
+          cookieCount = cleaned.split(';').length;
+          warnHint = '${warnHint ?? ''}；当前用 document.cookie 降级抓取，'
+              'HttpOnly cookie 拿不到，NexusPHP 鉴权很可能失败';
+        } else if (cleaned.length > 10 && cleaned.contains('=')) {
+          // 抓到了 cookie 但没有鉴权 token — 几乎一定是降级失效
+          warnHint = '${warnHint ?? ''}；document.cookie 降级只拿到非鉴权 '
+              'cookie（lang/theme 等），未发现 c_secure_/uid/PHPSESSID — '
+              '请确认 WebView 里已登录成功';
+        }
+      } catch (_) {
+        // ignore
+      }
+    }
+
+    if (cookieString == null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(warnHint != null
+              ? '抓取 Cookie 失败：$warnHint'
+              : '未抓到 Cookie，请确认已登录'),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+      return;
+    }
+
+    await provider.saveCookie(site.id, cookieString);
+
+    // 检查是否含有 NexusPHP 鉴权字段
+    final hasUid = RegExp(r'\b(c_secure_uid|uid|user_id)=')
+        .hasMatch(cookieString);
+    if (!mounted) return;
+    setState(() => _webViewVisible = false);
+    final bg = !hasUid
+        ? Colors.orange
+        : warnHint != null
+            ? Colors.amber
+            : Colors.green;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(!hasUid
+            ? '已抓 $cookieCount 项 Cookie，但未发现 uid — 可能未登录成功'
+            : warnHint != null
+                ? '已抓 $cookieCount 项（降级模式，可能不完整）'
+                : 'Cookie 已抓取（$cookieCount 项）'),
+        backgroundColor: bg,
+        duration: const Duration(seconds: 5),
+      ),
     );
   }
 

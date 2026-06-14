@@ -1,0 +1,24 @@
+name: webview_cookie_manager
+description: Local fork of webview_cookie_manager 2.0.6 with AGP 8 namespace fix.
+version: 2.0.6+local
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=1.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.flutter.plugins.webview_cookie_manager
+        pluginClass: WebviewCookieManagerPlugin
+      ios:
+        pluginClass: WebviewCookieManagerPlugin

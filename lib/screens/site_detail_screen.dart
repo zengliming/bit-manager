@@ -6,6 +6,7 @@ import '../widgets/site_favicon.dart';
 import '../utils/helpers.dart';
 import 'site_form_screen.dart';
 import 'site_cookie_screen.dart';
+import 'site_rules_screen.dart';
 
 class SiteDetailScreen extends StatelessWidget {
   final SiteConfig site;
@@ -18,6 +19,14 @@ class SiteDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(site.name),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.code),
+            tooltip: '解析规则',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => SiteRulesScreen(site: site)),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             tooltip: '编辑',
@@ -234,15 +243,34 @@ class SiteDetailScreen extends StatelessWidget {
   }
 
   Widget _buildInfoGrid(BuildContext context, SiteUserInfo info) {
+    String? formatNum(num? v) =>
+        v?.toStringAsFixed(v % 1 == 0 ? 0 : 2);
+
     final items = <_InfoItem>[
       _InfoItem('分享率',
           info.ratio == double.infinity ? '∞' : info.ratio?.toStringAsFixed(2)),
       _InfoItem('上传量', info.uploaded != null ? formatBytes(info.uploaded!) : null),
       _InfoItem('下载量',
           info.downloaded != null ? formatBytes(info.downloaded!) : null),
-      _InfoItem('魔力值', info.bonusPoints?.toString()),
+      _InfoItem('真实上传',
+          info.trueUploaded != null ? formatBytes(info.trueUploaded!) : null),
+      _InfoItem('真实下载',
+          info.trueDownloaded != null ? formatBytes(info.trueDownloaded!) : null),
+      _InfoItem('魔力值', formatNum(info.bonusPoints)),
+      _InfoItem('做种积分', formatNum(info.seedingBonus)),
+      _InfoItem('时魔', formatNum(info.bonusPerHour)),
       _InfoItem('做种数', info.seedingCount?.toString()),
       _InfoItem('下载中', info.leechingCount?.toString()),
+      _InfoItem('做种体积',
+          info.seedingSize != null ? formatBytes(info.seedingSize!) : null),
+      _InfoItem('未读消息',
+          (info.messageCount ?? 0) > 0 ? '${info.messageCount}' : null),
+      _InfoItem('H&R 待考核',
+          (info.hnrPreWarning ?? 0) > 0 ? '${info.hnrPreWarning}' : null),
+      _InfoItem('H&R 不达标',
+          (info.hnrUnsatisfied ?? 0) > 0 ? '${info.hnrUnsatisfied}' : null),
+      _InfoItem('加入日期', info.joinedAtText),
+      _InfoItem('最近动向', info.lastAccessAtText),
     ].where((i) => i.value != null).toList();
 
     return Wrap(

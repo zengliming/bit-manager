@@ -1,0 +1,124 @@
+{
+  "_comment": "默认 NexusPHP 站点解析规则。改这个文件就能调整所有未自定义的站点行为，不用动代码。每个字段的 selector 数组按顺序尝试，filter 可以是字符串名（无参）或 {name, args} 对象。",
+  "_version": 1,
+  "fields": {
+    "messageCount": {
+      "_label": "未读消息",
+      "selector": [
+        "td[style*='background: red'] a[href*='messages.php']"
+      ],
+      "filter": "parseNumber"
+    },
+    "uploaded": {
+      "_label": "上传量",
+      "selector": [
+        "td.rowhead:contains('传输') + td",
+        "td.rowhead:contains('傳送') + td",
+        "td.rowhead:contains('Transfers') + td"
+      ],
+      "filters": [
+        { "name": "regex", "args": ["(?:上[传傳]量|Uploaded).+?([\\d.,]+\\s*[ZEPTGMK]?i?B)", "i"] },
+        "parseSize"
+      ]
+    },
+    "trueUploaded": {
+      "_label": "真实上传量",
+      "selector": [
+        "td.rowhead:contains('传输') + td",
+        "td.rowhead:contains('傳送') + td",
+        "td.rowhead:contains('Transfers') + td"
+      ],
+      "filters": [
+        { "name": "regex", "args": ["(?:实际|真实|實際|真實|Real|Actual)\\s*(?:上[传傳]量|Uploaded).+?([\\d.,]+\\s*[ZEPTGMK]?i?B)", "i"] },
+        "parseSize"
+      ]
+    },
+    "downloaded": {
+      "_label": "下载量",
+      "selector": [
+        "td.rowhead:contains('传输') + td",
+        "td.rowhead:contains('傳送') + td",
+        "td.rowhead:contains('Transfers') + td"
+      ],
+      "filters": [
+        { "name": "regex", "args": ["(?:下[载載]量|Downloaded).+?([\\d.,]+\\s*[ZEPTGMK]?i?B)", "i"] },
+        "parseSize"
+      ]
+    },
+    "trueDownloaded": {
+      "_label": "真实下载量",
+      "selector": [
+        "td.rowhead:contains('传输') + td",
+        "td.rowhead:contains('傳送') + td",
+        "td.rowhead:contains('Transfers') + td"
+      ],
+      "filters": [
+        { "name": "regex", "args": ["(?:实际|真实|實際|真實|Real|Actual)\\s*(?:下[载載]量|Downloaded).+?([\\d.,]+\\s*[ZEPTGMK]?i?B)", "i"] },
+        "parseSize"
+      ]
+    },
+    "ratio": {
+      "_label": "分享率",
+      "selector": [
+        "td.rowhead:contains('传输') + td",
+        "td.rowhead:contains('傳送') + td",
+        "td.rowhead:contains('Transfers') + td",
+        "td.rowfollow:contains('分享率')"
+      ],
+      "filter": {
+        "name": "regex",
+        "args": ["(?:分享率|Ratio|Share\\s*Ratio).+?([\\d.]+|∞|Inf\\.?|Infinity|---)", "i"]
+      }
+    },
+    "levelName": {
+      "_label": "等级",
+      "selector": [
+        "td.rowhead:contains('等级') + td > img",
+        "td.rowhead:contains('等級') + td > img",
+        "td.rowhead:contains('Class') + td > img"
+      ],
+      "attr": "title"
+    },
+    "seedingBonus": {
+      "_label": "做种积分",
+      "selector": [
+        "td.rowhead:contains('做种积分') + td",
+        "td.rowhead:contains('Seeding Points') + td",
+        "td.rowhead:contains('做種積分') + td",
+        "td.rowhead:contains('保种积分') + td"
+      ],
+      "filter": "parseNumber"
+    },
+    "bonusPerHour": {
+      "_label": "时魔",
+      "selector": [
+        "div:contains('你当前每小时能获取')",
+        "div:contains('You are currently getting')",
+        "div:contains('你當前每小時能獲取')"
+      ],
+      "filter": "parseNumber"
+    },
+    "lastAccessAt": {
+      "_label": "最近动向",
+      "selector": [
+        "td.rowhead:contains('最近动向') + td",
+        "td.rowhead:contains('最近動向') + td",
+        "td.rowhead:contains('Last Action') + td"
+      ],
+      "filters": [
+        { "name": "split", "args": ["(", 0] },
+        "trim"
+      ]
+    },
+    "hnrPreWarning": {
+      "_label": "H&R 待考核",
+      "selector": ["#info_block a[href*='myhr.php']"],
+      "filter": { "name": "regex", "args": ["(\\d+)\\s*/\\s*\\d+"] }
+    },
+    "hnrUnsatisfied": {
+      "_label": "H&R 不达标",
+      "selector": ["#info_block a[href*='myhr.php']"],
+      "filter": { "name": "regex", "args": ["\\d+\\s*/\\s*(\\d+)"] }
+    }
+  }
+}
