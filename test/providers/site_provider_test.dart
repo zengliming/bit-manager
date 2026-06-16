@@ -1,5 +1,6 @@
 import 'package:bit_manager/models/site_config.dart';
 import 'package:bit_manager/providers/site_provider.dart';
+import 'package:bit_manager/utils/storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ void main() {
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    LocalStorage.resetForTest();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
@@ -117,6 +119,40 @@ void main() {
 
       expect(provider.sites.length, 2);
       expect(provider.sites.firstWhere((s) => s.id == 'a').name, 'Site a');
+    });
+
+    test('importPresets 把 preset.iconAsset 复制到 site.iconAsset', () async {
+      final provider = SiteProvider();
+      final presets = [
+        const SitePreset(
+          id: 'agsvpt',
+          name: 'AGSV',
+          iconAsset: 'assets/sites/icons/agsvpt.png',
+        ),
+        const SitePreset(id: 'noicon', name: 'NoIcon'),
+      ];
+
+      await provider.importPresets(presets);
+
+      final agsv = provider.sites.firstWhere((s) => s.id == 'agsvpt');
+      expect(agsv.iconAsset, 'assets/sites/icons/agsvpt.png');
+
+      final noicon = provider.sites.firstWhere((s) => s.id == 'noicon');
+      expect(noicon.iconAsset, isNull);
+    });
+
+    test('loadSites 对老数据（iconAsset 为 null）做 probe 兜底', () async {
+      // 旧版 JSON 没有 iconAsset 字段
+      SharedPreferences.setMockInitialValues({
+        'sites':
+            '[{"id":"aither","name":"Aither","baseUrl":"https://aither.example","tags":[],"isActive":true,"sortOrder":1,"addedAt":"2024-01-01T00:00:00.000"}]',
+      });
+
+      final provider = SiteProvider();
+      await provider.loadSites();
+
+      expect(provider.sites.length, 1);
+      expect(provider.sites.first.iconAsset, 'assets/sites/icons/aither.ico');
     });
 
     test('importPresets 把 preset.schema 复制到 site.parseSchema.schema', () async {

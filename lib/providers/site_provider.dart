@@ -81,6 +81,10 @@ class SiteProvider extends ChangeNotifier {
       final rawList = await storage.getJsonList(_storageKey);
       _sites = rawList.map((json) => SiteConfig.fromJson(json)).toList();
 
+      // 旧版持久化数据可能没有 iconAsset — 用 rootBundle probe 兜底
+      // （新版 importPresets 会直接复制 preset.iconAsset，不需要 probe）
+      await _backfillIconAssets();
+
       for (final site in _sites) {
         final cookie = await storage.getString('cookie_${site.id}');
         if (cookie != null && cookie.isNotEmpty) {
@@ -120,6 +124,23 @@ class SiteProvider extends ChangeNotifier {
     return list
         .map((j) => SitePreset.fromJson(j as Map<String, dynamic>))
         .toList();
+  }
+
+  /// 用 rootBundle 探测每个站点的真实图标路径，填回 site.iconAsset
+  ///
+  /// 用途：老数据没存 iconAsset；新版 importPresets 已经处理，不需要 probe。
+  /// probe 一次后写回存储，避免每次启动重做。
+  Future<void> _backfillIconAssets() async {
+    bool changed = false;
+    for (final site in _sites) {
+      if (site.iconAsset != null && site.iconAsset!.isNotEmpty) continue;
+      final resolved = await SiteService.resolveIconAsset(site.id);
+      if (resolved != null) {
+        site.iconAsset = resolved;
+        changed = true;
+      }
+    }
+    if (changed) await _saveSites();
   }
 
   /// 持久化站点列表
@@ -214,6 +235,7 @@ class SiteProvider extends ChangeNotifier {
         baseUrl: preset.baseUrl,
         tags: List.from(preset.tags),
         sortOrder: _sites.isEmpty ? 1 : _sites.last.sortOrder + 1,
+        iconAsset: preset.iconAsset,
         parseSchema: schema,
       );
       _sites.add(config);

@@ -55,7 +55,7 @@ class SiteDetailScreen extends StatelessWidget {
                       Row(
                         children: [
                           SiteFavicon(
-                            iconAsset: _getIconAsset(site.id),
+                            iconAsset: site.iconAsset,
                             siteName: site.name,
                             size: 56,
                             radius: 14,
@@ -350,14 +350,6 @@ class SiteDetailScreen extends StatelessWidget {
       await context.read<SiteProvider>().deleteSite(site.id);
       if (context.mounted) Navigator.pop(context);
     }
-  }
-
-  String? _getIconAsset(String siteId) {
-    const exts = ['.ico', '.png', '.jpg', '.gif', '.svg', '.webp'];
-    for (final ext in exts) {
-      return 'assets/sites/icons/$siteId$ext';
-    }
-    return null;
   }
 }
 

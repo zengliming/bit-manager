@@ -570,6 +570,34 @@ class SiteService {
     }
   }
 
+  /// 探测 assets/sites/icons/ 下真实存在的图标文件路径
+  ///
+  /// 用途：用户已有的持久化数据（旧版 SiteConfig 没存 iconAsset），
+  /// 启动时用站点 id 探测一次实际文件扩展名，填回 site.iconAsset。
+  /// 新流程（importPresets）已经直接复制 preset.iconAsset，不需要 probe。
+  static const _iconExtensions = [
+    '.ico',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.webp',
+  ];
+
+  static Future<String?> resolveIconAsset(String siteId) async {
+    for (final ext in _iconExtensions) {
+      final path = 'assets/sites/icons/$siteId$ext';
+      try {
+        await rootBundle.load(path);
+        return path;
+      } catch (_) {
+        // 文件不存在，尝试下一个扩展名
+      }
+    }
+    return null;
+  }
+
   /// 用 schema.fields 提供的 selector + filter 规则填充 info
   ///
   /// 字段名对照（key 沿用 PT-depiler 命名）：

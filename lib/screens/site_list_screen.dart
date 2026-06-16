@@ -130,7 +130,7 @@ class _SiteListScreenState extends State<SiteListScreen> {
                         userInfo: provider.getUserInfo(site.id),
                         hasCookie: provider.hasCookie(site.id),
                         refreshing: provider.isRefreshing(site.id),
-                        iconAsset: _getIconAsset(site.id),
+                        iconAsset: site.iconAsset,
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -207,15 +207,6 @@ class _SiteListScreenState extends State<SiteListScreen> {
         },
       ),
     );
-  }
-
-  /// 根据站点 id 查找预设图标路径
-  String? _getIconAsset(String siteId) {
-    const exts = ['.ico', '.png', '.jpg', '.gif', '.svg', '.webp'];
-    for (final ext in exts) {
-      return 'assets/sites/icons/$siteId$ext';
-    }
-    return null;
   }
 
   /// 打开站内消息页（WebView 屏）

@@ -11,6 +11,9 @@ class SiteConfig {
   int sortOrder;
   DateTime addedAt;
 
+  /// 图标资源路径（从预设导入时复制；手动添加时为 null）
+  String? iconAsset;
+
   /// 站点解析配置（可选）。从预设导入时复制 SitePreset.parseSchema；
   /// 用户手动添加的非预设站点可在站点表单中填写。
   SiteParseSchema? parseSchema;
@@ -24,6 +27,7 @@ class SiteConfig {
     this.isActive = true,
     this.sortOrder = 0,
     DateTime? addedAt,
+    this.iconAsset,
     this.parseSchema,
   }) : tags = tags ?? [],
        addedAt = addedAt ?? DateTime.now();
@@ -35,6 +39,7 @@ class SiteConfig {
     String? notes,
     bool? isActive,
     int? sortOrder,
+    String? iconAsset,
     SiteParseSchema? parseSchema,
   }) {
     return SiteConfig(
@@ -46,6 +51,7 @@ class SiteConfig {
       isActive: isActive ?? this.isActive,
       sortOrder: sortOrder ?? this.sortOrder,
       addedAt: addedAt,
+      iconAsset: iconAsset ?? this.iconAsset,
       parseSchema: parseSchema ?? this.parseSchema,
     );
   }
@@ -59,6 +65,7 @@ class SiteConfig {
     'isActive': isActive,
     'sortOrder': sortOrder,
     'addedAt': addedAt.toIso8601String(),
+    if (iconAsset != null) 'iconAsset': iconAsset,
     if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
   };
 
@@ -72,6 +79,7 @@ class SiteConfig {
     sortOrder: json['sortOrder'] as int? ?? 0,
     addedAt:
         DateTime.tryParse(json['addedAt'] as String? ?? '') ?? DateTime.now(),
+    iconAsset: json['iconAsset'] as String?,
     parseSchema: json['parseSchema'] is Map<String, dynamic>
         ? SiteParseSchema.fromJson(json['parseSchema'] as Map<String, dynamic>)
         : null,
