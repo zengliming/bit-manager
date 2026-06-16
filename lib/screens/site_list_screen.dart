@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/site_config.dart';
 import '../providers/site_provider.dart';
 import '../widgets/site_tile.dart';
 import '../widgets/empty_state.dart';
 import 'site_form_screen.dart';
 import 'site_import_screen.dart';
 import 'site_detail_screen.dart';
+import 'site_webview_screen.dart';
+import '../services/site_service.dart';
 
 class SiteListScreen extends StatefulWidget {
   const SiteListScreen({super.key});
@@ -139,6 +142,11 @@ class _SiteListScreenState extends State<SiteListScreen> {
                           final updated = site.copyWith(isActive: v);
                           provider.updateSite(site.id, updated);
                         },
+                        onOpenMessages: () => _openMessages(
+                          context,
+                          site,
+                          provider,
+                        ),
                       ),
                     );
                   },
@@ -211,6 +219,38 @@ class _SiteListScreenState extends State<SiteListScreen> {
       return 'assets/sites/icons/$siteId$ext';
     }
     return null;
+  }
+
+  /// 打开站内消息页（WebView 屏）
+  ///
+  /// 点击未读徽标触发。先校验 cookie / URL 存在，否则提示并返回。
+  void _openMessages(
+    BuildContext context,
+    SiteConfig site,
+    SiteProvider provider,
+  ) {
+    final messenger = ScaffoldMessenger.of(context);
+    if (!provider.hasCookie(site.id)) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('请先配置 Cookie')),
+      );
+      return;
+    }
+    if (site.baseUrl == null || site.baseUrl!.isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('该站点未配置 URL')),
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SiteWebViewScreen(
+          site: site,
+          path: SiteService.messagePathFor(site.parseSchema),
+        ),
+      ),
+    );
   }
 
   /// 批量刷新所有有 Cookie 的站点用户信息
