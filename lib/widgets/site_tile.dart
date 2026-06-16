@@ -3,7 +3,12 @@ import '../models/site_config.dart';
 import 'site_favicon.dart';
 import '../utils/helpers.dart';
 
-/// 站点列表项 — 展示图标、名称、标签、用户信息摘要
+/// 站点列表项 — 紧凑 4 行布局
+///
+/// 行 1：图标 + 名称 + cookie + 未读徽标
+/// 行 2：标签 chips
+/// 行 3：用户名 · 等级 · ↑上传 · ↓下载
+/// 行 4：✦魔力 · ⇧做种 · ⇩下载 · ⚠H&R
 class SiteTile extends StatelessWidget {
   final SiteConfig site;
   final SiteUserInfo? userInfo;
@@ -13,6 +18,7 @@ class SiteTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onRefresh;
   final ValueChanged<bool>? onToggleActive;
+  final VoidCallback? onOpenMessages;
 
   const SiteTile({
     super.key,
@@ -24,6 +30,7 @@ class SiteTile extends StatelessWidget {
     this.onTap,
     this.onRefresh,
     this.onToggleActive,
+    this.onOpenMessages,
   });
 
   @override
@@ -40,7 +47,6 @@ class SiteTile extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                // 图标
                 SiteFavicon(
                   iconAsset: iconAsset,
                   siteName: site.name,
@@ -48,93 +54,29 @@ class SiteTile extends StatelessWidget {
                   radius: 10,
                 ),
                 const SizedBox(width: 12),
-
-                // 中间信息区
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 名称行
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              site.name,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (hasCookie) ...[
-                            const SizedBox(width: 6),
-                            Icon(
-                              Icons.cookie,
-                              size: 14,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-
-                      // 标签 Chips
+                      _buildRow1(context),
                       if (site.tags.isNotEmpty)
-                        Wrap(
-                          spacing: 4,
-                          runSpacing: 2,
-                          children: site.tags
-                              .take(3)
-                              .map(
-                                (tag) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primary.withValues(
-                                      alpha: 0.08,
-                                    ),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    tag,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: theme.colorScheme.primary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: _buildTagChips(theme),
                         ),
-
-                      // 用户信息摘要 / 占位提示
-                      const SizedBox(height: 4),
-                      _buildUserSummary(context),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: _buildIdentityLine(theme),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: _buildStatusLine(theme),
+                      ),
                     ],
                   ),
                 ),
-
-                // 右侧：分享率 / 刷新 + 启用开关
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SizedBox(height: 24, child: _buildTrailingTop(context)),
-                    const SizedBox(height: 4),
-                    SizedBox(
-                      height: 28,
-                      child: Switch(
-                        value: site.isActive,
-                        onChanged: onToggleActive,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(width: 8),
+                _buildTrailing(context, theme),
               ],
             ),
           ),
@@ -143,16 +85,72 @@ class SiteTile extends StatelessWidget {
     );
   }
 
-  Widget _buildUserSummary(BuildContext context) {
+  // ── 行 1：图标、名称、cookie、unread ──
+  Widget _buildRow1(BuildContext context) {
     final theme = Theme.of(context);
+    final info = userInfo;
+    final showUnread = hasCookie && (info?.messageCount ?? 0) > 0;
+    final unreadCount = info?.messageCount ?? 0;
+
+    return Row(
+      children: [
+        Flexible(
+          child: Text(
+            site.name,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        if (hasCookie) ...[
+          const SizedBox(width: 6),
+          Icon(Icons.cookie, size: 14, color: theme.colorScheme.primary),
+        ],
+        if (showUnread) ...[
+          const SizedBox(width: 8),
+          _UnreadBadge(count: unreadCount, onTap: onOpenMessages),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTagChips(ThemeData theme) {
+    return Wrap(
+      spacing: 4,
+      runSpacing: 2,
+      children: site.tags
+          .take(3)
+          .map(
+            (tag) => Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 2,
+              ),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                tag,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  // ── 行 3：身份 + 传输 ──
+  Widget _buildIdentityLine(ThemeData theme) {
     final mutedStyle = TextStyle(
       fontSize: 11,
       color: theme.colorScheme.onSurfaceVariant,
     );
 
-    if (refreshing) {
-      return Text('正在获取用户信息...', style: mutedStyle);
-    }
     if (!hasCookie) {
       return Text('未配置 Cookie', style: mutedStyle);
     }
@@ -176,7 +174,6 @@ class SiteTile extends StatelessWidget {
     if (parts.isEmpty) {
       return Text('解析未命中字段 · 站点模板可能不兼容', style: mutedStyle);
     }
-
     return Text(
       parts.join(' · '),
       style: mutedStyle,
@@ -185,8 +182,76 @@ class SiteTile extends StatelessWidget {
     );
   }
 
-  /// 右上角：抓取中显示 spinner；有 ratio 显示 ratio；否则显示刷新图标按钮
-  Widget _buildTrailingTop(BuildContext context) {
+  // ── 行 4：状态指标 ──
+  Widget _buildStatusLine(ThemeData theme) {
+    final info = userInfo;
+    if (info == null) return const SizedBox.shrink();
+
+    final mutedStyle = TextStyle(
+      fontSize: 11,
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+
+    final children = <Widget>[];
+
+    if (info.bonusPoints != null) {
+      children.add(Text('✦${_formatNumber(info.bonusPoints!)}', style: mutedStyle));
+    }
+    if (info.seedingCount != null) {
+      children.add(Text('⇧${info.seedingCount}', style: mutedStyle));
+    }
+    if (info.leechingCount != null) {
+      children.add(Text('⇩${info.leechingCount}', style: mutedStyle));
+    }
+
+    final pre = info.hnrPreWarning ?? 0;
+    final unsat = info.hnrUnsatisfied ?? 0;
+    if (pre + unsat > 0) {
+      final hnrColor = unsat > 0
+          ? const Color(0xFFFF3B30)
+          : const Color(0xFFFF9500);
+      children.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          decoration: BoxDecoration(
+            color: hnrColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            '⚠${pre + unsat}',
+            style: TextStyle(
+              fontSize: 11,
+              color: hnrColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (children.isEmpty) return const SizedBox.shrink();
+    return Wrap(spacing: 8, children: children);
+  }
+
+  // ── 右侧：ratio / 刷新 + 启用开关 ──
+  Widget _buildTrailing(BuildContext context, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(height: 24, child: _buildTrailingTop(context)),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 28,
+          child: Switch(
+            value: site.isActive,
+            onChanged: onToggleActive,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ),
+      ],
+    );
+  }  Widget _buildTrailingTop(BuildContext context) {
     if (refreshing) {
       return const SizedBox(
         width: 18,
@@ -224,9 +289,51 @@ class SiteTile extends StatelessWidget {
   }
 
   Color _ratioColor(double ratio) {
-    if (ratio == double.infinity || ratio >= 2.0)
+    if (ratio == double.infinity || ratio >= 2.0) {
       return const Color(0xFF34C759);
+    }
     if (ratio >= 1.0) return const Color(0xFF007AFF);
     return const Color(0xFFFF3B30);
+  }
+
+  String _formatNumber(num n) {
+    if (n % 1 == 0) return n.toInt().toString();
+    return n.toStringAsFixed(2);
+  }
+}
+
+/// 红色未读徽标
+class _UnreadBadge extends StatelessWidget {
+  final int count;
+  final VoidCallback? onTap;
+
+  const _UnreadBadge({required this.count, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = count > 99 ? '99+' : count.toString();
+    return Semantics(
+      label: '$count 条未读消息',
+      button: onTap != null,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFF3B30),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
