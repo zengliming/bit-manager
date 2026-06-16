@@ -410,8 +410,8 @@ class _SiteWebViewScreenState extends State<SiteWebViewScreen> {
   }
 
   Future<void> _injectCookies(Uri uri, String cookie) async {
-    final parts = cookie.split(';');
-    for (final p in parts) {
+    final cookies = <Cookie>[];
+    for (final p in cookie.split(';')) {
       final trimmed = p.trim();
       if (trimmed.isEmpty) continue;
       final eq = trimmed.indexOf('=');
@@ -419,13 +419,14 @@ class _SiteWebViewScreenState extends State<SiteWebViewScreen> {
       final name = trimmed.substring(0, eq).trim();
       final value = trimmed.substring(eq + 1).trim();
       if (name.isEmpty) continue;
-      await _cookieManager.setCookie(
-        uri,
+      cookies.add(
         Cookie(name, value)
           ..domain = uri.host
           ..path = '/',
       );
     }
+    if (cookies.isEmpty) return;
+    await _cookieManager.setCookies(cookies, origin: uri.toString());
   }
 
   String _joinUrl(String baseUrl, String path) {
