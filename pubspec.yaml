@@ -62,8 +62,8 @@ flutter:
 
   assets:
     - assets/sites/presets.json
-    - assets/sites/default_schema.json
     - assets/sites/icons/
+    - assets/sites/schemas/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
