@@ -37,9 +37,7 @@ SiteUserInfo makeInfo({
 }
 
 Future<void> pump(WidgetTester tester, Widget child) async {
-  await tester.pumpWidget(
-    MaterialApp(home: Scaffold(body: child)),
-  );
+  await tester.pumpWidget(MaterialApp(home: Scaffold(body: child)));
 }
 
 void main() {
@@ -55,8 +53,7 @@ void main() {
       expect(find.textContaining('⚠'), findsNothing);
     });
 
-    testWidgets('messageCount=3 时显示红色未读徽标且可点击',
-        (tester) async {
+    testWidgets('messageCount=3 时显示红色未读徽标且可点击', (tester) async {
       final site = makeSite();
       final info = makeInfo(messageCount: 3);
       var tapped = 0;
@@ -122,12 +119,7 @@ void main() {
 
       await pump(
         tester,
-        SiteTile(
-          site: site,
-          userInfo: info,
-          hasCookie: true,
-          refreshing: true,
-        ),
+        SiteTile(site: site, userInfo: info, hasCookie: true, refreshing: true),
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -138,7 +130,10 @@ void main() {
       final site = makeSite();
       final info = makeInfo(messageCount: 5, username: 'alice');
 
-      await pump(tester, SiteTile(site: site, userInfo: info, hasCookie: false));
+      await pump(
+        tester,
+        SiteTile(site: site, userInfo: info, hasCookie: false),
+      );
 
       // 状态行不渲染
       expect(find.text('99+'), findsNothing);

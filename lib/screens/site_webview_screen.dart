@@ -18,11 +18,7 @@ class SiteWebViewScreen extends StatefulWidget {
   /// 站内相对路径，如 '/messages.php' 或 '/inbox.php'
   final String path;
 
-  const SiteWebViewScreen({
-    super.key,
-    required this.site,
-    required this.path,
-  });
+  const SiteWebViewScreen({super.key, required this.site, required this.path});
 
   @override
   State<SiteWebViewScreen> createState() => _SiteWebViewScreenState();

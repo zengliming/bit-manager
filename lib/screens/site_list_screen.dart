@@ -142,11 +142,8 @@ class _SiteListScreenState extends State<SiteListScreen> {
                           final updated = site.copyWith(isActive: v);
                           provider.updateSite(site.id, updated);
                         },
-                        onOpenMessages: () => _openMessages(
-                          context,
-                          site,
-                          provider,
-                        ),
+                        onOpenMessages: () =>
+                            _openMessages(context, site, provider),
                       ),
                     );
                   },
@@ -231,15 +228,11 @@ class _SiteListScreenState extends State<SiteListScreen> {
   ) {
     final messenger = ScaffoldMessenger.of(context);
     if (!provider.hasCookie(site.id)) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('请先配置 Cookie')),
-      );
+      messenger.showSnackBar(const SnackBar(content: Text('请先配置 Cookie')));
       return;
     }
     if (site.baseUrl == null || site.baseUrl!.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('该站点未配置 URL')),
-      );
+      messenger.showSnackBar(const SnackBar(content: Text('该站点未配置 URL')));
       return;
     }
     Navigator.push(

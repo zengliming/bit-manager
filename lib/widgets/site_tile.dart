@@ -122,10 +122,7 @@ class SiteTile extends StatelessWidget {
           .take(3)
           .map(
             (tag) => Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 6,
-                vertical: 2,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(6),
@@ -195,7 +192,9 @@ class SiteTile extends StatelessWidget {
     final children = <Widget>[];
 
     if (info.bonusPoints != null) {
-      children.add(Text('✦${_formatNumber(info.bonusPoints!)}', style: mutedStyle));
+      children.add(
+        Text('✦${_formatNumber(info.bonusPoints!)}', style: mutedStyle),
+      );
     }
     if (info.seedingCount != null) {
       children.add(Text('⇧${info.seedingCount}', style: mutedStyle));
@@ -251,7 +250,9 @@ class SiteTile extends StatelessWidget {
         ),
       ],
     );
-  }  Widget _buildTrailingTop(BuildContext context) {
+  }
+
+  Widget _buildTrailingTop(BuildContext context) {
     if (refreshing) {
       return const SizedBox(
         width: 18,
