@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +21,15 @@ class LocalStorage {
       await _instance!._init();
     }
     return _instance!;
+  }
+
+  /// 测试钩子：清空单例 + 重置初始化标志
+  ///
+  /// 与 `SharedPreferences.setMockInitialValues({})` 配合使用，让下一个
+  /// `getInstance()` 走 `_init` 重新读 mock 数据。
+  @visibleForTesting
+  static void resetForTest() {
+    _instance = null;
   }
 
   Future<void> _init() async {
