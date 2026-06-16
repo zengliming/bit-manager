@@ -115,6 +115,40 @@ void main() {
       expect(provider.sites.length, 2);
       expect(provider.sites.firstWhere((s) => s.id == 'a').name, 'Site a');
     });
+
+    test('importPresets 把 preset.schema 复制到 site.parseSchema.schema', () async {
+      final provider = SiteProvider();
+      final presets = [
+        const SitePreset(
+          id: 'gazelle-x',
+          name: 'Gazelle X',
+          schema: 'Gazelle',
+        ),
+        // preset 无 schema 时不创建 parseSchema
+        const SitePreset(id: 'default', name: 'Default'),
+        // preset 同时有 schema 和 parseSchema 时合并
+        const SitePreset(
+          id: 'merge',
+          name: 'Merge',
+          schema: 'Gazelle',
+          parseSchema: SiteParseSchema(bonusLabels: ['啤酒瓶']),
+        ),
+      ];
+
+      await provider.importPresets(presets);
+
+      final gz = provider.sites.firstWhere((s) => s.id == 'gazelle-x');
+      expect(gz.parseSchema, isNotNull);
+      expect(gz.parseSchema!.schema, equals('Gazelle'));
+
+      final def = provider.sites.firstWhere((s) => s.id == 'default');
+      expect(def.parseSchema, isNull);
+
+      final m = provider.sites.firstWhere((s) => s.id == 'merge');
+      expect(m.parseSchema, isNotNull);
+      expect(m.parseSchema!.schema, equals('Gazelle'));
+      expect(m.parseSchema!.bonusLabels, equals(['啤酒瓶']));
+    });
   });
 
   group('Cookie 管理', () {

@@ -199,13 +199,18 @@ class SiteProvider extends ChangeNotifier {
     int count = 0;
     for (final preset in presets) {
       if (_sites.any((s) => s.id == preset.id)) continue;
+      // 把 preset.schema 合并进 parseSchema（保留原有 fields/*Labels）
+      SiteParseSchema? schema = preset.parseSchema;
+      if (preset.schema != null) {
+        schema = (schema ?? const SiteParseSchema()).copyWith(schema: preset.schema);
+      }
       final config = SiteConfig(
         id: preset.id,
         name: preset.name,
         baseUrl: preset.baseUrl,
         tags: List.from(preset.tags),
         sortOrder: _sites.isEmpty ? 1 : _sites.last.sortOrder + 1,
-        parseSchema: preset.parseSchema,
+        parseSchema: schema,
       );
       _sites.add(config);
       count++;
