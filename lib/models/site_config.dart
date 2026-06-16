@@ -276,6 +276,10 @@ class SitePreset {
   final String? iconAsset;
   final String? category;
 
+  /// 站点架构：'NexusPHP' | 'Gazelle' | null
+  /// null 表示未声明，解析时回落到 NexusPHP
+  final String? schema;
+
   /// 站点解析覆写（可选）。如不提供则使用通用 NexusPHP/Gazelle 默认解析。
   final SiteParseSchema? parseSchema;
 
@@ -288,6 +292,7 @@ class SitePreset {
     this.tags = const [],
     this.iconAsset,
     this.category,
+    this.schema,
     this.parseSchema,
   });
 
@@ -300,11 +305,25 @@ class SitePreset {
         tags: (json['tags'] as List?)?.cast<String>() ?? [],
         iconAsset: json['iconAsset'] as String?,
         category: json['category'] as String?,
+        schema: json['schema'] as String?,
         parseSchema: json['parseSchema'] is Map<String, dynamic>
             ? SiteParseSchema.fromJson(
                 json['parseSchema'] as Map<String, dynamic>)
             : null,
       );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        if (aka.isNotEmpty) 'aka': aka,
+        if (description != null) 'description': description,
+        if (baseUrl != null) 'baseUrl': baseUrl,
+        if (tags.isNotEmpty) 'tags': tags,
+        if (iconAsset != null) 'iconAsset': iconAsset,
+        if (category != null) 'category': category,
+        if (schema != null) 'schema': schema,
+        if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
+      };
 }
 
 /// 站点用户信息 — 通过 Cookie 抓取

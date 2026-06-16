@@ -82,6 +82,37 @@ void main() {
       expect(preset.iconAsset, isNull);
       expect(preset.category, isNull);
     });
+
+    test('SitePreset 序列化/反序列化包含 schema 字段', () {
+      final preset = SitePreset(
+        id: 'gazelle-test',
+        name: 'Gazelle Test',
+        baseUrl: 'https://example.com',
+        schema: 'Gazelle',
+      );
+      final json = preset.toJson();
+      expect(json['schema'], equals('Gazelle'));
+
+      final restored = SitePreset.fromJson(Map<String, dynamic>.from(json));
+      expect(restored.schema, equals('Gazelle'));
+    });
+
+    test('SitePreset schema 为 null 时不写入 json', () {
+      final preset = SitePreset(
+        id: 'default',
+        name: 'Default',
+      );
+      final json = preset.toJson();
+      expect(json.containsKey('schema'), isFalse);
+    });
+
+    test('SitePreset.fromJson 缺失 schema 时返回 null', () {
+      final restored = SitePreset.fromJson(<String, dynamic>{
+        'id': 'x',
+        'name': 'X',
+      });
+      expect(restored.schema, isNull);
+    });
   });
 
   group('SiteUserInfo', () {
