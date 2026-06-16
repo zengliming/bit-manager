@@ -155,8 +155,41 @@ class SiteDetailScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // ── 用户信息卡片 ──
-              if (userInfo != null) ...[
+              if (site.isPublicSite)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.public,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '公开站点',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                '无需登录即可浏览，没有用户账户信息',
+                                style: TextStyle(fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (userInfo != null)
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -189,8 +222,6 @@ class SiteDetailScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-              ],
 
               // ── 操作按钮 ──
               if (hasCookie)

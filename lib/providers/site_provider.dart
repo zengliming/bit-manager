@@ -236,6 +236,7 @@ class SiteProvider extends ChangeNotifier {
         tags: List.from(preset.tags),
         sortOrder: _sites.isEmpty ? 1 : _sites.last.sortOrder + 1,
         iconAsset: preset.iconAsset,
+        type: preset.type,
         parseSchema: schema,
       );
       _sites.add(config);
@@ -305,6 +306,12 @@ class SiteProvider extends ChangeNotifier {
     final idx = _sites.indexWhere((s) => s.id == siteId);
     if (idx == -1) throw StateError('Site $siteId not found');
     final site = _sites[idx];
+
+    // 公开站点没有用户账户 / 分享率等概念，直接跳过（不污染 fetchFailed）
+    if (site.isPublicSite) {
+      return false;
+    }
+
     final cookie = _cookies[siteId];
 
     _refreshing.add(siteId);
@@ -338,10 +345,10 @@ class SiteProvider extends ChangeNotifier {
   }
 
   /// 批量刷新所有有 Cookie 的站点用户信息（最多 3 并发）
-  /// 返回 (成功数, 失败数)
+  /// 返回 (成功数, 失败数)。public 站点会被跳过，不计入两者。
   Future<(int, int)> refreshAllUserInfo() async {
     final targets = _sites
-        .where((s) => s.isActive && hasCookie(s.id))
+        .where((s) => s.isActive && !s.isPublicSite && hasCookie(s.id))
         .map((s) => s.id)
         .toList();
     if (targets.isEmpty) return (0, 0);

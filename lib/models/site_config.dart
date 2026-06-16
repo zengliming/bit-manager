@@ -14,6 +14,11 @@ class SiteConfig {
   /// 图标资源路径（从预设导入时复制；手动添加时为 null）
   String? iconAsset;
 
+  /// 站点类型：'public' = 公开站（无用户账户 / 无分享率等概念），
+  /// null 或其它值 = 私有站（默认 PT 站行为）。
+  /// 对齐 PT-depiler `definitions/<site>.ts` 的 `type: "public"`。
+  String? type;
+
   /// 站点解析配置（可选）。从预设导入时复制 SitePreset.parseSchema；
   /// 用户手动添加的非预设站点可在站点表单中填写。
   SiteParseSchema? parseSchema;
@@ -28,9 +33,13 @@ class SiteConfig {
     this.sortOrder = 0,
     DateTime? addedAt,
     this.iconAsset,
+    this.type,
     this.parseSchema,
   }) : tags = tags ?? [],
        addedAt = addedAt ?? DateTime.now();
+
+  /// 是否公开站点（无用户账户信息）
+  bool get isPublicSite => type == 'public';
 
   SiteConfig copyWith({
     String? name,
@@ -40,6 +49,7 @@ class SiteConfig {
     bool? isActive,
     int? sortOrder,
     String? iconAsset,
+    String? type,
     SiteParseSchema? parseSchema,
   }) {
     return SiteConfig(
@@ -52,6 +62,7 @@ class SiteConfig {
       sortOrder: sortOrder ?? this.sortOrder,
       addedAt: addedAt,
       iconAsset: iconAsset ?? this.iconAsset,
+      type: type ?? this.type,
       parseSchema: parseSchema ?? this.parseSchema,
     );
   }
@@ -66,6 +77,7 @@ class SiteConfig {
     'sortOrder': sortOrder,
     'addedAt': addedAt.toIso8601String(),
     if (iconAsset != null) 'iconAsset': iconAsset,
+    if (type != null) 'type': type,
     if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
   };
 
@@ -80,6 +92,7 @@ class SiteConfig {
     addedAt:
         DateTime.tryParse(json['addedAt'] as String? ?? '') ?? DateTime.now(),
     iconAsset: json['iconAsset'] as String?,
+    type: json['type'] as String?,
     parseSchema: json['parseSchema'] is Map<String, dynamic>
         ? SiteParseSchema.fromJson(json['parseSchema'] as Map<String, dynamic>)
         : null,
@@ -314,6 +327,9 @@ class SitePreset {
   /// null 表示未声明，解析时回落到 NexusPHP
   final String? schema;
 
+  /// 站点类型：'public' = 公开站；null = 私有站（默认）
+  final String? type;
+
   /// 站点解析覆写（可选）。如不提供则使用通用 NexusPHP/Gazelle 默认解析。
   final SiteParseSchema? parseSchema;
 
@@ -327,6 +343,7 @@ class SitePreset {
     this.iconAsset,
     this.category,
     this.schema,
+    this.type,
     this.parseSchema,
   });
 
@@ -340,6 +357,7 @@ class SitePreset {
     iconAsset: json['iconAsset'] as String?,
     category: json['category'] as String?,
     schema: json['schema'] as String?,
+    type: json['type'] as String?,
     parseSchema: json['parseSchema'] is Map<String, dynamic>
         ? SiteParseSchema.fromJson(json['parseSchema'] as Map<String, dynamic>)
         : null,
@@ -355,6 +373,7 @@ class SitePreset {
     if (iconAsset != null) 'iconAsset': iconAsset,
     if (category != null) 'category': category,
     if (schema != null) 'schema': schema,
+    if (type != null) 'type': type,
     if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
   };
 }

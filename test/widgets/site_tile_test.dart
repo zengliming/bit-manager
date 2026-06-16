@@ -140,5 +140,22 @@ void main() {
       // 占位文案出现
       expect(find.text('未配置 Cookie'), findsOneWidget);
     });
+
+    testWidgets('isPublicSite=true 时显示「公开站点」标识', (tester) async {
+      final site = SiteConfig(
+        id: 'dmhy',
+        name: 'DMHY',
+        baseUrl: 'https://share.dmhy.org',
+        type: 'public',
+      );
+
+      await pump(tester, SiteTile(site: site, hasCookie: true));
+
+      expect(find.text('公开站点'), findsOneWidget);
+      // 行 4 状态指标不渲染（userInfo 始终 null）
+      expect(find.textContaining('⚠'), findsNothing);
+      // 不显示「未配置 Cookie」（public 站 cookie 概念不同）
+      expect(find.text('未配置 Cookie'), findsNothing);
+    });
   });
 }

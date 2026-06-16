@@ -1,5 +1,6 @@
 import 'package:bit_manager/models/site_config.dart';
 import 'package:bit_manager/providers/site_provider.dart';
+import 'package:bit_manager/services/site_service.dart';
 import 'package:bit_manager/utils/storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -141,6 +142,48 @@ void main() {
       expect(noicon.iconAsset, isNull);
     });
 
+    test('importPresets 把 preset.type 复制到 site.type', () async {
+      final provider = SiteProvider();
+      final presets = [
+        const SitePreset(id: 'dmhy', name: 'DMHY', type: 'public'),
+        const SitePreset(id: 'mteam', name: 'M-Team'), // 私有（默认）
+      ];
+
+      await provider.importPresets(presets);
+
+      expect(provider.sites.firstWhere((s) => s.id == 'dmhy').type, 'public');
+      expect(provider.sites.firstWhere((s) => s.id == 'mteam').type, isNull);
+    });
+
+    test('SiteConfig JSON 序列化保留 type 字段', () {
+      final site = SiteConfig(id: 'dmhy', name: 'DMHY', type: 'public');
+      final json = site.toJson();
+      expect(json['type'], 'public');
+
+      final restored = SiteConfig.fromJson({
+        'id': 'dmhy',
+        'name': 'DMHY',
+        'type': 'public',
+        'tags': [],
+        'isActive': true,
+        'sortOrder': 1,
+        'addedAt': '2024-01-01T00:00:00.000',
+      });
+      expect(restored.type, 'public');
+    });
+
+    test('SiteConfig JSON 反序列化缺 type 字段时默认为 null', () {
+      final restored = SiteConfig.fromJson({
+        'id': 'old',
+        'name': 'Old',
+        'tags': [],
+        'isActive': true,
+        'sortOrder': 1,
+        'addedAt': '2024-01-01T00:00:00.000',
+      });
+      expect(restored.type, isNull);
+    });
+
     test('loadSites 对老数据（iconAsset 为 null）做 probe 兜底', () async {
       // 旧版 JSON 没有 iconAsset 字段
       SharedPreferences.setMockInitialValues({
@@ -153,6 +196,58 @@ void main() {
 
       expect(provider.sites.length, 1);
       expect(provider.sites.first.iconAsset, 'assets/sites/icons/aither.ico');
+    });
+
+    test('refreshAllUserInfo 跳过 public 类型的站点', () async {
+      // 提前加载默认 schema 资源
+      await SiteService.ensureDefaultSchemaLoaded();
+
+      final provider = SiteProvider();
+      // 一个 public 站，一个 private 站
+      await provider.addSite(
+        SiteConfig(
+          id: 'dmhy',
+          name: 'DMHY',
+          baseUrl: 'https://share.dmhy.org',
+          type: 'public',
+        ),
+      );
+      await provider.addSite(
+        SiteConfig(
+          id: 'mteam',
+          name: 'M-Team',
+          baseUrl: 'https://m-team.example',
+        ),
+      );
+      // 给两个都加 cookie
+      await provider.saveCookie('dmhy', 'uid=1');
+      await provider.saveCookie('mteam', 'uid=2');
+
+      final (success, failed) = await provider.refreshAllUserInfo();
+
+      // public 站 dmhy 应被跳过：既不成功也不失败
+      expect(success + failed, lessThan(2));
+      // dmhy 不应有 userInfo（被跳过）
+      expect(provider.getUserInfo('dmhy'), isNull);
+    });
+
+    test('fetchUserInfo 对 public 站直接返回 false，不污染 fetchFailed', () async {
+      await SiteService.ensureDefaultSchemaLoaded();
+
+      final provider = SiteProvider();
+      await provider.addSite(
+        SiteConfig(
+          id: 'dmhy',
+          name: 'DMHY',
+          baseUrl: 'https://share.dmhy.org',
+          type: 'public',
+        ),
+      );
+
+      final result = await provider.fetchUserInfo('dmhy');
+      expect(result, isFalse);
+      // 不应写入任何 userInfo（包括 fetchFailed=true 的占位）
+      expect(provider.getUserInfo('dmhy'), isNull);
     });
 
     test('importPresets 把 preset.schema 复制到 site.parseSchema.schema', () async {

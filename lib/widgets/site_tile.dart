@@ -68,10 +68,11 @@ class SiteTile extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 4),
                         child: _buildIdentityLine(theme),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: _buildStatusLine(theme),
-                      ),
+                      if (!site.isPublicSite)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: _buildStatusLine(theme),
+                        ),
                     ],
                   ),
                 ),
@@ -141,12 +142,29 @@ class SiteTile extends StatelessWidget {
     );
   }
 
-  // ── 行 3：身份 + 传输 ──
+  // ── 行 3：身份 + 传输（或公开站点提示）──
   Widget _buildIdentityLine(ThemeData theme) {
     final mutedStyle = TextStyle(
       fontSize: 11,
       color: theme.colorScheme.onSurfaceVariant,
     );
+
+    // 公开站点没有用户账户信息，显示简短标识
+    if (site.isPublicSite) {
+      return Row(
+        children: [
+          Icon(Icons.public, size: 12, color: theme.colorScheme.primary),
+          const SizedBox(width: 4),
+          Text(
+            '公开站点',
+            style: mutedStyle.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      );
+    }
 
     if (!hasCookie) {
       return Text('未配置 Cookie', style: mutedStyle);
