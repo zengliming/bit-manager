@@ -117,7 +117,8 @@ class SiteTile extends StatelessWidget {
   - 右：抓取中 spinner；否则 ratio；否则无 userInfo 时显示刷新按钮
 - **行 2**：标签 chips（保留现有 `take(3)`）
 - **行 3**：纯文本 11 号灰字
-  - username / level / ↑down 至少一项存在才渲染整行
+  - 渲染 `username · level · ↑上传 · ↓下载` 各项（缺省项隐藏该项）
+  - 全部为 null → 渲染"未配置 Cookie"占位（与现有 `_buildUserSummary` 行为一致）
 - **行 4**：状态指标 11 号灰字
   - ✦ 魔力值（`bonusPoints != null`）
   - ⇧ 做种数（`seedingCount != null`）
@@ -125,8 +126,8 @@ class SiteTile extends StatelessWidget {
   - ⚠ H&R（`pre+unsat` 都为 0/null → 不渲染；> 0 → 合并显示 `⚠{sum}`；不达标 > 0 时换强调色 `0xFFFF3B30`）
   - 一项都没有 → 整行不渲染
 
-右侧（启用开关）：`Switch` 整体下移到列底，缩小 `materialTapTargetSize`。
-无 cookie 的站行内全部 userInfo 相关行不渲染（保留"未配置 Cookie"提示）。
+右侧（启用开关）：`Switch` 固定在右列最底部（行 4 高度内），`height: 28` 紧贴下边距；与原版一致用 `materialTapTargetSize: shrinkWrap`。
+无 cookie 的站：行 3 显示"未配置 Cookie"占位文本；行 4 整体不渲染；徽标不出现（因 `messageCount=null`）。
 
 ### `SiteWebViewScreen`
 
@@ -237,7 +238,7 @@ void _openMessages(BuildContext context, SiteConfig site, SiteProvider provider)
 - `hnrPreWarning=2, hnrUnsatisfied=1` → 显示 "⚠3" 强调色
 - `hnrPreWarning=0, hnrUnsatisfied=0` → 不显示
 - `refreshing=true` → spinner 替代 ratio
-- `hasCookie=false` → userInfo 相关行不渲染
+- `hasCookie=false` → 行 3 显示"未配置 Cookie"；行 4 不渲染；徽标不出现
 
 `test/screens/site_webview_screen_test.dart`：
 - 无 cookie → 提示且不导航（绑定在 `_openMessages` 处测）
