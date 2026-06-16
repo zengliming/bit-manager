@@ -267,3 +267,22 @@ void _openMessages(BuildContext context, SiteConfig site, SiteProvider provider)
 | `messageCount=null` 的站未读徽标不显示 | UI 文案 "未配置" 区分；schema 解析失败在 `SiteRulesScreen` 提供手动补 |
 | `fetchFailed=true` 时旧值误导 | 默认保留旧值（A 决策）；如要切 B 改 1 行即可 |
 | WebView 内存占用 | `dispose` 释放 controller；浏览器风格返回而非保留 |
+
+## 实施状态
+
+实施完成于 2026-06-16。涉及改动：
+
+- `lib/services/site_service.dart`（`messagePathFor` 静态方法）
+- `lib/providers/site_provider.dart`（`unreadTotal` getter）
+- `lib/screens/site_webview_screen.dart`（新建通用 WebView 屏）
+- `lib/widgets/site_tile.dart`（4 行紧凑布局 + 未读 / H&R 徽标）
+- `lib/screens/site_list_screen.dart`（绑定 `onOpenMessages` → `_openMessages`）
+- `lib/utils/storage.dart`（加 `resetForTest()` 测试钩子）
+
+测试文件：
+- `test/services/site_service_message_path_test.dart`（4 个用例）
+- `test/providers/site_provider_unread_total_test.dart`（4 个用例）
+- `test/screens/site_webview_screen_test.dart`（4 个用例）
+- `test/widgets/site_tile_test.dart`（8 个用例）
+
+合计新增 20 个测试，全量测试 157 PASS，`flutter analyze` 在新增/修改文件上 0 issue。
