@@ -83,7 +83,8 @@ class TorrentProvider extends ChangeNotifier {
       TorrentSortField.totalSize => t.totalSize,
       TorrentSortField.progress => (t.progress * 1000000).round(),
       TorrentSortField.eta => t.eta,
-      TorrentSortField.lastActivity => t.lastActivity?.millisecondsSinceEpoch ?? 0,
+      TorrentSortField.lastActivity =>
+        t.lastActivity?.millisecondsSinceEpoch ?? 0,
       TorrentSortField.seedsConnected => t.seedsConnected,
       TorrentSortField.leechers => t.leechers,
       TorrentSortField.multiSource => t.multiSource,

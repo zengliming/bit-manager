@@ -56,8 +56,7 @@ class SelectorEngine {
     if (idx < matches.length) {
       // 还有不连续的 :contains —— 复杂情况（如 a:contains('x') b:contains('y')），
       // 目前不支持。PT-depiler 没用过。
-      assert(false,
-          'SelectorEngine: 不连续 :contains 暂不支持，selector="$s"');
+      assert(false, 'SelectorEngine: 不连续 :contains 暂不支持，selector="$s"');
       return const [];
     }
 

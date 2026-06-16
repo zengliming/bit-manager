@@ -49,9 +49,11 @@ class SiteProvider extends ChangeNotifier {
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase();
       result = result
-          .where((s) =>
-              s.name.toLowerCase().contains(q) ||
-              s.tags.any((t) => t.toLowerCase().contains(q)))
+          .where(
+            (s) =>
+                s.name.toLowerCase().contains(q) ||
+                s.tags.any((t) => t.toLowerCase().contains(q)),
+          )
           .toList();
     }
     if (_tagFilter != null && _tagFilter!.isNotEmpty) {
@@ -202,7 +204,9 @@ class SiteProvider extends ChangeNotifier {
       // 把 preset.schema 合并进 parseSchema（保留原有 fields/*Labels）
       SiteParseSchema? schema = preset.parseSchema;
       if (preset.schema != null) {
-        schema = (schema ?? const SiteParseSchema()).copyWith(schema: preset.schema);
+        schema = (schema ?? const SiteParseSchema()).copyWith(
+          schema: preset.schema,
+        );
       }
       final config = SiteConfig(
         id: preset.id,

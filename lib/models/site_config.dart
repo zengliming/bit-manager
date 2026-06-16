@@ -25,8 +25,8 @@ class SiteConfig {
     this.sortOrder = 0,
     DateTime? addedAt,
     this.parseSchema,
-  })  : tags = tags ?? [],
-        addedAt = addedAt ?? DateTime.now();
+  }) : tags = tags ?? [],
+       addedAt = addedAt ?? DateTime.now();
 
   SiteConfig copyWith({
     String? name,
@@ -51,32 +51,31 @@ class SiteConfig {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'baseUrl': baseUrl,
-        'tags': tags,
-        'notes': notes,
-        'isActive': isActive,
-        'sortOrder': sortOrder,
-        'addedAt': addedAt.toIso8601String(),
-        if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
-      };
+    'id': id,
+    'name': name,
+    'baseUrl': baseUrl,
+    'tags': tags,
+    'notes': notes,
+    'isActive': isActive,
+    'sortOrder': sortOrder,
+    'addedAt': addedAt.toIso8601String(),
+    if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
+  };
 
   factory SiteConfig.fromJson(Map<String, dynamic> json) => SiteConfig(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        baseUrl: json['baseUrl'] as String?,
-        tags: (json['tags'] as List?)?.cast<String>() ?? [],
-        notes: json['notes'] as String?,
-        isActive: json['isActive'] as bool? ?? true,
-        sortOrder: json['sortOrder'] as int? ?? 0,
-        addedAt:
-            DateTime.tryParse(json['addedAt'] as String? ?? '') ?? DateTime.now(),
-        parseSchema: json['parseSchema'] is Map<String, dynamic>
-            ? SiteParseSchema.fromJson(
-                json['parseSchema'] as Map<String, dynamic>)
-            : null,
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    baseUrl: json['baseUrl'] as String?,
+    tags: (json['tags'] as List?)?.cast<String>() ?? [],
+    notes: json['notes'] as String?,
+    isActive: json['isActive'] as bool? ?? true,
+    sortOrder: json['sortOrder'] as int? ?? 0,
+    addedAt:
+        DateTime.tryParse(json['addedAt'] as String? ?? '') ?? DateTime.now(),
+    parseSchema: json['parseSchema'] is Map<String, dynamic>
+        ? SiteParseSchema.fromJson(json['parseSchema'] as Map<String, dynamic>)
+        : null,
+  );
 }
 
 /// 站点解析 schema — 自定义某个站点的 td.rowhead 标签词、url 路径等
@@ -184,8 +183,9 @@ class SiteParseSchema {
         if (v is Map<String, dynamic>) {
           fields![k.toString()] = FieldRule.fromJson(v);
         } else if (v is Map) {
-          fields![k.toString()] =
-              FieldRule.fromJson(Map<String, dynamic>.from(v));
+          fields![k.toString()] = FieldRule.fromJson(
+            Map<String, dynamic>.from(v),
+          );
         }
       });
     }
@@ -204,18 +204,18 @@ class SiteParseSchema {
   }
 
   Map<String, dynamic> toJson() => {
-        if (schema != null) 'schema': schema,
-        if (userDetailsPath != null) 'userDetailsPath': userDetailsPath,
-        if (fields != null)
-          'fields': fields!.map((k, v) => MapEntry(k, v.toJson())),
-        if (usernameLabels != null) 'usernameLabels': usernameLabels,
-        if (levelLabels != null) 'levelLabels': levelLabels,
-        if (transferLabels != null) 'transferLabels': transferLabels,
-        if (bonusLabels != null) 'bonusLabels': bonusLabels,
-        if (joinTimeLabels != null) 'joinTimeLabels': joinTimeLabels,
-        if (seedingLabels != null) 'seedingLabels': seedingLabels,
-        if (leechingLabels != null) 'leechingLabels': leechingLabels,
-      };
+    if (schema != null) 'schema': schema,
+    if (userDetailsPath != null) 'userDetailsPath': userDetailsPath,
+    if (fields != null)
+      'fields': fields!.map((k, v) => MapEntry(k, v.toJson())),
+    if (usernameLabels != null) 'usernameLabels': usernameLabels,
+    if (levelLabels != null) 'levelLabels': levelLabels,
+    if (transferLabels != null) 'transferLabels': transferLabels,
+    if (bonusLabels != null) 'bonusLabels': bonusLabels,
+    if (joinTimeLabels != null) 'joinTimeLabels': joinTimeLabels,
+    if (seedingLabels != null) 'seedingLabels': seedingLabels,
+    if (leechingLabels != null) 'leechingLabels': leechingLabels,
+  };
 }
 
 /// 单个字段的解析规则
@@ -283,12 +283,12 @@ class FieldRule {
   }
 
   Map<String, dynamic> toJson() => {
-        'selector': selector,
-        if (attr != null) 'attr': attr,
-        if (filter != null) 'filter': filter,
-        if (filters != null) 'filters': filters,
-        if (contains != null) 'contains': contains,
-      };
+    'selector': selector,
+    if (attr != null) 'attr': attr,
+    if (filter != null) 'filter': filter,
+    if (filters != null) 'filters': filters,
+    if (contains != null) 'contains': contains,
+  };
 }
 
 /// 站点预设 — 内置只读数据，从 assets/sites/presets.json 加载
@@ -323,33 +323,32 @@ class SitePreset {
   });
 
   factory SitePreset.fromJson(Map<String, dynamic> json) => SitePreset(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        aka: (json['aka'] as List?)?.cast<String>() ?? [],
-        description: json['description'] as String?,
-        baseUrl: json['baseUrl'] as String?,
-        tags: (json['tags'] as List?)?.cast<String>() ?? [],
-        iconAsset: json['iconAsset'] as String?,
-        category: json['category'] as String?,
-        schema: json['schema'] as String?,
-        parseSchema: json['parseSchema'] is Map<String, dynamic>
-            ? SiteParseSchema.fromJson(
-                json['parseSchema'] as Map<String, dynamic>)
-            : null,
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    aka: (json['aka'] as List?)?.cast<String>() ?? [],
+    description: json['description'] as String?,
+    baseUrl: json['baseUrl'] as String?,
+    tags: (json['tags'] as List?)?.cast<String>() ?? [],
+    iconAsset: json['iconAsset'] as String?,
+    category: json['category'] as String?,
+    schema: json['schema'] as String?,
+    parseSchema: json['parseSchema'] is Map<String, dynamic>
+        ? SiteParseSchema.fromJson(json['parseSchema'] as Map<String, dynamic>)
+        : null,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        if (aka.isNotEmpty) 'aka': aka,
-        if (description != null) 'description': description,
-        if (baseUrl != null) 'baseUrl': baseUrl,
-        if (tags.isNotEmpty) 'tags': tags,
-        if (iconAsset != null) 'iconAsset': iconAsset,
-        if (category != null) 'category': category,
-        if (schema != null) 'schema': schema,
-        if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
-      };
+    'id': id,
+    'name': name,
+    if (aka.isNotEmpty) 'aka': aka,
+    if (description != null) 'description': description,
+    if (baseUrl != null) 'baseUrl': baseUrl,
+    if (tags.isNotEmpty) 'tags': tags,
+    if (iconAsset != null) 'iconAsset': iconAsset,
+    if (category != null) 'category': category,
+    if (schema != null) 'schema': schema,
+    if (parseSchema != null) 'parseSchema': parseSchema!.toJson(),
+  };
 }
 
 /// 站点用户信息 — 通过 Cookie 抓取
@@ -359,28 +358,37 @@ class SiteUserInfo {
   String? username;
   int? uploaded;
   int? downloaded;
+
   /// 真实/实际上传量（NexusPHP 部分站点显示扣除做种加成后的）
   int? trueUploaded;
+
   /// 真实/实际下载量
   int? trueDownloaded;
   double? ratio;
   String? level;
   int? bonusPoints;
+
   /// 做种积分（与魔力值是不同的字段）
   num? seedingBonus;
+
   /// 时魔（每小时获得的魔力）
   num? bonusPerHour;
   int? seedingCount;
   int? leechingCount;
+
   /// 做种总体积（字节）
   int? seedingSize;
+
   /// 未读消息数
   int? messageCount;
+
   /// H&R 待考核数
   int? hnrPreWarning;
+
   /// H&R 不达标数
   int? hnrUnsatisfied;
   String? joinedAtText;
+
   /// 最近动向（最近一次站点活动时间，原文）
   String? lastAccessAtText;
   DateTime? lastFetchedAt;
@@ -412,54 +420,54 @@ class SiteUserInfo {
   });
 
   Map<String, dynamic> toJson() => {
-        'siteId': siteId,
-        'userId': userId,
-        'username': username,
-        'uploaded': uploaded,
-        'downloaded': downloaded,
-        'trueUploaded': trueUploaded,
-        'trueDownloaded': trueDownloaded,
-        'ratio': ratio,
-        'level': level,
-        'bonusPoints': bonusPoints,
-        'seedingBonus': seedingBonus,
-        'bonusPerHour': bonusPerHour,
-        'seedingCount': seedingCount,
-        'leechingCount': leechingCount,
-        'seedingSize': seedingSize,
-        'messageCount': messageCount,
-        'hnrPreWarning': hnrPreWarning,
-        'hnrUnsatisfied': hnrUnsatisfied,
-        'joinedAtText': joinedAtText,
-        'lastAccessAtText': lastAccessAtText,
-        'lastFetchedAt': lastFetchedAt?.toIso8601String(),
-        'fetchFailed': fetchFailed,
-      };
+    'siteId': siteId,
+    'userId': userId,
+    'username': username,
+    'uploaded': uploaded,
+    'downloaded': downloaded,
+    'trueUploaded': trueUploaded,
+    'trueDownloaded': trueDownloaded,
+    'ratio': ratio,
+    'level': level,
+    'bonusPoints': bonusPoints,
+    'seedingBonus': seedingBonus,
+    'bonusPerHour': bonusPerHour,
+    'seedingCount': seedingCount,
+    'leechingCount': leechingCount,
+    'seedingSize': seedingSize,
+    'messageCount': messageCount,
+    'hnrPreWarning': hnrPreWarning,
+    'hnrUnsatisfied': hnrUnsatisfied,
+    'joinedAtText': joinedAtText,
+    'lastAccessAtText': lastAccessAtText,
+    'lastFetchedAt': lastFetchedAt?.toIso8601String(),
+    'fetchFailed': fetchFailed,
+  };
 
   factory SiteUserInfo.fromJson(Map<String, dynamic> json) => SiteUserInfo(
-        siteId: json['siteId'] as String,
-        userId: json['userId'] as String?,
-        username: json['username'] as String?,
-        uploaded: json['uploaded'] as int?,
-        downloaded: json['downloaded'] as int?,
-        trueUploaded: json['trueUploaded'] as int?,
-        trueDownloaded: json['trueDownloaded'] as int?,
-        ratio: (json['ratio'] as num?)?.toDouble(),
-        level: json['level'] as String?,
-        bonusPoints: json['bonusPoints'] as int?,
-        seedingBonus: json['seedingBonus'] as num?,
-        bonusPerHour: json['bonusPerHour'] as num?,
-        seedingCount: json['seedingCount'] as int?,
-        leechingCount: json['leechingCount'] as int?,
-        seedingSize: json['seedingSize'] as int?,
-        messageCount: json['messageCount'] as int?,
-        hnrPreWarning: json['hnrPreWarning'] as int?,
-        hnrUnsatisfied: json['hnrUnsatisfied'] as int?,
-        joinedAtText: json['joinedAtText'] as String?,
-        lastAccessAtText: json['lastAccessAtText'] as String?,
-        lastFetchedAt: DateTime.tryParse(json['lastFetchedAt'] as String? ?? ''),
-        fetchFailed: json['fetchFailed'] as bool? ?? false,
-      );
+    siteId: json['siteId'] as String,
+    userId: json['userId'] as String?,
+    username: json['username'] as String?,
+    uploaded: json['uploaded'] as int?,
+    downloaded: json['downloaded'] as int?,
+    trueUploaded: json['trueUploaded'] as int?,
+    trueDownloaded: json['trueDownloaded'] as int?,
+    ratio: (json['ratio'] as num?)?.toDouble(),
+    level: json['level'] as String?,
+    bonusPoints: json['bonusPoints'] as int?,
+    seedingBonus: json['seedingBonus'] as num?,
+    bonusPerHour: json['bonusPerHour'] as num?,
+    seedingCount: json['seedingCount'] as int?,
+    leechingCount: json['leechingCount'] as int?,
+    seedingSize: json['seedingSize'] as int?,
+    messageCount: json['messageCount'] as int?,
+    hnrPreWarning: json['hnrPreWarning'] as int?,
+    hnrUnsatisfied: json['hnrUnsatisfied'] as int?,
+    joinedAtText: json['joinedAtText'] as String?,
+    lastAccessAtText: json['lastAccessAtText'] as String?,
+    lastFetchedAt: DateTime.tryParse(json['lastFetchedAt'] as String? ?? ''),
+    fetchFailed: json['fetchFailed'] as bool? ?? false,
+  );
 }
 
 /// Cookie 存储 — 存 SecureStorage，此类只作内存载体

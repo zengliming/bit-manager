@@ -444,7 +444,9 @@ class TorrentListScreen extends StatelessWidget {
                               selected: tp.errorFilter == entry.key,
                               onSelected: (_) {
                                 tp.setErrorFilter(
-                                  tp.errorFilter == entry.key ? null : entry.key,
+                                  tp.errorFilter == entry.key
+                                      ? null
+                                      : entry.key,
                                 );
                                 setSheetState(() {});
                               },
@@ -457,7 +459,9 @@ class TorrentListScreen extends StatelessWidget {
                                 '暂无异常种子',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -513,10 +517,7 @@ class TorrentListScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '排序',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
+                      Text('排序', style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 12),
                       ...fields.map(
                         (f) => RadioListTile<TorrentSortField>(

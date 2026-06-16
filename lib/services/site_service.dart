@@ -3,7 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, visibleForTesting;
+import 'package:flutter/foundation.dart'
+    show debugPrint, kDebugMode, visibleForTesting;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:html/dom.dart' as dom;
 import 'package:path_provider/path_provider.dart';
@@ -24,14 +25,16 @@ class SiteService {
   final Dio _dio;
 
   SiteService()
-      : _dio = Dio(BaseOptions(
+    : _dio = Dio(
+        BaseOptions(
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 20),
           // 用 bytes 类型跳过 dio FusedTransformer 中的 isJsonMimeType 检查；
           // 部分 PT 站把非法参数（如 Cache-control:private）拼进 Content-Type，
           // 会触发 MediaType.parse 抛 FormatException 并在控制台刷警告。
           responseType: ResponseType.bytes,
-        ));
+        ),
+      );
 
   /// 抓取站点用户信息。返回 null 表示抓取失败
   Future<SiteUserInfo?> fetchUserInfo(SiteConfig config, String? cookie) async {
@@ -46,23 +49,29 @@ class SiteService {
     // 这个判断只是初筛 — 真正"是否登录"还是看 fetch 时是否被服务器重定向。
     final cookieTrim = cookie.trim();
     if (cookieTrim.length < 6 || !cookieTrim.contains('=')) {
-      _log('[${config.id}] cookie 太短或格式异常，直接判失败 '
-          '(${cookieTrim.length} chars)');
+      _log(
+        '[${config.id}] cookie 太短或格式异常，直接判失败 '
+        '(${cookieTrim.length} chars)',
+      );
       return null;
     }
 
     final schema = config.parseSchema;
     final detailsPath = schema?.userDetailsPath ?? '/userdetails.php';
 
-    _log('[${config.id}] start: baseUrl=${config.baseUrl} '
-        'cookie=${cookie.length} chars, '
-        'has_uid=${RegExp(r'\b(uid|user_id|c_secure_uid)\b').hasMatch(cookie)}');
+    _log(
+      '[${config.id}] start: baseUrl=${config.baseUrl} '
+      'cookie=${cookie.length} chars, '
+      'has_uid=${RegExp(r'\b(uid|user_id|c_secure_uid)\b').hasMatch(cookie)}',
+    );
 
     try {
       // 阶段 1：抓首页
       final indexHtml = await _getHtml(config.baseUrl!, cookie);
-      _log('[${config.id}] index html: '
-          '${indexHtml == null ? "null" : "${indexHtml.length} chars"}');
+      _log(
+        '[${config.id}] index html: '
+        '${indexHtml == null ? "null" : "${indexHtml.length} chars"}',
+      );
       if (indexHtml == null) return null;
       await _dumpHtmlIfDebug(config.id, 'index', indexHtml);
 
@@ -70,37 +79,46 @@ class SiteService {
       _logHtmlFingerprint(config.id, 'index', indexHtml);
 
       // 落地是登录页 → cookie 失效，直接返回失败
-      if (RegExp(r'takelogin\.php|<title[^>]*>[^<]*登[录錄][\s\S-]*</title>',
-              caseSensitive: false)
-          .hasMatch(indexHtml)) {
+      if (RegExp(
+        r'takelogin\.php|<title[^>]*>[^<]*登[录錄][\s\S-]*</title>',
+        caseSensitive: false,
+      ).hasMatch(indexHtml)) {
         _log('[${config.id}] ❌ 落地登录页，cookie 已失效。请重新登录抓 cookie。');
         return null;
       }
 
       // 先用首页能拿到的字段填充
       final info = _parseIndexHtml(config.id, indexHtml);
-      _log('[${config.id}] after index: userId=${info.userId} '
-          'username=${info.username} ratio=${info.ratio} '
-          'uploaded=${info.uploaded} downloaded=${info.downloaded}');
+      _log(
+        '[${config.id}] after index: userId=${info.userId} '
+        'username=${info.username} ratio=${info.ratio} '
+        'uploaded=${info.uploaded} downloaded=${info.downloaded}',
+      );
 
       // 阶段 2：如果拿到了 user id，再抓详情页补全
       final userId = info.userId;
       if (userId == null || userId.isEmpty) {
-        _log('[${config.id}] WARNING: 未在首页找到 userId — '
-            '检查 baseUrl 是否真的是登录后首页（而非登录页/重定向页）');
+        _log(
+          '[${config.id}] WARNING: 未在首页找到 userId — '
+          '检查 baseUrl 是否真的是登录后首页（而非登录页/重定向页）',
+        );
       } else {
         final detailUrl = _joinUrl(config.baseUrl!, '$detailsPath?id=$userId');
         final detailHtml = await _getHtml(detailUrl, cookie);
-        _log('[${config.id}] detail html: '
-            '${detailHtml == null ? "null" : "${detailHtml.length} chars"}');
+        _log(
+          '[${config.id}] detail html: '
+          '${detailHtml == null ? "null" : "${detailHtml.length} chars"}',
+        );
         if (detailHtml != null) {
           await _dumpHtmlIfDebug(config.id, 'detail', detailHtml);
           _mergeDetailHtml(info, detailHtml, schema: schema);
-          _log('[${config.id}] after detail: '
-              'username=${info.username} level=${info.level} '
-              'uploaded=${info.uploaded} downloaded=${info.downloaded} '
-              'ratio=${info.ratio} bonus=${info.bonusPoints} '
-              'joined=${info.joinedAtText}');
+          _log(
+            '[${config.id}] after detail: '
+            'username=${info.username} level=${info.level} '
+            'uploaded=${info.uploaded} downloaded=${info.downloaded} '
+            'ratio=${info.ratio} bonus=${info.bonusPoints} '
+            'joined=${info.joinedAtText}',
+          );
         }
       }
 
@@ -129,25 +147,29 @@ class SiteService {
       if (has('takelogin.php')) 'takelogin(登录页)✓',
       if (has('login.php')) 'login.php✓',
       if (has('id="info_block"') || has("id='info_block'")) 'info_block✓',
-      if (has('class="rowhead"') || has("class='rowhead'") ||
-          has('class="rowfollow"') || has('class=\'rowfollow\''))
+      if (has('class="rowhead"') ||
+          has("class='rowhead'") ||
+          has('class="rowfollow"') ||
+          has('class=\'rowfollow\''))
         'rowhead/rowfollow✓',
       if (RegExp(r'<noscript', caseSensitive: false).hasMatch(html))
         'noscript✓',
-      if (has('window.__nuxt') || has('window.__next_data') ||
+      if (has('window.__nuxt') ||
+          has('window.__next_data') ||
           has('id="app"') && has('vue') ||
           has('id="root"') && has('react'))
         'SPA shell✓(JS 渲染)',
     ];
-    _log('[$siteId] $tag fingerprint: '
-        '${findings.isEmpty ? "(无任何关键词)" : findings.join(", ")}');
+    _log(
+      '[$siteId] $tag fingerprint: '
+      '${findings.isEmpty ? "(无任何关键词)" : findings.join(", ")}',
+    );
 
     // 尝试看 <title>，登录页通常 title 是「登录」
-    final title = RegExp(r'<title[^>]*>([\s\S]*?)</title>',
-            caseSensitive: false)
-        .firstMatch(html)
-        ?.group(1)
-        ?.trim();
+    final title = RegExp(
+      r'<title[^>]*>([\s\S]*?)</title>',
+      caseSensitive: false,
+    ).firstMatch(html)?.group(1)?.trim();
     if (title != null) _log('[$siteId] $tag title: $title');
   }
 
@@ -189,7 +211,9 @@ class SiteService {
   /// 公开：在 HTML 上跑一组 field 规则，返回每字段命中值。
   /// 供 SiteRulesScreen 预览使用 — 不写回 site data。
   static Map<String, Object?> runFieldRulesForPreview(
-      String html, Map<String, FieldRule> rules) {
+    String html,
+    Map<String, FieldRule> rules,
+  ) {
     final doc = SelectorEngine.parse(html);
     final info = SiteUserInfo(siteId: 'preview');
     final svc = SiteService();
@@ -230,7 +254,7 @@ class SiteService {
           'Cookie': cookie,
           'User-Agent':
               'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-                  '(KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+              '(KHTML, like Gecko) Chrome/120.0 Safari/537.36',
           'Accept':
               'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         },
@@ -262,15 +286,20 @@ class SiteService {
       _parseIndexHtml(siteId, html);
 
   @visibleForTesting
-  void mergeDetailHtml(SiteUserInfo info, String html,
-          {SiteParseSchema? schema}) =>
-      _mergeDetailHtml(info, html, schema: schema);
+  void mergeDetailHtml(
+    SiteUserInfo info,
+    String html, {
+    SiteParseSchema? schema,
+  }) => _mergeDetailHtml(info, html, schema: schema);
 
   /// 兼容旧 API：parseHtml = parseIndex + 额外尝试一些纯文本兜底
   /// 仅用于测试旧的「单页解析」用例
   @visibleForTesting
-  SiteUserInfo parseHtml(String siteId, String html,
-      {SiteParseSchema? schema}) {
+  SiteUserInfo parseHtml(
+    String siteId,
+    String html, {
+    SiteParseSchema? schema,
+  }) {
     final info = _parseIndexHtml(siteId, html);
     _mergeDetailHtml(info, html, schema: schema);
     info.lastFetchedAt = DateTime.now();
@@ -318,9 +347,15 @@ class SiteService {
     info.bonusPoints ??= _parseInt(_classText(html, 'color_bonus'));
 
     // Gazelle 首页风格的 li#stats_*，内部可能有 "Up: <span>2.5 TiB</span>" 这种前缀
-    info.uploaded ??= parseSize(_extractSizeFromText(_idInnerText(html, 'stats_uploaded')));
-    info.downloaded ??= parseSize(_extractSizeFromText(_idInnerText(html, 'stats_downloaded')));
-    info.ratio ??= parseRatio(_extractRatioFromText(_idInnerText(html, 'stats_ratio')));
+    info.uploaded ??= parseSize(
+      _extractSizeFromText(_idInnerText(html, 'stats_uploaded')),
+    );
+    info.downloaded ??= parseSize(
+      _extractSizeFromText(_idInnerText(html, 'stats_downloaded')),
+    );
+    info.ratio ??= parseRatio(
+      _extractRatioFromText(_idInnerText(html, 'stats_ratio')),
+    );
 
     return info;
   }
@@ -356,18 +391,20 @@ class SiteService {
       orderIdx += 1;
 
       // class 含 Name/username → 大概率是用户名链接
-      final classMatch = RegExp(r'''class=["']([^"']*)["']''', caseSensitive: false)
-          .firstMatch(attrs);
+      final classMatch = RegExp(
+        r'''class=["']([^"']*)["']''',
+        caseSensitive: false,
+      ).firstMatch(attrs);
       final cls = classMatch?.group(1)?.toLowerCase() ?? '';
       if (cls.contains('name') || cls.contains('username')) score += 20;
 
       // inner 是纯 <img>（一个标签 + 空白），即头像链接
       final innerTrimmed = inner.trim();
       final imgOnly = RegExp(
-              r'''^\s*<img\b[^>]*/?\s*>\s*$''',
-              caseSensitive: false,
-              dotAll: true)
-          .hasMatch(innerTrimmed);
+        r'''^\s*<img\b[^>]*/?\s*>\s*$''',
+        caseSensitive: false,
+        dotAll: true,
+      ).hasMatch(innerTrimmed);
       if (imgOnly) score -= 50;
 
       // 剥光后纯文本若是已知头像标签也降权
@@ -382,11 +419,12 @@ class SiteService {
         bestScore = score;
         // 用户名取剥光后文本，过长（><60）视为脏数据丢弃
         final username =
-            (stripped.isNotEmpty && stripped.length < 60 &&
-                    !avatarLabels.contains(stripped.toLowerCase()) &&
-                    !imgOnly)
-                ? stripped
-                : null;
+            (stripped.isNotEmpty &&
+                stripped.length < 60 &&
+                !avatarLabels.contains(stripped.toLowerCase()) &&
+                !imgOnly)
+            ? stripped
+            : null;
         best = _UserPick(userId: userId, username: username);
       }
     }
@@ -445,7 +483,8 @@ class SiteService {
   /// 测试钩子：直接注入默认 fields，跳过 assets 加载
   @visibleForTesting
   static void setDefaultFieldsForTest(
-      Map<String, Map<String, FieldRule>> fields) {
+    Map<String, Map<String, FieldRule>> fields,
+  ) {
     _defaultFieldsBySchema = fields;
     _manifestLoaded = true;
   }
@@ -453,9 +492,7 @@ class SiteService {
   /// 重置默认 fields 为内置 fallback（测试 tearDown 用）
   @visibleForTesting
   static void resetDefaultFieldsForTest() {
-    _defaultFieldsBySchema = {
-      'NexusPHP': _builtinFallback,
-    };
+    _defaultFieldsBySchema = {'NexusPHP': _builtinFallback};
     _manifestLoaded = false;
   }
 
@@ -469,8 +506,9 @@ class SiteService {
     if (_manifestLoaded) return;
     _manifestLoaded = true;
     try {
-      final raw = await rootBundle
-          .loadString('assets/sites/schemas/manifest.json');
+      final raw = await rootBundle.loadString(
+        'assets/sites/schemas/manifest.json',
+      );
       final json = jsonDecode(raw) as Map<String, dynamic>;
       final list = json['schemas'] as List?;
       if (list == null) return;
@@ -490,8 +528,9 @@ class SiteService {
             // 跳过 _label / _comment 等带下划线开头的元数据字段
             if (k.startsWith('_')) return;
             try {
-              fields[k.toString()] =
-                  FieldRule.fromJson(Map<String, dynamic>.from(v));
+              fields[k.toString()] = FieldRule.fromJson(
+                Map<String, dynamic>.from(v),
+              );
             } catch (_) {
               // 单个字段加载失败不影响其它字段
             }
@@ -538,7 +577,10 @@ class SiteService {
   /// - `messageCount`              → messageCount
   /// - `hnrPreWarning` / `hnrUnsatisfied` → 同名
   void _applyFieldRules(
-      SiteUserInfo info, dom.Document doc, Map<String, FieldRule> fields) {
+    SiteUserInfo info,
+    dom.Document doc,
+    Map<String, FieldRule> fields,
+  ) {
     void run(String fieldName, void Function(Object? value) setter) {
       final rule = fields[fieldName];
       if (rule == null) return;
@@ -662,8 +704,11 @@ class SiteService {
   ///
   /// [schema] 允许某个站点自定义标签词。例如 13city 把"魔力值"叫"啤酒瓶"，
   /// 站点配置里写 `bonusLabels: ['啤酒瓶']` 即可。
-  void _mergeDetailHtml(SiteUserInfo info, String html,
-      {SiteParseSchema? schema}) {
+  void _mergeDetailHtml(
+    SiteUserInfo info,
+    String html, {
+    SiteParseSchema? schema,
+  }) {
     // 只解析 HTML 一次，三层规则共用同一个 Document
     final doc = SelectorEngine.parse(html);
 
@@ -675,23 +720,34 @@ class SiteService {
 
     // ── 阶段 2：按 schema 选默认规则（null 回落 NexusPHP）──
     final schemaKey = schema?.schema ?? 'NexusPHP';
-    final defaults = _defaultFieldsBySchema[schemaKey]
-        ?? _defaultFieldsBySchema['NexusPHP']!;
+    final defaults =
+        _defaultFieldsBySchema[schemaKey] ??
+        _defaultFieldsBySchema['NexusPHP']!;
     _applyFieldRules(info, doc, defaults);
 
     // ── 阶段 3：旧的「td.rowhead 标签词」路径，兜底各种二开站点变体 ──
-    final usernameLabels =
-        _mergeLabels(_defaultUsernameLabels, schema?.usernameLabels);
+    final usernameLabels = _mergeLabels(
+      _defaultUsernameLabels,
+      schema?.usernameLabels,
+    );
     final levelLabels = _mergeLabels(_defaultLevelLabels, schema?.levelLabels);
-    final transferLabels =
-        _mergeLabels(_defaultTransferLabels, schema?.transferLabels);
+    final transferLabels = _mergeLabels(
+      _defaultTransferLabels,
+      schema?.transferLabels,
+    );
     final bonusLabels = _mergeLabels(_defaultBonusLabels, schema?.bonusLabels);
-    final joinTimeLabels =
-        _mergeLabels(_defaultJoinTimeLabels, schema?.joinTimeLabels);
-    final seedingLabels =
-        _mergeLabels(_defaultSeedingLabels, schema?.seedingLabels);
-    final leechingLabels =
-        _mergeLabels(_defaultLeechingLabels, schema?.leechingLabels);
+    final joinTimeLabels = _mergeLabels(
+      _defaultJoinTimeLabels,
+      schema?.joinTimeLabels,
+    );
+    final seedingLabels = _mergeLabels(
+      _defaultSeedingLabels,
+      schema?.seedingLabels,
+    );
+    final leechingLabels = _mergeLabels(
+      _defaultLeechingLabels,
+      schema?.leechingLabels,
+    );
 
     // ── 用户名（详情页通常有，且更准确）──
     info.username ??= _rowText(html, usernameLabels);
@@ -710,17 +766,22 @@ class SiteService {
     final transfer = _rowText(html, transferLabels);
     if (transfer != null) {
       info.uploaded ??= _matchSize(transfer, [
-        RegExp(r'(?:上[传傳]量|Uploaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
-            caseSensitive: false),
+        RegExp(
+          r'(?:上[传傳]量|Uploaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
+          caseSensitive: false,
+        ),
       ]);
       info.downloaded ??= _matchSize(transfer, [
-        RegExp(r'(?:下[载載]量|Downloaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
-            caseSensitive: false),
+        RegExp(
+          r'(?:下[载載]量|Downloaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
+          caseSensitive: false,
+        ),
       ]);
       info.ratio ??= _matchRatio(transfer, [
         RegExp(
-            r'(?:分享率|Ratio|Share\s*Ratio)\s*[:：]?\s*([\d.]+|∞|Inf\.|Infinity|---)',
-            caseSensitive: false),
+          r'(?:分享率|Ratio|Share\s*Ratio)\s*[:：]?\s*([\d.]+|∞|Inf\.|Infinity|---)',
+          caseSensitive: false,
+        ),
       ]);
     }
 
@@ -741,22 +802,31 @@ class SiteService {
     final text = _stripTags(html);
 
     info.uploaded ??= _matchSize(text, [
-      RegExp(r'(?:上[传傳]量|Uploaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
-          caseSensitive: false),
+      RegExp(
+        r'(?:上[传傳]量|Uploaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
+        caseSensitive: false,
+      ),
     ]);
     info.downloaded ??= _matchSize(text, [
-      RegExp(r'(?:下[载載]量|Downloaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
-          caseSensitive: false),
+      RegExp(
+        r'(?:下[载載]量|Downloaded)\s*[:：]?\s*([\d.,]+\s*[ZEPTGMK]?i?B)',
+        caseSensitive: false,
+      ),
     ]);
     info.ratio ??= _matchRatio(text, [
       RegExp(
-          r'(?:分享率|Ratio|Share\s*Ratio)\s*[:：]?\s*([\d.]+|∞|Inf\.?|Infinity|---)',
-          caseSensitive: false),
+        r'(?:分享率|Ratio|Share\s*Ratio)\s*[:：]?\s*([\d.]+|∞|Inf\.?|Infinity|---)',
+        caseSensitive: false,
+      ),
     ]);
-    info.bonusPoints ??= _parseInt(_firstMatch(text, [
-      RegExp(r'(?:魔力值|Karma Points|Bonus)\s*[:：]?\s*([\d,]+(?:\.\d+)?)',
-          caseSensitive: false),
-    ]));
+    info.bonusPoints ??= _parseInt(
+      _firstMatch(text, [
+        RegExp(
+          r'(?:魔力值|Karma Points|Bonus)\s*[:：]?\s*([\d,]+(?:\.\d+)?)',
+          caseSensitive: false,
+        ),
+      ]),
+    );
     if (info.level == null) {
       final lvl = _firstMatch(text, [
         RegExp(r'User\s*Class\s*[:：]\s*([^\s|·]{1,20})', caseSensitive: false),
@@ -768,14 +838,22 @@ class SiteService {
     info.level ??= _imgAlt(html, classContains: 'userlevel');
 
     // 做种 / 下载中：兜底纯文本扫描（部分站点不在 td.rowhead 里）
-    info.seedingCount ??= _parseInt(_firstMatch(text, [
-      RegExp(r'(?:当前做种|當前做種|做种数|Seeding)\s*[:：]?\s*(\d+)',
-          caseSensitive: false),
-    ]));
-    info.leechingCount ??= _parseInt(_firstMatch(text, [
-      RegExp(r'(?:当前下载|當前下載|下载中|Leeching)\s*[:：]?\s*(\d+)',
-          caseSensitive: false),
-    ]));
+    info.seedingCount ??= _parseInt(
+      _firstMatch(text, [
+        RegExp(
+          r'(?:当前做种|當前做種|做种数|Seeding)\s*[:：]?\s*(\d+)',
+          caseSensitive: false,
+        ),
+      ]),
+    );
+    info.leechingCount ??= _parseInt(
+      _firstMatch(text, [
+        RegExp(
+          r'(?:当前下载|當前下載|下载中|Leeching)\s*[:：]?\s*(\d+)',
+          caseSensitive: false,
+        ),
+      ]),
+    );
   }
 
   /// 在 HTML 中找出符合条件的 `<img>` 标签的 alt 属性。
@@ -802,8 +880,7 @@ class SiteService {
       final src = _imgSrcRe.firstMatch(tag)?.group(1) ?? '';
       // 把反斜杠当分隔符处理，容忍 Windows 风格路径
       final normSrc = src.toLowerCase().replaceAll(r'\', '/');
-      if (srcContains != null &&
-          normSrc.contains(srcContains.toLowerCase())) {
+      if (srcContains != null && normSrc.contains(srcContains.toLowerCase())) {
         return alt;
       }
       if (classContains != null) {
@@ -830,15 +907,23 @@ class SiteService {
   }
 
   /// 找 `<td.rowhead>label</td>` 后相邻 td 中 `<img>` 的指定属性
-  String? _rowImgAttr(String html, List<String> labels, {required String attr}) {
+  String? _rowImgAttr(
+    String html,
+    List<String> labels, {
+    required String attr,
+  }) {
     final cell = _rowHeadFollowingCell(html, labels);
     if (cell == null) return null;
-    final imgMatch = RegExp(r'<img\b[^>]*>', caseSensitive: false).firstMatch(cell);
+    final imgMatch = RegExp(
+      r'<img\b[^>]*>',
+      caseSensitive: false,
+    ).firstMatch(cell);
     if (imgMatch == null) return null;
     final tag = imgMatch.group(0)!;
-    final m = RegExp('''\\b${RegExp.escape(attr)}=["']([^"']*)["']''',
-            caseSensitive: false)
-        .firstMatch(tag);
+    final m = RegExp(
+      '''\\b${RegExp.escape(attr)}=["']([^"']*)["']''',
+      caseSensitive: false,
+    ).firstMatch(tag);
     final v = m?.group(1)?.trim();
     return (v == null || v.isEmpty) ? null : v;
   }
@@ -909,18 +994,28 @@ class SiteService {
   String _stripTags(String html) {
     return html
         .replaceAll(
-            RegExp(r'<script[^>]*>.*?</script>',
-                caseSensitive: false, dotAll: true),
-            ' ')
+          RegExp(
+            r'<script[^>]*>.*?</script>',
+            caseSensitive: false,
+            dotAll: true,
+          ),
+          ' ',
+        )
         .replaceAll(
-            RegExp(r'<style[^>]*>.*?</style>',
-                caseSensitive: false, dotAll: true),
-            ' ')
+          RegExp(
+            r'<style[^>]*>.*?</style>',
+            caseSensitive: false,
+            dotAll: true,
+          ),
+          ' ',
+        )
         .replaceAll(RegExp(r'<!--.*?-->', dotAll: true), ' ')
         // <img ... alt="X" ...> -> " X "（保留等级名等关键文本）
         .replaceAllMapped(
-          RegExp(r'''<img[^>]*\balt=["']([^"']*)["'][^>]*>''',
-              caseSensitive: false),
+          RegExp(
+            r'''<img[^>]*\balt=["']([^"']*)["'][^>]*>''',
+            caseSensitive: false,
+          ),
           (m) => ' ${m.group(1)} ',
         )
         .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), ' \n ')
@@ -955,8 +1050,10 @@ class SiteService {
   /// 从含其他文本的字符串中抽出第一个大小串（"Up: 2.5 TiB" → "2.5 TiB"）
   String? _extractSizeFromText(String? s) {
     if (s == null) return null;
-    final m = RegExp(r'([\d.,]+\s*[ZEPTGMK]?i?B)\b', caseSensitive: false)
-        .firstMatch(s);
+    final m = RegExp(
+      r'([\d.,]+\s*[ZEPTGMK]?i?B)\b',
+      caseSensitive: false,
+    ).firstMatch(s);
     return m?.group(1);
   }
 

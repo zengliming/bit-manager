@@ -82,7 +82,9 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
           index: _currentIndex,
           children: [
             const SiteListScreen(),
-            DashboardScreen(onNavigateToTorrents: () => setState(() => _currentIndex = 2)),
+            DashboardScreen(
+              onNavigateToTorrents: () => setState(() => _currentIndex = 2),
+            ),
             const TorrentListScreen(),
             const SettingsScreen(),
           ],
@@ -92,7 +94,9 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
+                color: Theme.of(
+                  context,
+                ).colorScheme.surface.withValues(alpha: 0.85),
                 border: Border(
                   top: BorderSide(
                     color: Theme.of(context).dividerColor,
@@ -109,7 +113,9 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
                 shadowColor: Colors.transparent,
                 labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 indicatorShape: const StadiumBorder(),
-                indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                indicatorColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.12),
                 destinations: const [
                   NavigationDestination(
                     icon: Icon(Icons.language_outlined),
@@ -209,9 +215,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
         color: const Color(0xFFFFFFFF),
         surfaceTintColor: Colors.transparent,
         shadowColor: const Color(0x0F000000),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         clipBehavior: Clip.antiAlias,
         margin: EdgeInsets.zero,
       ),
@@ -314,9 +318,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
         color: const Color(0xFF1C1C1E),
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         clipBehavior: Clip.antiAlias,
         margin: EdgeInsets.zero,
       ),

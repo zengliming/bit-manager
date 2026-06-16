@@ -46,15 +46,30 @@ String extractSiteFromUrl(String? url) {
     if (parts.length < 2) return parts[0];
     // 已知 TLD 列表（双段后缀），需要跳过这些才能拿到注册域名主体
     const compoundTlds = {
-      'co.uk', 'com.cn', 'net.cn', 'org.cn', 'gov.cn',
-      'co.jp', 'com.hk', 'com.tw',
+      'co.uk',
+      'com.cn',
+      'net.cn',
+      'org.cn',
+      'gov.cn',
+      'co.jp',
+      'com.hk',
+      'com.tw',
     };
     String getEffectiveTld(String lastTwo) =>
         compoundTlds.contains(lastTwo) ? lastTwo : parts.last;
     // 跳过常见子域名前缀
     const skipPrefixes = {
-      'tracker', 'trackers', 'www', 'rss', 'api', 'cdn',
-      'tr', 'bt', 'pt', 'passport', 'login',
+      'tracker',
+      'trackers',
+      'www',
+      'rss',
+      'api',
+      'cdn',
+      'tr',
+      'bt',
+      'pt',
+      'passport',
+      'login',
     };
     // 从右往左跳过 TLD 和子域名前缀，取第一个非前缀的段
     final tld = getEffectiveTld(

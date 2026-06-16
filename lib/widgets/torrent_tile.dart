@@ -116,8 +116,7 @@ class TorrentTile extends StatelessWidget {
                           color: Color(0xFF34C759),
                         ),
                       ),
-                    if (torrent.downloadSpeed > 0 &&
-                        torrent.uploadSpeed > 0)
+                    if (torrent.downloadSpeed > 0 && torrent.uploadSpeed > 0)
                       const SizedBox(width: 8),
                     if (torrent.uploadSpeed > 0)
                       Text(
@@ -129,11 +128,9 @@ class TorrentTile extends StatelessWidget {
                       ),
                     if ((torrent.downloadSpeed > 0 ||
                             torrent.uploadSpeed > 0) &&
-                        (torrent.seedsConnected > 0 ||
-                            torrent.seedsTotal > 0))
+                        (torrent.seedsConnected > 0 || torrent.seedsTotal > 0))
                       const SizedBox(width: 8),
-                    if (torrent.seedsConnected > 0 ||
-                        torrent.seedsTotal > 0)
+                    if (torrent.seedsConnected > 0 || torrent.seedsTotal > 0)
                       Text(
                         '做种 ${torrent.seedsConnected}/${torrent.seedsTotal}',
                         style: TextStyle(
@@ -181,7 +178,10 @@ class TorrentTile extends StatelessWidget {
                   runSpacing: 4,
                   children: [
                     if (torrent.site != null && torrent.site!.isNotEmpty)
-                      _Tag(label: torrent.site!, color: const Color(0xFF5856D6)),
+                      _Tag(
+                        label: torrent.site!,
+                        color: const Color(0xFF5856D6),
+                      ),
                     if (torrent.multiSource > 0)
                       _Tag(
                         label: '辅种 ${torrent.multiSource}',

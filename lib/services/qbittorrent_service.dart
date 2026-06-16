@@ -142,17 +142,19 @@ class QBittorrentService implements ITorrentClientService {
 
     // 并行获取所有种子的 tracker 信息，避免 N+1 串行查询
     final trackerResults = await Future.wait(
-      rawList.where((j) => (j is Map) && ((j['hash'] as String?)?.isNotEmpty ?? false)).map(
-        (json) async {
-          final hash = (json as Map<String, dynamic>)['hash'] as String;
-          try {
-            final infos = await getTrackers(config, hash);
-            return MapEntry(hash, infos);
-          } catch (_) {
-            return MapEntry(hash, <TrackerInfo>[]);
-          }
-        },
-      ),
+      rawList
+          .where(
+            (j) => (j is Map) && ((j['hash'] as String?)?.isNotEmpty ?? false),
+          )
+          .map((json) async {
+            final hash = (json as Map<String, dynamic>)['hash'] as String;
+            try {
+              final infos = await getTrackers(config, hash);
+              return MapEntry(hash, infos);
+            } catch (_) {
+              return MapEntry(hash, <TrackerInfo>[]);
+            }
+          }),
     );
     final trackerByHash = <String, List<TrackerInfo>>{
       for (final entry in trackerResults) entry.key: entry.value,
@@ -211,7 +213,8 @@ class QBittorrentService implements ITorrentClientService {
                   (m['completion_on'] as int) * 1000,
                 )
               : null,
-          lastActivity: (m['last_activity'] as num?) != null &&
+          lastActivity:
+              (m['last_activity'] as num?) != null &&
                   (m['last_activity'] as int) > 0
               ? DateTime.fromMillisecondsSinceEpoch(
                   (m['last_activity'] as int) * 1000,

@@ -80,7 +80,9 @@ class DashboardScreen extends StatelessWidget {
                     child: ClientTile(
                       stats: cs,
                       onTap: () {
-                        context.read<TorrentProvider>().setClientFilter(cs.clientId);
+                        context.read<TorrentProvider>().setClientFilter(
+                          cs.clientId,
+                        );
                         onNavigateToTorrents?.call();
                       },
                     ),

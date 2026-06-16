@@ -5,11 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 SiteConfig testSite(String id) => SiteConfig(
-      id: id,
-      name: 'Site $id',
-      baseUrl: 'https://$id.example.com',
-      tags: ['电影'],
-    );
+  id: id,
+  name: 'Site $id',
+  baseUrl: 'https://$id.example.com',
+  tags: ['电影'],
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -74,7 +74,10 @@ void main() {
       await provider2.loadSites();
 
       expect(provider2.sites.length, 2);
-      expect(provider2.sites.map((s) => s.id), containsAll(['site-1', 'site-2']));
+      expect(
+        provider2.sites.map((s) => s.id),
+        containsAll(['site-1', 'site-2']),
+      );
     });
 
     test('addSite 不允许重复 id', () async {
@@ -119,11 +122,7 @@ void main() {
     test('importPresets 把 preset.schema 复制到 site.parseSchema.schema', () async {
       final provider = SiteProvider();
       final presets = [
-        const SitePreset(
-          id: 'gazelle-x',
-          name: 'Gazelle X',
-          schema: 'Gazelle',
-        ),
+        const SitePreset(id: 'gazelle-x', name: 'Gazelle X', schema: 'Gazelle'),
         // preset 无 schema 时不创建 parseSchema
         const SitePreset(id: 'default', name: 'Default'),
         // preset 同时有 schema 和 parseSchema 时合并
@@ -246,7 +245,9 @@ void main() {
 
     test('allTags 收集所有站点的标签', () async {
       final provider = SiteProvider();
-      await provider.addSite(SiteConfig(id: 'a', name: 'Alpha', tags: ['电影', '官组']));
+      await provider.addSite(
+        SiteConfig(id: 'a', name: 'Alpha', tags: ['电影', '官组']),
+      );
       await provider.addSite(SiteConfig(id: 'b', name: 'Beta', tags: ['音乐']));
 
       expect(provider.allTags, containsAll(['电影', '官组', '音乐']));

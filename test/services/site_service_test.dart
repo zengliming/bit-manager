@@ -1,6 +1,5 @@
 import 'package:bit_manager/models/site_config.dart';
 import 'package:bit_manager/services/site_service.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -144,14 +143,17 @@ void main() {
   });
 
   group('parseHtml — 等级提取', () {
-    test('NexusPHP：只有 <img class="userlevel" src=".../class/..." alt="...">，无「等级:」文字', () {
-      const html = '''
+    test(
+      'NexusPHP：只有 <img class="userlevel" src=".../class/..." alt="...">，无「等级:」文字',
+      () {
+        const html = '''
 <a href="userdetails.php?id=1">u</a>
 <img class="userlevel_image" src="pic/class/Power_User.gif" alt="Power User">
 ''';
-      final info = SiteService().parseHtml('s', html);
-      expect(info.level, 'Power User');
-    });
+        final info = SiteService().parseHtml('s', html);
+        expect(info.level, 'Power User');
+      },
+    );
 
     test('NexusPHP：src 含 /class/ 但无 userlevel class，仍能识别', () {
       const html = '''
@@ -205,8 +207,7 @@ void main() {
     });
 
     test('Gazelle: user.php?id=N 也能识别', () {
-      const html =
-          '<a href="user.php?id=42" class="username">RedUser</a>';
+      const html = '<a href="user.php?id=42" class="username">RedUser</a>';
       final info = SiteService().parseIndexHtml('s', html);
       expect(info.userId, '42');
       expect(info.username, 'RedUser');
@@ -228,7 +229,11 @@ void main() {
 ''';
       final info = SiteService().parseIndexHtml('cspt', html);
       expect(info.userId, '10010118');
-      expect(info.username, 'zlmzzzz', reason: '应跳过头像链接，取 class*="Name" 的用户名链接');
+      expect(
+        info.username,
+        'zlmzzzz',
+        reason: '应跳过头像链接，取 class*="Name" 的用户名链接',
+      );
     });
 
     test('avatar 标签为英文 "avatar" 也能识别', () {
@@ -442,7 +447,10 @@ void main() {
             ),
             'joinTime': const FieldRule(
               selector: ["td.rowhead:contains('加入日期') + td"],
-              filter: {'name': 'split', 'args': ['(', 0]},
+              filter: {
+                'name': 'split',
+                'args': ['(', 0],
+              },
             ),
             'seeding': const FieldRule(
               selector: ["td.rowhead:contains('当前做种') + td"],
@@ -482,9 +490,11 @@ void main() {
       expect(info.bonusPoints, 9999);
     });
 
-    test('默认 NexusPHP schema 一次性抓全 messageCount/seedingBonus/lastAccessAt/H&R 等字段', () {
-      // 完整 NexusPHP userdetails.php 模拟
-      const html = '''
+    test(
+      '默认 NexusPHP schema 一次性抓全 messageCount/seedingBonus/lastAccessAt/H&R 等字段',
+      () {
+        // 完整 NexusPHP userdetails.php 模拟
+        const html = '''
 <table id="info_block">
   <tr>
     <td>
@@ -509,23 +519,24 @@ void main() {
   <tr><td class="rowhead">加入日期</td><td class="rowfollow">2023-01-15 10:30:00 (2 年前)</td></tr>
 </table>
 ''';
-      final info = SiteUserInfo(siteId: 's');
-      SiteService().mergeDetailHtml(info, html);
+        final info = SiteUserInfo(siteId: 's');
+        SiteService().mergeDetailHtml(info, html);
 
-      expect(info.username, 'tester');
-      expect(info.level, 'Power User');
-      expect(info.uploaded, closeTo(5.43 * 1099511627776, 1));
-      expect(info.trueUploaded, closeTo(2.50 * 1099511627776, 1));
-      expect(info.downloaded, closeTo(1.20 * 1099511627776, 1));
-      expect(info.trueDownloaded, closeTo(1.00 * 1099511627776, 1));
-      expect(info.ratio, closeTo(4.525, 0.001));
-      expect(info.seedingBonus, 123456);
-      expect(info.messageCount, 3);
-      expect(info.hnrPreWarning, 1);
-      expect(info.hnrUnsatisfied, 2);
-      expect(info.lastAccessAtText, '2025-06-10 15:30:00');
-      expect(info.joinedAtText, '2023-01-15 10:30:00');
-    });
+        expect(info.username, 'tester');
+        expect(info.level, 'Power User');
+        expect(info.uploaded, closeTo(5.43 * 1099511627776, 1));
+        expect(info.trueUploaded, closeTo(2.50 * 1099511627776, 1));
+        expect(info.downloaded, closeTo(1.20 * 1099511627776, 1));
+        expect(info.trueDownloaded, closeTo(1.00 * 1099511627776, 1));
+        expect(info.ratio, closeTo(4.525, 0.001));
+        expect(info.seedingBonus, 123456);
+        expect(info.messageCount, 3);
+        expect(info.hnrPreWarning, 1);
+        expect(info.hnrUnsatisfied, 2);
+        expect(info.lastAccessAtText, '2025-06-10 15:30:00');
+        expect(info.joinedAtText, '2023-01-15 10:30:00');
+      },
+    );
 
     test('未读消息没出现（无红色背景 td）时 messageCount 保持 null', () {
       const html = '''
@@ -558,8 +569,7 @@ void main() {
           },
         ),
       );
-      expect(info.userId, isNull,
-          reason: 'id setter 应拒绝非数字值，不能把「张三」当 id 存');
+      expect(info.userId, isNull, reason: 'id setter 应拒绝非数字值，不能把「张三」当 id 存');
     });
 
     test('id 字段 setter：数字字符串或整型都可接受', () {
@@ -572,12 +582,14 @@ void main() {
       SiteService().mergeDetailHtml(
         info1,
         html,
-        schema: SiteParseSchema(fields: {
-          'id': const FieldRule(
-            selector: ["a[href*='userdetails.php']"],
-            attr: 'href',
-          ),
-        }),
+        schema: SiteParseSchema(
+          fields: {
+            'id': const FieldRule(
+              selector: ["a[href*='userdetails.php']"],
+              attr: 'href',
+            ),
+          },
+        ),
       );
       // 不会直接当 id（href 是整个 URL "userdetails.php?id=42"，不是纯数字）
       // 但应被识别并通过
@@ -587,13 +599,18 @@ void main() {
       SiteService().mergeDetailHtml(
         info2,
         html,
-        schema: SiteParseSchema(fields: {
-          'id': const FieldRule(
-            selector: ["a[href*='userdetails.php']"],
-            attr: 'href',
-            filter: { 'name': 'querystring', 'args': ['id'] },
-          ),
-        }),
+        schema: SiteParseSchema(
+          fields: {
+            'id': const FieldRule(
+              selector: ["a[href*='userdetails.php']"],
+              attr: 'href',
+              filter: {
+                'name': 'querystring',
+                'args': ['id'],
+              },
+            ),
+          },
+        ),
       );
       expect(info2.userId, '42');
     });
@@ -617,7 +634,10 @@ void main() {
     test('filter 包装为 {name, args} 时 args 完整保留', () {
       final rule = FieldRule.fromJson({
         'selector': ["x"],
-        'filter': {'name': 'split', 'args': ['(', 0]},
+        'filter': {
+          'name': 'split',
+          'args': ['(', 0],
+        },
       });
       expect(rule.filters, hasLength(1));
       final f = rule.filters!.first as Map;
@@ -690,7 +710,8 @@ void main() {
       await SiteService.ensureDefaultSchemaLoaded();
       // parseHtml 使用 schema=null
       final svc = SiteService();
-      final html = '<html><body><table>'
+      final html =
+          '<html><body><table>'
           "<tr><td class='rowhead'>传输</td><td>上传量: 1.00 TB 下载量: 2.00 TB 分享率: 0.50</td></tr>"
           '</table></body></html>';
       final info = svc.parseHtml('test', html, schema: null);
@@ -702,13 +723,17 @@ void main() {
       await SiteService.ensureDefaultSchemaLoaded();
       final svc = SiteService();
       // Gazelle 风格 HTML：li#stats_uploaded 内有纯文本"2.5 TiB"
-      final html = '<html><body>'
+      final html =
+          '<html><body>'
           '<li id="stats_uploaded">2.5 TiB</li>'
           '<li id="stats_downloaded">1.0 TiB</li>'
           '<li id="stats_ratio">2.5</li>'
           '</body></html>';
-      final info = svc.parseHtml('test', html,
-          schema: const SiteParseSchema(schema: 'Gazelle'));
+      final info = svc.parseHtml(
+        'test',
+        html,
+        schema: const SiteParseSchema(schema: 'Gazelle'),
+      );
       expect(info.uploaded, equals(2748779069440)); // 2.5 TiB
       expect(info.downloaded, equals(1099511627776)); // 1.0 TiB
       expect(info.ratio, closeTo(2.5, 0.01));
@@ -720,7 +745,8 @@ void main() {
       final svc = SiteService();
       // NexusPHP 默认会从 td.rowhead:contains('传输') + td 拿上传量
       // 站点自定义 fields 用 contains 过滤拿 42 GB
-      final html = '<html><body><table>'
+      final html =
+          '<html><body><table>'
           "<tr><td class='rowhead'>传输</td><td>上传量: 999 TB 下载量: 1.00 TB</td></tr>"
           "<tr><td>专用区</td><td>42 GB</td></tr>"
           '</table></body></html>';

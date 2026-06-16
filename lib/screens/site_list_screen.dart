@@ -58,8 +58,9 @@ class _SiteListScreenState extends State<SiteListScreen> {
                   ),
                 );
               }
-              final hasAnyCookie = provider.sites
-                  .any((s) => s.isActive && provider.hasCookie(s.id));
+              final hasAnyCookie = provider.sites.any(
+                (s) => s.isActive && provider.hasCookie(s.id),
+              );
               return IconButton(
                 icon: const Icon(Icons.refresh),
                 tooltip: '刷新全部用户信息',
@@ -226,8 +227,10 @@ class _SiteListScreenState extends State<SiteListScreen> {
     if (!context.mounted) return;
     messenger.showSnackBar(
       SnackBar(
-        content: Text('已刷新 $success 个站点'
-            '${failed > 0 ? "，$failed 个失败" : ""}'),
+        content: Text(
+          '已刷新 $success 个站点'
+          '${failed > 0 ? "，$failed 个失败" : ""}',
+        ),
         backgroundColor: failed == 0 ? Colors.green : null,
       ),
     );

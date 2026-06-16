@@ -87,25 +87,28 @@ class SiteTile extends StatelessWidget {
                           runSpacing: 2,
                           children: site.tags
                               .take(3)
-                              .map((tag) => Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 2,
+                              .map(
+                                (tag) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary.withValues(
+                                      alpha: 0.08,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: theme.colorScheme.primary
-                                          .withValues(alpha: 0.08),
-                                      borderRadius: BorderRadius.circular(6),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    tag,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: theme.colorScheme.primary,
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                    child: Text(
-                                      tag,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: theme.colorScheme.primary,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ))
+                                  ),
+                                ),
+                              )
                               .toList(),
                         ),
 
@@ -120,10 +123,7 @@ class SiteTile extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    SizedBox(
-                      height: 24,
-                      child: _buildTrailingTop(context),
-                    ),
+                    SizedBox(height: 24, child: _buildTrailingTop(context)),
                     const SizedBox(height: 4),
                     SizedBox(
                       height: 28,
@@ -224,7 +224,8 @@ class SiteTile extends StatelessWidget {
   }
 
   Color _ratioColor(double ratio) {
-    if (ratio == double.infinity || ratio >= 2.0) return const Color(0xFF34C759);
+    if (ratio == double.infinity || ratio >= 2.0)
+      return const Color(0xFF34C759);
     if (ratio >= 1.0) return const Color(0xFF007AFF);
     return const Color(0xFFFF3B30);
   }

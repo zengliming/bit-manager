@@ -204,9 +204,12 @@ class TransmissionService implements ITorrentClientService {
             (m['doneDate'] as num?) != null && (m['doneDate'] as int) > 0
             ? DateTime.fromMillisecondsSinceEpoch((m['doneDate'] as int) * 1000)
             : null,
-        lastActivity: (m['activityDate'] as num?) != null &&
+        lastActivity:
+            (m['activityDate'] as num?) != null &&
                 (m['activityDate'] as int) > 0
-            ? DateTime.fromMillisecondsSinceEpoch((m['activityDate'] as int) * 1000)
+            ? DateTime.fromMillisecondsSinceEpoch(
+                (m['activityDate'] as int) * 1000,
+              )
             : null,
         site: extractSiteFromUrl(
           _parseTrackerList(m['trackerList'] as String? ?? '').firstOrNull,

@@ -78,9 +78,9 @@ class SiteDetailScreen extends StatelessWidget {
                                     site.baseUrl!,
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -97,12 +97,14 @@ class SiteDetailScreen extends StatelessWidget {
                         Wrap(
                           spacing: 6,
                           children: site.tags
-                              .map((tag) => Chip(
-                                    label: Text(tag),
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    visualDensity: VisualDensity.compact,
-                                  ))
+                              .map(
+                                (tag) => Chip(
+                                  label: Text(tag),
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              )
                               .toList(),
                         ),
                         const SizedBox(height: 8),
@@ -115,9 +117,9 @@ class SiteDetailScreen extends StatelessWidget {
                           site.notes!,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -218,7 +220,9 @@ class SiteDetailScreen extends StatelessWidget {
                     if (context.mounted) {
                       messenger.showSnackBar(
                         SnackBar(
-                          content: Text(ok ? '用户信息已更新' : '获取失败，请检查 Cookie 是否有效'),
+                          content: Text(
+                            ok ? '用户信息已更新' : '获取失败，请检查 Cookie 是否有效',
+                          ),
                           backgroundColor: ok ? Colors.green : Colors.red,
                         ),
                       );
@@ -231,8 +235,7 @@ class SiteDetailScreen extends StatelessWidget {
               // 删除按钮
               OutlinedButton.icon(
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
-                label: const Text('删除站点',
-                    style: TextStyle(color: Colors.red)),
+                label: const Text('删除站点', style: TextStyle(color: Colors.red)),
                 onPressed: () => _confirmDelete(context),
               ),
             ],
@@ -243,32 +246,50 @@ class SiteDetailScreen extends StatelessWidget {
   }
 
   Widget _buildInfoGrid(BuildContext context, SiteUserInfo info) {
-    String? formatNum(num? v) =>
-        v?.toStringAsFixed(v % 1 == 0 ? 0 : 2);
+    String? formatNum(num? v) => v?.toStringAsFixed(v % 1 == 0 ? 0 : 2);
 
     final items = <_InfoItem>[
-      _InfoItem('分享率',
-          info.ratio == double.infinity ? '∞' : info.ratio?.toStringAsFixed(2)),
-      _InfoItem('上传量', info.uploaded != null ? formatBytes(info.uploaded!) : null),
-      _InfoItem('下载量',
-          info.downloaded != null ? formatBytes(info.downloaded!) : null),
-      _InfoItem('真实上传',
-          info.trueUploaded != null ? formatBytes(info.trueUploaded!) : null),
-      _InfoItem('真实下载',
-          info.trueDownloaded != null ? formatBytes(info.trueDownloaded!) : null),
+      _InfoItem(
+        '分享率',
+        info.ratio == double.infinity ? '∞' : info.ratio?.toStringAsFixed(2),
+      ),
+      _InfoItem(
+        '上传量',
+        info.uploaded != null ? formatBytes(info.uploaded!) : null,
+      ),
+      _InfoItem(
+        '下载量',
+        info.downloaded != null ? formatBytes(info.downloaded!) : null,
+      ),
+      _InfoItem(
+        '真实上传',
+        info.trueUploaded != null ? formatBytes(info.trueUploaded!) : null,
+      ),
+      _InfoItem(
+        '真实下载',
+        info.trueDownloaded != null ? formatBytes(info.trueDownloaded!) : null,
+      ),
       _InfoItem('魔力值', formatNum(info.bonusPoints)),
       _InfoItem('做种积分', formatNum(info.seedingBonus)),
       _InfoItem('时魔', formatNum(info.bonusPerHour)),
       _InfoItem('做种数', info.seedingCount?.toString()),
       _InfoItem('下载中', info.leechingCount?.toString()),
-      _InfoItem('做种体积',
-          info.seedingSize != null ? formatBytes(info.seedingSize!) : null),
-      _InfoItem('未读消息',
-          (info.messageCount ?? 0) > 0 ? '${info.messageCount}' : null),
-      _InfoItem('H&R 待考核',
-          (info.hnrPreWarning ?? 0) > 0 ? '${info.hnrPreWarning}' : null),
-      _InfoItem('H&R 不达标',
-          (info.hnrUnsatisfied ?? 0) > 0 ? '${info.hnrUnsatisfied}' : null),
+      _InfoItem(
+        '做种体积',
+        info.seedingSize != null ? formatBytes(info.seedingSize!) : null,
+      ),
+      _InfoItem(
+        '未读消息',
+        (info.messageCount ?? 0) > 0 ? '${info.messageCount}' : null,
+      ),
+      _InfoItem(
+        'H&R 待考核',
+        (info.hnrPreWarning ?? 0) > 0 ? '${info.hnrPreWarning}' : null,
+      ),
+      _InfoItem(
+        'H&R 不达标',
+        (info.hnrUnsatisfied ?? 0) > 0 ? '${info.hnrUnsatisfied}' : null,
+      ),
       _InfoItem('加入日期', info.joinedAtText),
       _InfoItem('最近动向', info.lastAccessAtText),
     ].where((i) => i.value != null).toList();
@@ -277,29 +298,31 @@ class SiteDetailScreen extends StatelessWidget {
       spacing: 12,
       runSpacing: 12,
       children: items
-          .map((item) => SizedBox(
-                width: (MediaQuery.of(context).size.width - 64) / 2 - 6,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.label,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+          .map(
+            (item) => SizedBox(
+              width: (MediaQuery.of(context).size.width - 64) / 2 - 6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      item.value!,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.value!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
-              ))
+                  ),
+                ],
+              ),
+            ),
+          )
           .toList(),
     );
   }

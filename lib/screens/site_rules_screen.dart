@@ -116,9 +116,10 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('详情页路径',
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    '详情页路径',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 4),
                   TextFormField(
                     initialValue: _detailsPath ?? '',
@@ -188,9 +189,13 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
                   Row(
                     children: [
                       const Expanded(
-                        child: Text('预览 / 测试',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600)),
+                        child: Text(
+                          '预览 / 测试',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: _loadDumpFromDisk,
@@ -211,7 +216,9 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
                     controller: _previewCtrl,
                     maxLines: 6,
                     style: const TextStyle(
-                        fontSize: 11, fontFamily: 'monospace'),
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                    ),
                     decoration: const InputDecoration(
                       hintText: '<html>...',
                       border: OutlineInputBorder(),
@@ -225,8 +232,10 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
                   ),
                   if (_previewError != null) ...[
                     const SizedBox(height: 8),
-                    Text(_previewError!,
-                        style: const TextStyle(color: Colors.red)),
+                    Text(
+                      _previewError!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ],
                 ],
               ),
@@ -240,12 +249,13 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
   }
 
   void _showAddFieldSheet() {
-    final available =
-        _fieldLabels.keys.where((k) => !_fields.containsKey(k)).toList();
+    final available = _fieldLabels.keys
+        .where((k) => !_fields.containsKey(k))
+        .toList();
     if (available.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('所有已知字段都已添加')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('所有已知字段都已添加')));
       return;
     }
     showModalBottomSheet<void>(
@@ -258,9 +268,13 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
               for (final key in available)
                 ListTile(
                   title: Text(_fieldLabels[key] ?? key),
-                  subtitle: Text(key,
-                      style: const TextStyle(
-                          fontSize: 11, fontFamily: 'monospace')),
+                  subtitle: Text(
+                    key,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
                   onTap: () {
                     Navigator.pop(ctx);
                     setState(() {
@@ -280,8 +294,9 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
     try {
       await SiteService.ensureDefaultSchemaLoaded();
       // 直接读 default_schema.json 把字段拷过来
-      final raw = await rootBundle
-          .loadString('assets/sites/default_schema.json');
+      final raw = await rootBundle.loadString(
+        'assets/sites/default_schema.json',
+      );
       final json = jsonDecode(raw) as Map<String, dynamic>;
       final fieldsJson = json['fields'] as Map<String, dynamic>?;
       if (fieldsJson == null) {
@@ -299,10 +314,11 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
         } catch (_) {}
       });
       setState(() {});
-      messenger.showSnackBar(SnackBar(
-          content: Text(added > 0
-              ? '已添加 $added 个默认字段'
-              : '所有默认字段都已存在，未做改动')));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(added > 0 ? '已添加 $added 个默认字段' : '所有默认字段都已存在，未做改动'),
+        ),
+      );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('导入失败：$e')));
     }
@@ -313,8 +329,9 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
     try {
       final path = await SiteService.dumpPathFor(widget.site.id, 'detail');
       if (path == null) {
-        messenger.showSnackBar(const SnackBar(
-            content: Text('未找到 dump 文件 — 先刷新一次站点用户信息以生成')));
+        messenger.showSnackBar(
+          const SnackBar(content: Text('未找到 dump 文件 — 先刷新一次站点用户信息以生成')),
+        );
         return;
       }
       final html = await SiteService.readDump(path);
@@ -367,9 +384,13 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
     for (final entry in _fields.entries) {
       final rule = entry.value.toRule();
       if (rule == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
             content: Text(
-                '字段 ${_fieldLabels[entry.key] ?? entry.key}：请至少填一个 selector')));
+              '字段 ${_fieldLabels[entry.key] ?? entry.key}：请至少填一个 selector',
+            ),
+          ),
+        );
         return;
       }
     }
@@ -417,10 +438,10 @@ class _EditableField {
   });
 
   factory _EditableField.empty() => _EditableField(
-        selectorCtrls: [TextEditingController()],
-        attrCtrl: TextEditingController(),
-        filters: [],
-      );
+    selectorCtrls: [TextEditingController()],
+    attrCtrl: TextEditingController(),
+    filters: [],
+  );
 
   factory _EditableField.from(FieldRule rule) {
     final filters = <_EditableFilter>[];
@@ -433,10 +454,8 @@ class _EditableField {
     }
     return _EditableField(
       selectorCtrls: (rule.selector.isEmpty
-              ? <TextEditingController>[TextEditingController()]
-              : rule.selector
-                  .map((s) => TextEditingController(text: s))
-                  .toList()),
+          ? <TextEditingController>[TextEditingController()]
+          : rule.selector.map((s) => TextEditingController(text: s)).toList()),
       attrCtrl: TextEditingController(text: rule.attr ?? ''),
       filters: filters,
     );
@@ -489,8 +508,9 @@ class _EditableFilter {
       final args = (descriptor['args'] as List?) ?? const [];
       return _EditableFilter(
         name: name,
-        argCtrls:
-            args.map((a) => TextEditingController(text: a.toString())).toList(),
+        argCtrls: args
+            .map((a) => TextEditingController(text: a.toString()))
+            .toList(),
       );
     }
     return _EditableFilter(name: 'parseNumber', argCtrls: []);
@@ -512,13 +532,14 @@ class _EditableFilter {
         .map((c) => c.text)
         .where((s) => s.isNotEmpty)
         .map<Object>((s) {
-      // 简单类型推断：纯整数 → int，"true/false" → bool，否则 String
-      final i = int.tryParse(s);
-      if (i != null) return i;
-      if (s == 'true') return true;
-      if (s == 'false') return false;
-      return s;
-    }).toList();
+          // 简单类型推断：纯整数 → int，"true/false" → bool，否则 String
+          final i = int.tryParse(s);
+          if (i != null) return i;
+          if (s == 'true') return true;
+          if (s == 'false') return false;
+          return s;
+        })
+        .toList();
     if (args.isEmpty) return name;
     return {'name': name, 'args': args};
   }
@@ -570,22 +591,26 @@ class _FieldCardState extends State<_FieldCard> {
                     child: Row(
                       children: [
                         Icon(
-                          _expanded
-                              ? Icons.expand_less
-                              : Icons.expand_more,
+                          _expanded ? Icons.expand_less : Icons.expand_more,
                           size: 18,
                         ),
                         const SizedBox(width: 4),
-                        Text(widget.label,
-                            style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600)),
+                        Text(
+                          widget.label,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         const SizedBox(width: 6),
-                        Text('(${widget.fieldKey})',
-                            style: TextStyle(
-                                fontSize: 11,
-                                color: scheme.onSurfaceVariant,
-                                fontFamily: 'monospace')),
+                        Text(
+                          '(${widget.fieldKey})',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: scheme.onSurfaceVariant,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -594,7 +619,9 @@ class _FieldCardState extends State<_FieldCard> {
                   Flexible(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
@@ -602,15 +629,20 @@ class _FieldCardState extends State<_FieldCard> {
                       child: Text(
                         preview.toString(),
                         style: const TextStyle(
-                            fontSize: 11, color: Colors.green),
+                          fontSize: 11,
+                          color: Colors.green,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline,
-                      size: 18, color: Colors.red),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    size: 18,
+                    color: Colors.red,
+                  ),
                   visualDensity: VisualDensity.compact,
                   onPressed: widget.onDelete,
                 ),
@@ -618,8 +650,10 @@ class _FieldCardState extends State<_FieldCard> {
             ),
             if (_expanded) ...[
               const Divider(height: 16),
-              const Text('Selectors（按顺序尝试，首个非空者胜）',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+              const Text(
+                'Selectors（按顺序尝试，首个非空者胜）',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 4),
               for (var i = 0; i < widget.field.selectorCtrls.length; i++)
                 Padding(
@@ -630,28 +664,28 @@ class _FieldCardState extends State<_FieldCard> {
                         child: TextField(
                           controller: widget.field.selectorCtrls[i],
                           style: const TextStyle(
-                              fontSize: 12, fontFamily: 'monospace'),
+                            fontSize: 12,
+                            fontFamily: 'monospace',
+                          ),
                           decoration: const InputDecoration(
                             isDense: true,
                             border: OutlineInputBorder(),
-                            hintText:
-                                "td.rowhead:contains('xxx') + td",
+                            hintText: "td.rowhead:contains('xxx') + td",
                           ),
                           onChanged: (_) => widget.onChanged(),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.remove_circle_outline,
-                            size: 18),
+                        icon: const Icon(Icons.remove_circle_outline, size: 18),
                         visualDensity: VisualDensity.compact,
                         onPressed: widget.field.selectorCtrls.length == 1
                             ? null
                             : () => setState(() {
-                                  widget.field.selectorCtrls
-                                      .removeAt(i)
-                                      .dispose();
-                                  widget.onChanged();
-                                }),
+                                widget.field.selectorCtrls
+                                    .removeAt(i)
+                                    .dispose();
+                                widget.onChanged();
+                              }),
                       ),
                     ],
                   ),
@@ -671,15 +705,21 @@ class _FieldCardState extends State<_FieldCard> {
                 children: [
                   const SizedBox(
                     width: 80,
-                    child: Text('Attr',
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Attr',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: TextField(
                       controller: widget.field.attrCtrl,
                       style: const TextStyle(
-                          fontSize: 12, fontFamily: 'monospace'),
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                      ),
                       decoration: const InputDecoration(
                         isDense: true,
                         border: OutlineInputBorder(),
@@ -692,8 +732,10 @@ class _FieldCardState extends State<_FieldCard> {
               ),
 
               const SizedBox(height: 12),
-              const Text('Filters（顺序应用）',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+              const Text(
+                'Filters（顺序应用）',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
               for (var i = 0; i < widget.field.filters.length; i++)
                 _FilterRow(
                   filter: widget.field.filters[i],
@@ -707,8 +749,9 @@ class _FieldCardState extends State<_FieldCard> {
                 icon: const Icon(Icons.add, size: 16),
                 label: const Text('加 filter', style: TextStyle(fontSize: 12)),
                 onPressed: () => setState(() {
-                  widget.field.filters
-                      .add(_EditableFilter(name: 'parseNumber', argCtrls: []));
+                  widget.field.filters.add(
+                    _EditableFilter(name: 'parseNumber', argCtrls: []),
+                  );
                   widget.onChanged();
                 }),
               ),
@@ -783,7 +826,9 @@ class _FilterRowState extends State<_FilterRow> {
                     child: TextField(
                       controller: f.argCtrls[i],
                       style: const TextStyle(
-                          fontSize: 12, fontFamily: 'monospace'),
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                      ),
                       decoration: InputDecoration(
                         isDense: true,
                         border: const OutlineInputBorder(),
@@ -796,8 +841,11 @@ class _FilterRowState extends State<_FilterRow> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.remove_circle_outline,
-                size: 18, color: Colors.red),
+            icon: const Icon(
+              Icons.remove_circle_outline,
+              size: 18,
+              color: Colors.red,
+            ),
             visualDensity: VisualDensity.compact,
             onPressed: widget.onDelete,
           ),

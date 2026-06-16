@@ -55,11 +55,13 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
     if (_searchCtrl.text.isNotEmpty) {
       final q = _searchCtrl.text.toLowerCase();
       result = result
-          .where((p) =>
-              p.name.toLowerCase().contains(q) ||
-              p.id.toLowerCase().contains(q) ||
-              p.tags.any((t) => t.toLowerCase().contains(q)) ||
-              p.aka.any((a) => a.toLowerCase().contains(q)))
+          .where(
+            (p) =>
+                p.name.toLowerCase().contains(q) ||
+                p.id.toLowerCase().contains(q) ||
+                p.tags.any((t) => t.toLowerCase().contains(q)) ||
+                p.aka.any((a) => a.toLowerCase().contains(q)),
+          )
           .toList();
     }
 
@@ -128,8 +130,7 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                         label: Text(cat),
                         selected: _categoryFilter == cat,
                         onSelected: (_) {
-                          _categoryFilter =
-                              _categoryFilter == cat ? null : cat;
+                          _categoryFilter = _categoryFilter == cat ? null : cat;
                           _applyFilters();
                         },
                         visualDensity: VisualDensity.compact,
@@ -173,7 +174,9 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
 
                       return Card(
                         margin: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         child: ListTile(
                           leading: SiteFavicon(
                             iconAsset: preset.iconAsset,
@@ -189,9 +192,9 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: isImported
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant
+                                        ? Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant
                                         : null,
                                   ),
                                 ),
@@ -203,9 +206,9 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                                     preset.aka.join(' / '),
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -235,13 +238,22 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                                   children: [
                                     if (preset.category != null)
                                       _infoChip(
-                                          context, preset.category!, false),
+                                        context,
+                                        preset.category!,
+                                        false,
+                                      ),
                                     if (preset.baseUrl != null)
-                                      _infoChip(context,
-                                          _hostFromUrl(preset.baseUrl!), true),
+                                      _infoChip(
+                                        context,
+                                        _hostFromUrl(preset.baseUrl!),
+                                        true,
+                                      ),
                                     if (preset.tags.isNotEmpty)
-                                      ...preset.tags.take(3).map(
-                                          (t) => _infoChip(context, t, false)),
+                                      ...preset.tags
+                                          .take(3)
+                                          .map(
+                                            (t) => _infoChip(context, t, false),
+                                          ),
                                   ],
                                 ),
                               ),
@@ -252,16 +264,18 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
                             children: [
                               if (!isImported)
                                 IconButton(
-                                  icon: const Icon(Icons.edit_outlined,
-                                      size: 18),
+                                  icon: const Icon(
+                                    Icons.edit_outlined,
+                                    size: 18,
+                                  ),
                                   tooltip: '编辑后添加',
                                   onPressed: () => _editAndAdd(preset),
                                 ),
                               if (isImported)
-                                Icon(Icons.check_circle,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary)
+                                Icon(
+                                  Icons.check_circle,
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
                               else
                                 Checkbox(
                                   value: isSelected,
@@ -357,14 +371,15 @@ class _SiteImportScreenState extends State<SiteImportScreen> {
   }
 
   Future<void> _importSelected(SiteProvider provider) async {
-    final selectedPresets =
-        _allPresets.where((p) => _selectedIds.contains(p.id)).toList();
+    final selectedPresets = _allPresets
+        .where((p) => _selectedIds.contains(p.id))
+        .toList();
     final count = await provider.importPresets(selectedPresets);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('成功导入 $count 个站点')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('成功导入 $count 个站点')));
       setState(() => _selectedIds.clear());
     }
   }

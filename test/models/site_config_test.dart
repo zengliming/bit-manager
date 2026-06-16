@@ -98,10 +98,7 @@ void main() {
     });
 
     test('SitePreset schema 为 null 时不写入 json', () {
-      final preset = SitePreset(
-        id: 'default',
-        name: 'Default',
-      );
+      final preset = SitePreset(id: 'default', name: 'Default');
       final json = preset.toJson();
       expect(json.containsKey('schema'), isFalse);
     });
@@ -136,10 +133,7 @@ void main() {
     });
 
     test('copyWith() 不传参数时返回等价副本', () {
-      final orig = SiteParseSchema(
-        schema: 'NexusPHP',
-        userDetailsPath: '/x',
-      );
+      final orig = SiteParseSchema(schema: 'NexusPHP', userDetailsPath: '/x');
       final copied = orig.copyWith();
       expect(copied.schema, equals('NexusPHP'));
       expect(copied.userDetailsPath, equals('/x'));

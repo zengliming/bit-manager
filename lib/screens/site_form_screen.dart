@@ -41,11 +41,14 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
 
     final schema = s?.parseSchema;
     _bonusLabelsCtrl = TextEditingController(
-        text: schema?.bonusLabels?.join(', ') ?? '');
+      text: schema?.bonusLabels?.join(', ') ?? '',
+    );
     _levelLabelsCtrl = TextEditingController(
-        text: schema?.levelLabels?.join(', ') ?? '');
-    _userDetailsPathCtrl =
-        TextEditingController(text: schema?.userDetailsPath ?? '');
+      text: schema?.levelLabels?.join(', ') ?? '',
+    );
+    _userDetailsPathCtrl = TextEditingController(
+      text: schema?.userDetailsPath ?? '',
+    );
     _schema = schema?.schema;
     _advancedExpanded = schema != null;
   }
@@ -139,8 +142,7 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
               // ── 高级：解析覆写（NexusPHP 二开站点适配）──
               ExpansionTile(
                 title: const Text('高级：解析配置'),
-                subtitle: const Text(
-                    '建议去详情页用「解析规则」编辑器（更强大）。下方是旧版仅覆写标签词'),
+                subtitle: const Text('建议去详情页用「解析规则」编辑器（更强大）。下方是旧版仅覆写标签词'),
                 initiallyExpanded: _advancedExpanded,
                 tilePadding: EdgeInsets.zero,
                 childrenPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -180,11 +182,17 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
                     ),
                     items: const [
                       DropdownMenuItem<String?>(
-                          value: null, child: Text('自动（NexusPHP）')),
+                        value: null,
+                        child: Text('自动（NexusPHP）'),
+                      ),
                       DropdownMenuItem<String?>(
-                          value: 'NexusPHP', child: Text('NexusPHP')),
+                        value: 'NexusPHP',
+                        child: Text('NexusPHP'),
+                      ),
                       DropdownMenuItem<String?>(
-                          value: 'Gazelle', child: Text('Gazelle')),
+                        value: 'Gazelle',
+                        child: Text('Gazelle'),
+                      ),
                     ],
                     onChanged: (v) {
                       setState(() {
@@ -234,7 +242,8 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
     final bonusLabels = splitLabels(_bonusLabelsCtrl);
     final levelLabels = splitLabels(_levelLabelsCtrl);
     final detailsPath = _userDetailsPathCtrl.text.trim();
-    final hasSchema = bonusLabels != null ||
+    final hasSchema =
+        bonusLabels != null ||
         levelLabels != null ||
         detailsPath.isNotEmpty ||
         _schema != null;

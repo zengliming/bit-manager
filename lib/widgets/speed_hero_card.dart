@@ -40,11 +40,7 @@ class SpeedHeroCard extends StatelessWidget {
               textColor: const Color(0xFF248A3D),
             ),
           ),
-          Container(
-            width: 1,
-            height: 56,
-            color: theme.dividerColor,
-          ),
+          Container(width: 1, height: 56, color: theme.dividerColor),
           Expanded(
             child: _SpeedColumn(
               icon: Icons.arrow_upward,

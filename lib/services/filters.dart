@@ -72,9 +72,10 @@ class Filters {
     var s = v.toString().trim().replaceAll(',', '');
     if (s.isEmpty) return null;
     // 取「数字 单位」段（数字和单位之间允许空白），单位只取第一段连续字母（含 i）
-    final m = RegExp(r'(-?\d+(?:\.\d+)?)\s*([ZEPTGMK]?i?B)\b',
-            caseSensitive: false)
-        .firstMatch(s);
+    final m = RegExp(
+      r'(-?\d+(?:\.\d+)?)\s*([ZEPTGMK]?i?B)\b',
+      caseSensitive: false,
+    ).firstMatch(s);
     if (m == null) {
       // 纯数字直接返回
       return int.tryParse(s);
@@ -88,15 +89,24 @@ class Filters {
 
   static int? _sizeUnit(String unit) {
     switch (unit) {
-      case 'TIB': return 1099511627776;
-      case 'GIB': return 1073741824;
-      case 'MIB': return 1048576;
-      case 'KIB': return 1024;
-      case 'TB': return 1000000000000;
-      case 'GB': return 1000000000;
-      case 'MB': return 1000000;
-      case 'KB': return 1000;
-      case 'B': return 1;
+      case 'TIB':
+        return 1099511627776;
+      case 'GIB':
+        return 1073741824;
+      case 'MIB':
+        return 1048576;
+      case 'KIB':
+        return 1024;
+      case 'TB':
+        return 1000000000000;
+      case 'GB':
+        return 1000000000;
+      case 'MB':
+        return 1000000;
+      case 'KB':
+        return 1000;
+      case 'B':
+        return 1;
     }
     return null;
   }
