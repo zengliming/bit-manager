@@ -1,0 +1,65 @@
+{
+  "_comment": "Gazelle 架构默认规则（What.CD 风格：user.php?id=N + li#stats_*）。可作为 Gazelle 类站点的初始模板，差异由用户在规则编辑器调整。",
+  "_version": 1,
+  "fields": {
+    "id": {
+      "_label": "用户 ID",
+      "selector": ["a[href*='user.php?id=']"],
+      "filter": { "name": "querystring", "args": ["id"] }
+    },
+    "name": {
+      "_label": "用户名",
+      "selector": ["a[href*='user.php?id=']"]
+    },
+    "uploaded": {
+      "_label": "上传量",
+      "selector": ["li#stats_uploaded"],
+      "filter": "parseSize"
+    },
+    "downloaded": {
+      "_label": "下载量",
+      "selector": ["li#stats_downloaded"],
+      "filter": "parseSize"
+    },
+    "ratio": {
+      "_label": "分享率",
+      "selector": ["li#stats_ratio"],
+      "filter": "parseRatio"
+    },
+    "levelName": {
+      "_label": "等级",
+      "selector": ["#userclass"]
+    },
+    "joinTime": {
+      "_label": "加入日期",
+      "selector": ["li#stats_join_date"],
+      "filter": "trim"
+    },
+    "leeching": {
+      "_label": "当前下载",
+      "selector": [
+        "td:contains('Currently leeching') + td",
+        "#leeching_count",
+        "li#stats_leeching"
+      ],
+      "filter": "parseNumber"
+    },
+    "seeding": {
+      "_label": "当前做种",
+      "selector": [
+        "td:contains('Currently seeding') + td",
+        "#seeding_count",
+        "li#stats_seeding"
+      ],
+      "filter": "parseNumber"
+    },
+    "messageCount": {
+      "_label": "未读消息",
+      "selector": [
+        "#inbox_new",
+        "a[href*='inbox.php'][class*='new']"
+      ],
+      "filter": "parseNumber"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "_comment": "列出要加载的默认规则文件。key 是 SiteParseSchema.schema 的值，path 是相对 assets 路径。",
+  "_version": 1,
+  "schemas": [
+    { "key": "NexusPHP", "path": "assets/sites/schemas/nexusphp.json" },
+    { "key": "Gazelle",  "path": "assets/sites/schemas/gazelle.json" }
+  ]
+}
