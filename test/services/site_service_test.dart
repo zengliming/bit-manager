@@ -1,5 +1,6 @@
 import 'package:bit_manager/models/site_config.dart';
 import 'package:bit_manager/services/site_service.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -655,6 +656,87 @@ void main() {
       });
       expect(results['level'], 'VIP');
       expect(results['bonusPoints'], 8888);
+    });
+  });
+
+  group('多 schema 加载', () {
+    test('ensureDefaultSchemaLoaded 后 NexusPHP 与 Gazelle 都在内存', () async {
+      // 重置以便能再加载
+      SiteService.resetDefaultFieldsForTest();
+      await SiteService.ensureDefaultSchemaLoaded();
+      final nexus = SiteService.defaultFieldsForTest('NexusPHP');
+      final gazelle = SiteService.defaultFieldsForTest('Gazelle');
+      expect(nexus, isNotNull);
+      expect(gazelle, isNotNull);
+      expect(nexus!.containsKey('uploaded'), isTrue);
+      expect(gazelle!.containsKey('uploaded'), isTrue);
+    });
+
+    test('NexusPHP 默认规则包含 name / seeding / leeching', () async {
+      SiteService.resetDefaultFieldsForTest();
+      await SiteService.ensureDefaultSchemaLoaded();
+      final nexus = SiteService.defaultFieldsForTest('NexusPHP')!;
+      expect(nexus.containsKey('name'), isTrue);
+      expect(nexus.containsKey('seeding'), isTrue);
+      expect(nexus.containsKey('leeching'), isTrue);
+      // JSON 中的 "filter": "parseNumber" 在 fromJson 时被规范化进 filters 列表
+      expect(nexus['seeding']!.filters, isNotNull);
+      expect(nexus['seeding']!.filters!.contains('parseNumber'), isTrue);
+      expect(nexus['leeching']!.filters!.contains('parseNumber'), isTrue);
+    });
+
+    test('schema 为 null 时回落到 NexusPHP', () async {
+      SiteService.resetDefaultFieldsForTest();
+      await SiteService.ensureDefaultSchemaLoaded();
+      // parseHtml 使用 schema=null
+      final svc = SiteService();
+      final html = '<html><body><table>'
+          "<tr><td class='rowhead'>传输</td><td>上传量: 1.00 TB 下载量: 2.00 TB 分享率: 0.50</td></tr>"
+          '</table></body></html>';
+      final info = svc.parseHtml('test', html, schema: null);
+      expect(info.uploaded, isNotNull);
+    });
+
+    test('schema 为 Gazelle 时使用 Gazelle 默认规则', () async {
+      SiteService.resetDefaultFieldsForTest();
+      await SiteService.ensureDefaultSchemaLoaded();
+      final svc = SiteService();
+      // Gazelle 风格 HTML：li#stats_uploaded 内有纯文本"2.5 TiB"
+      final html = '<html><body>'
+          '<li id="stats_uploaded">2.5 TiB</li>'
+          '<li id="stats_downloaded">1.0 TiB</li>'
+          '<li id="stats_ratio">2.5</li>'
+          '</body></html>';
+      final info = svc.parseHtml('test', html,
+          schema: const SiteParseSchema(schema: 'Gazelle'));
+      expect(info.uploaded, equals(2748779069440)); // 2.5 TiB
+      expect(info.downloaded, equals(1099511627776)); // 1.0 TiB
+      expect(info.ratio, closeTo(2.5, 0.01));
+    });
+
+    test('站点自定义 fields 优先于默认规则', () async {
+      SiteService.resetDefaultFieldsForTest();
+      await SiteService.ensureDefaultSchemaLoaded();
+      final svc = SiteService();
+      // NexusPHP 默认会从 td.rowhead:contains('传输') + td 拿上传量
+      // 站点自定义 fields 用 contains 过滤拿 42 GB
+      final html = '<html><body><table>'
+          "<tr><td class='rowhead'>传输</td><td>上传量: 999 TB 下载量: 1.00 TB</td></tr>"
+          "<tr><td>专用区</td><td>42 GB</td></tr>"
+          '</table></body></html>';
+      // package:html 不支持 td.classname；用 td + contains 过滤
+      final customRule = const FieldRule(
+        selector: ["td"],
+        contains: '42 GB',
+        filter: 'parseSize',
+      );
+      final schema = SiteParseSchema(
+        schema: 'NexusPHP',
+        fields: {'uploaded': customRule},
+      );
+      final info = svc.parseHtml('test', html, schema: schema);
+      // 自定义规则拿到的 42 GB（42,000,000,000 — 十进制单位）优先于默认拿到的 999 TB
+      expect(info.uploaded, equals(42000000000));
     });
   });
 }

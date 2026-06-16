@@ -420,12 +420,15 @@ class SiteService {
   /// 翻译成我们的 FieldRule 形式。所有用户特殊规则（[parseSchema.fields]）跑完后，
   /// 这里再补刀一遍 — 任何字段值仍是 null 才会被覆盖。
   ///
-  /// 真正的规则定义在 `assets/sites/default_schema.json`，启动时一次性加载到这里。
-  /// 改 JSON 不用动代码。测试代码可以通过 [setDefaultFieldsForTest] 注入用例。
-  static Map<String, FieldRule> _defaultNexusPhpFields = _builtinFallback;
+  /// 真正的规则定义在 `assets/sites/schemas/nexusphp.json` 等，启动时按
+  /// `assets/sites/schemas/manifest.json` 一次性加载到这里。改 JSON 不用动代码。
+  /// 测试代码可以通过 [setDefaultFieldsForTest] 注入用例。
+  static Map<String, Map<String, FieldRule>> _defaultFieldsBySchema = {
+    'NexusPHP': _builtinFallback,
+  };
 
-  /// 是否已加载过 default_schema.json（首次 fetch 时触发）
-  static bool _defaultLoaded = false;
+  /// 是否已加载过 schemas/manifest.json（首次 fetch 时触发）
+  static bool _manifestLoaded = false;
 
   /// 兜底：assets 加载失败时使用的最小内置规则（保证 app 不崩）
   static final Map<String, FieldRule> _builtinFallback = const {
@@ -441,47 +444,72 @@ class SiteService {
 
   /// 测试钩子：直接注入默认 fields，跳过 assets 加载
   @visibleForTesting
-  static void setDefaultFieldsForTest(Map<String, FieldRule> fields) {
-    _defaultNexusPhpFields = fields;
-    _defaultLoaded = true;
+  static void setDefaultFieldsForTest(
+      Map<String, Map<String, FieldRule>> fields) {
+    _defaultFieldsBySchema = fields;
+    _manifestLoaded = true;
   }
 
   /// 重置默认 fields 为内置 fallback（测试 tearDown 用）
   @visibleForTesting
   static void resetDefaultFieldsForTest() {
-    _defaultNexusPhpFields = _builtinFallback;
-    _defaultLoaded = false;
+    _defaultFieldsBySchema = {
+      'NexusPHP': _builtinFallback,
+    };
+    _manifestLoaded = false;
   }
 
-  /// 从 assets 加载 default_schema.json；幂等，反复调只读一次
+  /// 测试钩子：读取指定 schema 的默认 fields
+  @visibleForTesting
+  static Map<String, FieldRule>? defaultFieldsForTest(String schema) =>
+      _defaultFieldsBySchema[schema];
+
+  /// 从 assets/schemas/manifest.json 加载所有默认规则；幂等，反复调只读一次
   static Future<void> ensureDefaultSchemaLoaded() async {
-    if (_defaultLoaded) return;
-    _defaultLoaded = true;
+    if (_manifestLoaded) return;
+    _manifestLoaded = true;
     try {
-      final raw =
-          await rootBundle.loadString('assets/sites/default_schema.json');
+      final raw = await rootBundle
+          .loadString('assets/sites/schemas/manifest.json');
       final json = jsonDecode(raw) as Map<String, dynamic>;
-      final fieldsJson = json['fields'] as Map<String, dynamic>?;
-      if (fieldsJson == null) return;
-      final fields = <String, FieldRule>{};
-      fieldsJson.forEach((key, value) {
-        if (value is! Map) return;
-        // 跳过 _label / _comment 等带下划线开头的元数据字段
-        if (key.startsWith('_')) return;
+      final list = json['schemas'] as List?;
+      if (list == null) return;
+      for (final entry in list) {
+        if (entry is! Map) continue;
+        final key = entry['key'] as String?;
+        final path = entry['path'] as String?;
+        if (key == null || path == null) continue;
         try {
-          fields[key] =
-              FieldRule.fromJson(Map<String, dynamic>.from(value));
-        } catch (_) {
-          // 单个字段加载失败不影响其它字段
+          final rawSchema = await rootBundle.loadString(path);
+          final schemaJson = jsonDecode(rawSchema) as Map<String, dynamic>;
+          final fieldsJson = schemaJson['fields'] as Map<String, dynamic>?;
+          if (fieldsJson == null) continue;
+          final fields = <String, FieldRule>{};
+          fieldsJson.forEach((k, v) {
+            if (v is! Map) return;
+            // 跳过 _label / _comment 等带下划线开头的元数据字段
+            if (k.startsWith('_')) return;
+            try {
+              fields[k.toString()] =
+                  FieldRule.fromJson(Map<String, dynamic>.from(v));
+            } catch (_) {
+              // 单个字段加载失败不影响其它字段
+            }
+          });
+          if (fields.isNotEmpty) {
+            _defaultFieldsBySchema[key] = fields;
+          }
+        } catch (e) {
+          // 单个 schema 文件失败时保持内置 fallback，不影响其它 schema
+          if (kDebugMode) {
+            debugPrint('[SiteService] $path 加载失败: $e');
+          }
         }
-      });
-      if (fields.isNotEmpty) {
-        _defaultNexusPhpFields = fields;
       }
     } catch (e) {
-      // 加载失败时保持 _builtinFallback，避免 app 崩；下次 ensureDefaultSchemaLoaded 不会重试
+      // manifest 加载失败时 NexusPHP 仍走 _builtinFallback
       if (kDebugMode) {
-        debugPrint('[SiteService] default_schema.json 加载失败: $e — 使用内置兜底规则');
+        debugPrint('[SiteService] manifest.json 加载失败: $e — 使用内置 NexusPHP 兜底');
       }
     }
   }
@@ -645,10 +673,11 @@ class SiteService {
       _applyFieldRules(info, doc, schema!.fields!);
     }
 
-    // ── 阶段 2：跑默认 NexusPHP schema（PT-depiler schemas/NexusPHP.ts 等价）──
-    // 这层是给没自定义规则的站点用的，覆盖：messageCount / seedingBonus /
-    // bonusPerHour / lastAccessAt / hnrPreWarning / hnrUnsatisfied 等
-    _applyFieldRules(info, doc, _defaultNexusPhpFields);
+    // ── 阶段 2：按 schema 选默认规则（null 回落 NexusPHP）──
+    final schemaKey = schema?.schema ?? 'NexusPHP';
+    final defaults = _defaultFieldsBySchema[schemaKey]
+        ?? _defaultFieldsBySchema['NexusPHP']!;
+    _applyFieldRules(info, doc, defaults);
 
     // ── 阶段 3：旧的「td.rowhead 标签词」路径，兜底各种二开站点变体 ──
     final usernameLabels =
