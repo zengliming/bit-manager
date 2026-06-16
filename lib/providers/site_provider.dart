@@ -258,6 +258,16 @@ class SiteProvider extends ChangeNotifier {
 
   // ── 用户信息 ──
 
+  /// 所有站点未读消息总数（仅统计 messageCount > 0 的）
+  int get unreadTotal {
+    var sum = 0;
+    for (final info in _userInfo.values) {
+      final n = info.messageCount;
+      if (n != null && n > 0) sum += n;
+    }
+    return sum;
+  }
+
   /// 获取站点用户信息
   SiteUserInfo? getUserInfo(String siteId) => _userInfo[siteId];
 
