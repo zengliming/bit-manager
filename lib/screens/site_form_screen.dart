@@ -23,6 +23,8 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
   late final TextEditingController _bonusLabelsCtrl;
   late final TextEditingController _levelLabelsCtrl;
   late final TextEditingController _userDetailsPathCtrl;
+  // 站点架构：null = 自动（NexusPHP），显式选 NexusPHP/Gazelle
+  String? _schema;
   bool _advancedExpanded = false;
 
   bool get isEditing => widget.site != null;
@@ -44,6 +46,7 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
         text: schema?.levelLabels?.join(', ') ?? '');
     _userDetailsPathCtrl =
         TextEditingController(text: schema?.userDetailsPath ?? '');
+    _schema = schema?.schema;
     _advancedExpanded = schema != null;
   }
 
@@ -168,6 +171,27 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
                       helperText: '默认为 /userdetails.php，仅二开站点改路径时填',
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String?>(
+                    initialValue: _schema,
+                    decoration: const InputDecoration(
+                      labelText: '站点架构',
+                      helperText: '默认 NexusPHP。Gazelle 站点选 Gazelle。',
+                    ),
+                    items: const [
+                      DropdownMenuItem<String?>(
+                          value: null, child: Text('自动（NexusPHP）')),
+                      DropdownMenuItem<String?>(
+                          value: 'NexusPHP', child: Text('NexusPHP')),
+                      DropdownMenuItem<String?>(
+                          value: 'Gazelle', child: Text('Gazelle')),
+                    ],
+                    onChanged: (v) {
+                      setState(() {
+                        _schema = v;
+                      });
+                    },
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -212,9 +236,11 @@ class _SiteFormScreenState extends State<SiteFormScreen> {
     final detailsPath = _userDetailsPathCtrl.text.trim();
     final hasSchema = bonusLabels != null ||
         levelLabels != null ||
-        detailsPath.isNotEmpty;
+        detailsPath.isNotEmpty ||
+        _schema != null;
     final schema = hasSchema
         ? SiteParseSchema(
+            schema: _schema,
             bonusLabels: bonusLabels,
             levelLabels: levelLabels,
             userDetailsPath: detailsPath.isEmpty ? null : detailsPath,
