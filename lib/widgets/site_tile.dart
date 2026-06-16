@@ -68,7 +68,7 @@ class SiteTile extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 4),
                         child: _buildIdentityLine(theme),
                       ),
-                      if (!site.isPublicSite)
+                      if (!site.isPublicSite && userInfo != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: _buildStatusLine(theme),

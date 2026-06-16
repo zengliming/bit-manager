@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 
 import '../models/site_config.dart';
@@ -293,26 +290,22 @@ class _SiteRulesScreenState extends State<SiteRulesScreen> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       await SiteService.ensureDefaultSchemaLoaded();
-      // 直接读 default_schema.json 把字段拷过来
-      final raw = await rootBundle.loadString(
-        'assets/sites/default_schema.json',
-      );
-      final json = jsonDecode(raw) as Map<String, dynamic>;
-      final fieldsJson = json['fields'] as Map<String, dynamic>?;
-      if (fieldsJson == null) {
-        messenger.showSnackBar(const SnackBar(content: Text('默认 schema 为空')));
+
+      // 根据站点架构取已加载的默认字段规则（不再直接读已删除的 default_schema.json）
+      final schemaKey = widget.site.parseSchema?.schema ?? 'NexusPHP';
+      final defaultFields = SiteService.defaultFieldsFor(schemaKey);
+      if (defaultFields == null || defaultFields.isEmpty) {
+        messenger.showSnackBar(const SnackBar(content: Text('默认 schema 未加载')));
         return;
       }
+
       int added = 0;
-      fieldsJson.forEach((key, value) {
-        if (key.startsWith('_') || value is! Map) return;
-        if (_fields.containsKey(key)) return; // 不覆盖用户已配置
-        try {
-          final rule = FieldRule.fromJson(Map<String, dynamic>.from(value));
-          _fields[key] = _EditableField.from(rule);
-          added++;
-        } catch (_) {}
-      });
+      for (final entry in defaultFields.entries) {
+        if (entry.key.startsWith('_')) continue;
+        if (_fields.containsKey(entry.key)) continue; // 不覆盖用户已配置
+        _fields[entry.key] = _EditableField.from(entry.value);
+        added++;
+      }
       setState(() {});
       messenger.showSnackBar(
         SnackBar(

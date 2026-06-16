@@ -41,7 +41,7 @@ class SiteService {
     if (cookie == null || cookie.isEmpty) return null;
     if (config.baseUrl == null || config.baseUrl!.isEmpty) return null;
 
-    // 启动时一次性把 default_schema.json 加进内存（幂等）
+    // 启动时一次性按 manifest 加载多 schema 默认规则（幂等）
     await ensureDefaultSchemaLoaded();
 
     // 长度太短（少于 6 字符）或不含 '=' 直接判无效。
@@ -495,6 +495,10 @@ class SiteService {
     _defaultFieldsBySchema = {'NexusPHP': _builtinFallback};
     _manifestLoaded = false;
   }
+
+  /// 获取指定 schema 的默认字段规则
+  static Map<String, FieldRule>? defaultFieldsFor(String schema) =>
+      _defaultFieldsBySchema[schema];
 
   /// 测试钩子：读取指定 schema 的默认 fields
   @visibleForTesting

@@ -223,8 +223,10 @@ class SiteDetailScreen extends StatelessWidget {
                   ),
                 ),
 
+              const SizedBox(height: 12),
+
               // ── 操作按钮 ──
-              if (hasCookie)
+              if (hasCookie && !site.isPublicSite)
                 FilledButton.tonalIcon(
                   icon: const Icon(Icons.refresh),
                   label: const Text('刷新用户信息'),
