@@ -115,6 +115,37 @@ void main() {
     });
   });
 
+  group('SiteParseSchema', () {
+    test('copyWith({schema}) 保留其它字段', () {
+      final orig = SiteParseSchema(
+        schema: 'NexusPHP',
+        userDetailsPath: '/userdetails.php',
+        fields: {
+          'uploaded': const FieldRule(selector: ['td.x + td']),
+        },
+        bonusLabels: ['啤酒瓶'],
+        seedingLabels: ['当前做种'],
+      );
+      final copied = orig.copyWith(schema: 'Gazelle');
+      expect(copied.schema, equals('Gazelle'));
+      expect(copied.userDetailsPath, equals('/userdetails.php'));
+      expect(copied.fields, isNotNull);
+      expect(copied.fields!['uploaded']!.selector, equals(['td.x + td']));
+      expect(copied.bonusLabels, equals(['啤酒瓶']));
+      expect(copied.seedingLabels, equals(['当前做种']));
+    });
+
+    test('copyWith() 不传参数时返回等价副本', () {
+      final orig = SiteParseSchema(
+        schema: 'NexusPHP',
+        userDetailsPath: '/x',
+      );
+      final copied = orig.copyWith();
+      expect(copied.schema, equals('NexusPHP'));
+      expect(copied.userDetailsPath, equals('/x'));
+    });
+  });
+
   group('SiteUserInfo', () {
     test('fromJson / toJson round-trip', () {
       final original = SiteUserInfo(

@@ -150,6 +150,32 @@ class SiteParseSchema {
     this.leechingLabels,
   });
 
+  SiteParseSchema copyWith({
+    String? schema,
+    String? userDetailsPath,
+    Map<String, FieldRule>? fields,
+    List<String>? usernameLabels,
+    List<String>? levelLabels,
+    List<String>? transferLabels,
+    List<String>? bonusLabels,
+    List<String>? joinTimeLabels,
+    List<String>? seedingLabels,
+    List<String>? leechingLabels,
+  }) {
+    return SiteParseSchema(
+      schema: schema ?? this.schema,
+      userDetailsPath: userDetailsPath ?? this.userDetailsPath,
+      fields: fields ?? this.fields,
+      usernameLabels: usernameLabels ?? this.usernameLabels,
+      levelLabels: levelLabels ?? this.levelLabels,
+      transferLabels: transferLabels ?? this.transferLabels,
+      bonusLabels: bonusLabels ?? this.bonusLabels,
+      joinTimeLabels: joinTimeLabels ?? this.joinTimeLabels,
+      seedingLabels: seedingLabels ?? this.seedingLabels,
+      leechingLabels: leechingLabels ?? this.leechingLabels,
+    );
+  }
+
   factory SiteParseSchema.fromJson(Map<String, dynamic> json) {
     Map<String, FieldRule>? fields;
     if (json['fields'] is Map) {
