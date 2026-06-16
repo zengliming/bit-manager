@@ -559,6 +559,17 @@ class SiteService {
     return [...custom, ...defaults];
   }
 
+  /// 根据站点架构返回站内消息页路径
+  static String messagePathFor(SiteParseSchema? schema) {
+    switch (schema?.schema) {
+      case 'Gazelle':
+        return '/inbox.php';
+      case 'NexusPHP':
+      default:
+        return '/messages.php';
+    }
+  }
+
   /// 用 schema.fields 提供的 selector + filter 规则填充 info
   ///
   /// 字段名对照（key 沿用 PT-depiler 命名）：
