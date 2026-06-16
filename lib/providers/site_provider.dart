@@ -229,13 +229,17 @@ class SiteProvider extends ChangeNotifier {
           schema: preset.schema,
         );
       }
+      // 优先用 rootBundle 探测真实文件路径，不信任 preset.iconAsset
+      // （presets.json 里 71/287 是 null，且偶尔有写错扩展名的情况）
+      final iconAsset =
+          await SiteService.resolveIconAsset(preset.id) ?? preset.iconAsset;
       final config = SiteConfig(
         id: preset.id,
         name: preset.name,
         baseUrl: preset.baseUrl,
         tags: List.from(preset.tags),
         sortOrder: _sites.isEmpty ? 1 : _sites.last.sortOrder + 1,
-        iconAsset: preset.iconAsset,
+        iconAsset: iconAsset,
         type: preset.type,
         parseSchema: schema,
       );

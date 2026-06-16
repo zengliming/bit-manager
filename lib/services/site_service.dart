@@ -585,17 +585,35 @@ class SiteService {
     '.webp',
   ];
 
+  /// 探测结果缓存：site_id → 真实路径。null 表示探测过但找不到。
+  /// 避免 importPresets / loadSites 重复打 rootBundle（200+ 站 × 7 扩展 = 1400+ 次）。
+  static final Map<String, String?> _iconCache = {};
+
+  /// 探测 assets/sites/icons/ 下真实存在的图标文件路径
+  ///
+  /// 用途：preset.iconAsset 经常是 null（presets.json 漏写）或扩展名错，
+  /// 用 rootBundle 探一下真实存在的文件。带静态缓存避免重复 bundle 调用。
   static Future<String?> resolveIconAsset(String siteId) async {
+    final cached = _iconCache[siteId];
+    if (_iconCache.containsKey(siteId)) return cached;
     for (final ext in _iconExtensions) {
       final path = 'assets/sites/icons/$siteId$ext';
       try {
         await rootBundle.load(path);
+        _iconCache[siteId] = path;
         return path;
       } catch (_) {
         // 文件不存在，尝试下一个扩展名
       }
     }
+    _iconCache[siteId] = null;
     return null;
+  }
+
+  /// 测试钩子：清空缓存，让下一次 resolveIconAsset 重新探测
+  @visibleForTesting
+  static void clearIconCacheForTest() {
+    _iconCache.clear();
   }
 
   /// 用 schema.fields 提供的 selector + filter 规则填充 info

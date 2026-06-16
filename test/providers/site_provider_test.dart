@@ -155,6 +155,40 @@ void main() {
       expect(provider.sites.firstWhere((s) => s.id == 'mteam').type, isNull);
     });
 
+    test('importPresets 对 preset.iconAsset 为 null 的站做 probe 兜底', () async {
+      // 提前加载默认 schema 资源
+      await SiteService.ensureDefaultSchemaLoaded();
+
+      final provider = SiteProvider();
+      // aither.ico 存在；preset.iconAsset 故意留 null，验证 probe 兜底
+      const presets = [SitePreset(id: 'aither', name: 'Aither')];
+
+      await provider.importPresets(presets);
+
+      final aither = provider.sites.firstWhere((s) => s.id == 'aither');
+      expect(aither.iconAsset, 'assets/sites/icons/aither.ico');
+    });
+
+    test('importPresets 优先用 probe 结果，覆盖 preset.iconAsset 错误值', () async {
+      // 验证即使 preset.iconAsset 指向不存在的文件，probe 找到正确路径后用 probe 的
+      await SiteService.ensureDefaultSchemaLoaded();
+
+      final provider = SiteProvider();
+      // preset.iconAsset 故意写错（指向不存在的 .ico），但实际文件是 .png
+      const presets = [
+        SitePreset(
+          id: 'agsvpt',
+          name: 'AGSV',
+          iconAsset: 'assets/sites/icons/agsvpt.ico', // 错的：实际是 .png
+        ),
+      ];
+
+      await provider.importPresets(presets);
+
+      final agsv = provider.sites.firstWhere((s) => s.id == 'agsvpt');
+      expect(agsv.iconAsset, 'assets/sites/icons/agsvpt.png');
+    });
+
     test('SiteConfig JSON 序列化保留 type 字段', () {
       final site = SiteConfig(id: 'dmhy', name: 'DMHY', type: 'public');
       final json = site.toJson();
