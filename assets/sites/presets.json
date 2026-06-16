@@ -1022,7 +1022,8 @@
             "DIC",
             "海豚"
         ],
-        "iconAsset": null
+        "iconAsset": null,
+        "schema": "Gazelle"
     },
     {
         "id": "digitalcore",
@@ -1314,7 +1315,8 @@
         "aka": [
             "GGn"
         ],
-        "iconAsset": "assets/sites/icons/gazellegames.ico"
+        "iconAsset": "assets/sites/icons/gazellegames.ico",
+        "schema": "Gazelle"
     },
     {
         "id": "gfxpeers",
