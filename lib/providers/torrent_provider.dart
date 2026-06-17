@@ -308,18 +308,24 @@ class TorrentProvider extends ChangeNotifier {
         ..clear()
         ..addAll(onlineStatus);
 
-      // 按保存路径+名称计算辅种数：相同路径下同名种子的数量 - 1（自身），即真正的 cross-seed 数
+      // 按 客户端实例 + contentPath + totalSize 计算辅种数：同一客户端实例内、
+      // 指向同一数据路径且总大小相同的种子互为辅种，即真正的 cross-seed 数 = 同组数量 - 1。
+      // 必须包含 totalSize：cross-seed 硬链接常把多个不同资源放进同名目录，
+      // 仅凭 contentPath 会把不同数据（不同集数/分辨率/版本）误并为同一辅种组。
+      // 必须按 clientId 隔离：不同客户端实例即使路径相同也是不同机器上的不同数据。
       final groupCounts = <String, int>{};
       for (final t in allTorrents) {
-        if (t.savePath != null && t.savePath!.isNotEmpty) {
-          final key = '${t.savePath}::${t.name}';
-          groupCounts[key] = (groupCounts[key] ?? 0) + 1;
+        final key = t.contentPath;
+        if (key != null && key.isNotEmpty) {
+          final groupKey = '${t.clientId}::${t.contentPath}::${t.totalSize}';
+          groupCounts[groupKey] = (groupCounts[groupKey] ?? 0) + 1;
         }
       }
       for (final t in _allTorrents) {
-        if (t.savePath != null && t.savePath!.isNotEmpty) {
-          final key = '${t.savePath}::${t.name}';
-          final count = groupCounts[key] ?? 0;
+        final key = t.contentPath;
+        if (key != null && key.isNotEmpty) {
+          final groupKey = '${t.clientId}::${t.contentPath}::${t.totalSize}';
+          final count = groupCounts[groupKey] ?? 0;
           t.multiSource = count > 0 ? count - 1 : 0;
         } else {
           t.multiSource = 0;

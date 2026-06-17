@@ -1,6 +1,7 @@
 # 项目约定
 
 ## 提交规范
+- 不允许自动push代码
 - 提交 commit 时不要在 author、Co-Authored-By 或 commit message 中包含 Claude / Anthropic 标识。
 - 仅保留用户自己的 git 身份归属。
 

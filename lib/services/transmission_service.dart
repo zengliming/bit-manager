@@ -171,10 +171,17 @@ class TransmissionService implements ITorrentClientService {
 
     return rawList.map((json) {
       final m = (json is Map<String, dynamic>) ? json : <String, dynamic>{};
+      final name = m['name'] as String? ?? 'Unknown';
+      final downloadDir = m['downloadDir'] as String?;
+      // Transmission 无 content_path 等价字段，数据根目录 = downloadDir/name。
+      // 该值与 qBittorrent 的 content_path 语义一致，用于辅种识别。
+      final contentPath = (downloadDir != null && downloadDir.isNotEmpty)
+          ? '$downloadDir/$name'
+          : null;
       return Torrent(
         id: (m['id'] as num).toString(),
         hash: m['hashString'] as String? ?? '',
-        name: m['name'] as String? ?? 'Unknown',
+        name: name,
         clientId: config.id,
         clientType: config.type,
         progress: (m['percentDone'] as num?)?.toDouble() ?? 0,
@@ -194,7 +201,8 @@ class TransmissionService implements ITorrentClientService {
         leechers: (m['peersGettingFromUs'] as num?)?.toInt() ?? 0,
         eta: (m['eta'] as num?)?.toInt() ?? 0,
         error: m['errorString'] as String?,
-        savePath: m['downloadDir'] as String?,
+        savePath: downloadDir,
+        contentPath: contentPath,
         addedAt: (m['addedDate'] as num?) != null
             ? DateTime.fromMillisecondsSinceEpoch(
                 (m['addedDate'] as int) * 1000,

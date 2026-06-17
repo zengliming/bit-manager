@@ -9,21 +9,31 @@ class _FakeTorrentService implements ITorrentClientService {
   final List<Torrent> torrents;
   final Object? error;
   final bool throwsOnBatch;
+  /// 按客户端 id 区分返回不同种子列表；非空时优先于 [torrents]。
+  final Map<String, List<Torrent>> byClient;
 
   _FakeTorrentService.success(this.torrents)
     : error = null,
-      throwsOnBatch = false;
+      throwsOnBatch = false,
+      byClient = const {};
   _FakeTorrentService.failure(this.error)
     : torrents = const [],
-      throwsOnBatch = false;
+      throwsOnBatch = false,
+      byClient = const {};
   _FakeTorrentService({this.throwsOnBatch = false})
     : torrents = const [],
-      error = null;
+      error = null,
+      byClient = const {};
+  _FakeTorrentService.byClient(this.byClient)
+    : torrents = const [],
+      error = null,
+      throwsOnBatch = false;
 
   @override
   Future<List<Torrent>> getTorrents(ClientConfig config) async {
     final error = this.error;
     if (error != null) throw error;
+    if (byClient.containsKey(config.id)) return byClient[config.id]!;
     return torrents;
   }
 
@@ -143,18 +153,230 @@ void main() {
     String name = 'Test Torrent',
     TorrentState state = TorrentState.downloading,
     String? error,
+    String? savePath,
+    String? contentPath,
+    String clientId = 'qb',
     List<String> trackers = const [],
   }) => Torrent(
     id: id,
     hash: hash,
     name: name,
-    clientId: 'qb',
+    clientId: clientId,
     clientType: ClientType.qBittorrent,
     state: state,
     error: error,
+    savePath: savePath,
+    contentPath: contentPath,
     trackers: trackers,
     trackerStatuses: const ['2'], // 标记 tracker 成功，避免 isError 误判
   );
+
+  // ---- 辅种数计算测试 ----
+
+  group('multiSource cross-seed counting', () {
+    final qb = ClientConfig(
+      id: 'qb',
+      name: 'Client qb',
+      type: ClientType.qBittorrent,
+      host: '127.0.0.1',
+      port: 8080,
+    );
+
+    test('same contentPath with different names count as cross-seed', () async {
+      // 同一份数据，不同站点以不同名称发布——真正的辅种场景
+      final t1 = torrent(
+        id: '1',
+        hash: 'aaa',
+        name: 'Movie.2024.BluRay',
+        contentPath: '/data/Movie.2024',
+      );
+      final t2 = torrent(
+        id: '2',
+        hash: 'bbb',
+        name: '电影2024蓝光版',
+        contentPath: '/data/Movie.2024',
+      );
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      expect(p.allTorrents.firstWhere((t) => t.id == '1').multiSource, 1);
+      expect(p.allTorrents.firstWhere((t) => t.id == '2').multiSource, 1);
+    });
+
+    test('same name but different contentPath is not cross-seed', () async {
+      // 名称相同但数据完全不同，不应被误判为辅种
+      final t1 = torrent(
+        id: '1',
+        hash: 'aaa',
+        name: 'Same Name',
+        contentPath: '/data/A',
+      );
+      final t2 = torrent(
+        id: '2',
+        hash: 'bbb',
+        name: 'Same Name',
+        contentPath: '/data/B',
+      );
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      expect(p.allTorrents.firstWhere((t) => t.id == '1').multiSource, 0);
+      expect(p.allTorrents.firstWhere((t) => t.id == '2').multiSource, 0);
+    });
+
+    test('torrents without contentPath are not counted', () async {
+      final t1 = torrent(
+        id: '1',
+        hash: 'aaa',
+        name: 'No Path',
+        contentPath: null,
+      );
+      final t2 = torrent(
+        id: '2',
+        hash: 'bbb',
+        name: 'No Path',
+        contentPath: null,
+      );
+      final mockService = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      expect(p.allTorrents.firstWhere((t) => t.id == '1').multiSource, 0);
+      expect(p.allTorrents.firstWhere((t) => t.id == '2').multiSource, 0);
+    });
+
+    test('same contentPath across different clients is NOT merged', () async {
+      // 两个客户端实例各自持有一份相同 contentPath 的种子——它们是不同机器上的不同数据，
+      // 不应合并算作辅种；每个客户端内部的辅种数应独立计算。
+      final qb1 = ClientConfig(
+        id: 'qb1',
+        name: 'Client qb1',
+        type: ClientType.qBittorrent,
+        host: '127.0.0.1',
+        port: 8080,
+      );
+      final qb2 = ClientConfig(
+        id: 'qb2',
+        name: 'Client qb2',
+        type: ClientType.qBittorrent,
+        host: '127.0.0.2',
+        port: 8080,
+      );
+      // 每个客户端各两份，contentPath 相同但属于该实例内部——各自应为 1
+      final qb1Torrents = [
+        torrent(
+          id: '1a',
+          hash: 'aaa',
+          name: 'Movie A',
+          contentPath: '/data/Movie',
+          clientId: 'qb1',
+        ),
+        torrent(
+          id: '1b',
+          hash: 'bbb',
+          name: '电影A',
+          contentPath: '/data/Movie',
+          clientId: 'qb1',
+        ),
+      ];
+      final qb2Torrents = [
+        torrent(
+          id: '2a',
+          hash: 'ccc',
+          name: 'Movie A',
+          contentPath: '/data/Movie',
+          clientId: 'qb2',
+        ),
+        torrent(
+          id: '2b',
+          hash: 'ddd',
+          name: '电影A',
+          contentPath: '/data/Movie',
+          clientId: 'qb2',
+        ),
+      ];
+      final mockService = _FakeTorrentService.byClient({
+        'qb1': qb1Torrents,
+        'qb2': qb2Torrents,
+      });
+      final p = TorrentProvider(serviceResolver: (_) => mockService);
+      await p.refreshTorrents([qb1, qb2], showLoading: false);
+
+      // 每个实例内部 2 份相同 contentPath → 辅种数 1（不是跨实例合并后的 3）
+      for (final id in ['1a', '1b', '2a', '2b']) {
+        expect(
+          p.allTorrents.firstWhere((t) => t.id == id).multiSource,
+          1,
+          reason: '$id 应只算本实例内的辅种，跨实例不应合并',
+        );
+      }
+    });
+
+    test(
+      'same contentPath but different size are separate cross-seed groups',
+      () async {
+        // 真实场景：cross-seed 硬链接把多个不同资源放进同名目录，
+        // 它们 contentPath 相同但 totalSize 不同，不是同一份数据，不应合并算辅种。
+        final qb = ClientConfig(
+          id: 'qb',
+          name: 'Client qb',
+          type: ClientType.qBittorrent,
+          host: '127.0.0.1',
+          port: 8080,
+        );
+        // 同目录、同大小（21G）的两份——同一资源的辅种
+        final big1 = torrent(
+          id: 'b1',
+          hash: 'aaa',
+          name: '[耀眼].Dazzling.2026',
+          contentPath: '/media/tv/[耀眼].Dazzling.2026',
+          savePath: '/media/tv',
+        )..totalSize = 23041830587;
+        final big2 = torrent(
+          id: 'b2',
+          hash: 'bbb',
+          name: '[耀眼].Dazzling.2026',
+          contentPath: '/media/tv/[耀眼].Dazzling.2026',
+          savePath: '/media/tv',
+        )..totalSize = 23041830587;
+        // 同目录、不同大小（10G）的两份——另一个资源，与 21G 不是同一份数据
+        final mid1 = torrent(
+          id: 'm1',
+          hash: 'ccc',
+          name: '[耀眼].Dazzling.2026',
+          contentPath: '/media/tv/[耀眼].Dazzling.2026',
+          savePath: '/media/tv',
+        )..totalSize = 11123468644;
+        final mid2 = torrent(
+          id: 'm2',
+          hash: 'ddd',
+          name: '[耀眼].Dazzling.2026',
+          contentPath: '/media/tv/[耀眼].Dazzling.2026',
+          savePath: '/media/tv',
+        )..totalSize = 11123468644;
+        final mockService = _FakeTorrentService.success([
+          big1,
+          big2,
+          mid1,
+          mid2,
+        ]);
+        final p = TorrentProvider(serviceResolver: (_) => mockService);
+        await p.refreshTorrents([qb], showLoading: false);
+
+        // 21G 组：2 份 → 辅种 1；10G 组：2 份 → 辅种 1（不是合并后的 3）
+        expect(
+          p.allTorrents.firstWhere((t) => t.id == 'b1').multiSource,
+          1,
+          reason: '同 size 的才互为辅种',
+        );
+        expect(p.allTorrents.firstWhere((t) => t.id == 'b2').multiSource, 1);
+        expect(p.allTorrents.firstWhere((t) => t.id == 'm1').multiSource, 1);
+        expect(p.allTorrents.firstWhere((t) => t.id == 'm2').multiSource, 1);
+      },
+    );
+  });
 
   // ---- 在线状态测试 ----
 

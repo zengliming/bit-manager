@@ -199,6 +199,7 @@ class QBittorrentService implements ITorrentClientService {
           error: m['error'] as String?,
           site: extractSiteFromUrl(m['tracker'] as String?),
           savePath: m['save_path'] as String?,
+          contentPath: m['content_path'] as String?,
           trackers: trackers,
           trackerStatuses: trackerStatuses,
           addedAt: (m['added_on'] as num?) != null

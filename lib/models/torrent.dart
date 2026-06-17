@@ -35,6 +35,9 @@ class Torrent {
   String? error;
   String? site;
   String? savePath;
+  /// 种子实际数据的绝对路径：单文件种子指向文件本身，多文件种子指向根目录。
+  /// 用于辅种（cross-seed）识别——相同 contentPath 即指向同一份数据。
+  String? contentPath;
   DateTime? addedAt;
   DateTime? completedAt;
   DateTime? lastActivity;
@@ -65,6 +68,7 @@ class Torrent {
     this.error,
     this.site,
     this.savePath,
+    this.contentPath,
     this.addedAt,
     this.completedAt,
     this.lastActivity,

@@ -80,12 +80,16 @@ String extractSiteFromUrl(String? url) {
     // 收集非 TLD 部分（去掉末尾的 TLD 段）
     final stem = parts.sublist(0, parts.length - tld.split('.').length);
     if (stem.isEmpty) return parts[parts.length - 2];
-    for (final part in stem) {
+    // 从右往左跳过子域名前缀，取第一个非前缀的段——
+    // 注册域名主体总是 stem 中最靠右的那一段。
+    // 例如 "t.ubits.club" → stem=['t','ubits'] → 跳过 t 取 ubits，
+    // 而非从左取到子域名前缀 t。
+    for (final part in stem.reversed) {
       if (!skipPrefixes.contains(part.toLowerCase())) {
         return part;
       }
     }
-    return stem.first;
+    return stem.last;
   } catch (_) {
     return '';
   }
