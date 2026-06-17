@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/site_config.dart';
+import '../models/stats.dart';
 import '../providers/site_provider.dart';
 import '../widgets/site_tile.dart';
 import '../widgets/empty_state.dart';
@@ -9,6 +10,7 @@ import 'site_import_screen.dart';
 import 'site_detail_screen.dart';
 import 'site_webview_screen.dart';
 import '../services/site_service.dart';
+import '../utils/helpers.dart';
 
 class SiteListScreen extends StatefulWidget {
   const SiteListScreen({super.key});
@@ -114,6 +116,8 @@ class _SiteListScreenState extends State<SiteListScreen> {
 
           return Column(
             children: [
+              // 全站统计汇总卡片
+              _buildStatsCard(provider),
               // 标签筛选栏
               if (provider.allTags.isNotEmpty) _buildTagFilter(provider),
               // 站点列表
@@ -174,6 +178,115 @@ class _SiteListScreenState extends State<SiteListScreen> {
       ),
       style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400),
       onChanged: (v) => context.read<SiteProvider>().searchQuery = v,
+    );
+  }
+
+  /// 顶部全站统计汇总卡片
+  Widget _buildStatsCard(SiteProvider provider) {
+    final stats = provider.siteStats;
+    final lastText = stats.lastRefreshAt == null
+        ? '尚未刷新'
+        : '上次刷新：${_relativeTime(stats.lastRefreshAt!)}';
+
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 顶部概览行
+            Row(
+              children: [
+                Text(
+                  '站点 ${stats.totalSites} · 活跃 ${stats.activeSites} · '
+                  '已登录 ${stats.sitesWithCookie}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                if (provider.refreshingAll)
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  IconButton(
+                    icon: const Icon(Icons.refresh, size: 20),
+                    tooltip: '刷新全部用户信息',
+                    onPressed: stats.sitesWithCookie > 0
+                        ? () => _refreshAll(context, provider)
+                        : null,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // 数值网格
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: _statsItems(stats)
+                  .map((item) => _statCell(context, item.label, item.value))
+                  .toList(),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              lastText,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _relativeTime(DateTime t) {
+    final diff = DateTime.now().difference(t);
+    if (diff.inMinutes < 1) return '刚刚';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} 分钟前';
+    if (diff.inHours < 24) return '${diff.inHours} 小时前';
+    return '${diff.inDays} 天前';
+  }
+
+  List<_StatItem> _statsItems(SiteStats stats) {
+    return [
+      _StatItem('总上传', formatBytes(stats.totalUploaded)),
+      _StatItem('总下载', formatBytes(stats.totalDownloaded)),
+      _StatItem('总魔力', stats.totalBonus.toString()),
+      _StatItem('总做种数', stats.totalSeedingCount.toString()),
+      _StatItem('总做种体积', formatBytes(stats.totalSeedingSize)),
+      _StatItem('未读消息', stats.unreadTotal.toString()),
+      _StatItem('H&R 待考核', stats.hnrPreWarningTotal.toString()),
+      _StatItem('H&R 不达标', stats.hnrUnsatisfiedTotal.toString()),
+    ];
+  }
+
+  Widget _statCell(BuildContext context, String label, String value) {
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width - 64) / 2 - 6,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 
@@ -259,4 +372,10 @@ class _SiteListScreenState extends State<SiteListScreen> {
       ),
     );
   }
+}
+
+class _StatItem {
+  final String label;
+  final String value;
+  _StatItem(this.label, this.value);
 }
