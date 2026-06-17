@@ -10,7 +10,7 @@ import 'screens/site_list_screen.dart';
 import 'screens/torrent_list_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/status_border.dart';
-import 'widgets/collapsible_side_nav.dart';
+import 'widgets/floating_nav_bar.dart';
 import 'models/torrent.dart';
 
 /// Extension on [ColorScheme] to provide torrent state colors.
@@ -27,7 +27,6 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
   int _currentIndex = 0;
-  bool _navExpanded = false;
   RefreshService? _refreshService;
 
   @override
@@ -74,22 +73,22 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     const destinations = [
-      NavDestinationItem(
+      FloatingNavDestination(
         icon: Icons.language_outlined,
         selectedIcon: Icons.language,
         label: '站点',
       ),
-      NavDestinationItem(
+      FloatingNavDestination(
         icon: Icons.dns_outlined,
         selectedIcon: Icons.dns,
         label: '下载器',
       ),
-      NavDestinationItem(
+      FloatingNavDestination(
         icon: Icons.download_outlined,
         selectedIcon: Icons.download,
         label: '种子',
       ),
-      NavDestinationItem(
+      FloatingNavDestination(
         icon: Icons.settings_outlined,
         selectedIcon: Icons.settings,
         label: '设置',
@@ -115,24 +114,14 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
       home: Scaffold(
-        body: Row(
-          children: [
-            // 可折叠侧边导航栏：平时收起，点左上汉堡按钮展开
-            CollapsibleSideNav(
-              selectedIndex: _currentIndex,
-              expanded: _navExpanded,
-              onToggleExpand: () =>
-                  setState(() => _navExpanded = !_navExpanded),
-              onDestinationSelected: (i) => setState(() {
-                _currentIndex = i;
-                // 选中后自动收起，回到纯净页面
-                _navExpanded = false;
-              }),
-              destinations: destinations,
-            ),
-            Expanded(child: body),
-          ],
+        body: body,
+        // 悬浮底部导航栏：胶囊圆角 + 阴影，四周留 margin 漂浮在页面上方
+        bottomNavigationBar: FloatingNavBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (i) => setState(() => _currentIndex = i),
+          destinations: destinations,
         ),
+        extendBody: true,
       ),
     );
   }
