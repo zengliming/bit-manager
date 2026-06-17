@@ -32,8 +32,6 @@ class SlidingNavBar extends StatelessWidget {
     final unselectedColor = colorScheme.onSurfaceVariant;
 
     final n = destinations.length;
-    // 每槽宽度对应的胶囊对齐：第 i 项中心在 (i / (n-1)) 映射到 [-1, 1]
-    final alignmentX = n == 1 ? 0.0 : (selectedIndex / (n - 1)) * 2 - 1;
 
     return SafeArea(
       top: false,
@@ -43,19 +41,23 @@ class SlidingNavBar extends StatelessWidget {
           builder: (context, constraints) {
             final slotWidth = constraints.maxWidth / n;
             final indicatorWidth = slotWidth * _indicatorWidthFactor;
+            // 胶囊 left：选中槽左边缘 + 居中偏移，使胶囊中心精确对齐 tab 中心
+            final indicatorLeft =
+                slotWidth * selectedIndex + (slotWidth - indicatorWidth) / 2;
             return Stack(
               children: [
-                // ── 滑动胶囊指示器 ──
-                AnimatedAlign(
-                  duration: _duration,
-                  curve: _curve,
-                  alignment: Alignment(alignmentX, 0),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: AnimatedContainer(
-                      duration: _duration,
-                      curve: _curve,
-                      width: indicatorWidth,
+                // ── 滑动胶囊指示器（纵向居中）──
+                Positioned(
+                  left: indicatorLeft,
+                  top: 0,
+                  bottom: 0,
+                  child: AnimatedContainer(
+                    duration: _duration,
+                    curve: _curve,
+                    width: indicatorWidth,
+                    // 用对齐容器让胶囊在纵向居中，高度固定 40
+                    alignment: Alignment.center,
+                    child: Container(
                       height: 40,
                       decoration: BoxDecoration(
                         color: indicatorColor,
@@ -64,7 +66,7 @@ class SlidingNavBar extends StatelessWidget {
                     ),
                   ),
                 ),
-                // ── 各 tab 内容 ──
+                // ── 各 tab 内容（撑满高度，居中）──
                 Row(
                   children: List.generate(n, (i) {
                     final d = destinations[i];
@@ -114,19 +116,21 @@ class _NavCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected ? selectedColor : unselectedColor;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedSwitcher(
-          duration: duration,
-          transitionBuilder: (child, anim) {
-            return FadeTransition(
-              opacity: anim,
-              child: ScaleTransition(scale: anim, child: child),
-            );
-          },
-          child: Icon(
+    // 撑满格子高度后居中，避免内容被压到顶部
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedSwitcher(
+            duration: duration,
+            transitionBuilder: (child, anim) {
+              return FadeTransition(
+                opacity: anim,
+                child: ScaleTransition(scale: anim, child: child),
+              );
+            },
+            child: Icon(
             selected ? destination.selectedIcon : destination.icon,
             key: ValueKey(selected),
             size: selected ? 24 : 22,
@@ -146,6 +150,7 @@ class _NavCell extends StatelessWidget {
           child: Text(destination.label),
         ),
       ],
+      ),
     );
   }
 }
