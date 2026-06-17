@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/site_config.dart';
+import '../models/stats.dart' show SiteStats;
 import '../services/site_service.dart';
 import '../utils/storage.dart';
 
@@ -293,6 +294,68 @@ class SiteProvider extends ChangeNotifier {
       if (n != null && n > 0) sum += n;
     }
     return sum;
+  }
+
+  /// 上次站点刷新时间（手动刷新与自动刷新都更新，用于跨组件同步）
+  DateTime? _lastSiteRefreshAt;
+  DateTime? get lastSiteRefreshAt => _lastSiteRefreshAt;
+
+  /// 标记站点刷新完成时间（由 RefreshService 与 refreshAllUserInfo 调用）
+  void markSiteRefreshed(DateTime time) {
+    if (_lastSiteRefreshAt == null || time.isAfter(_lastSiteRefreshAt!)) {
+      _lastSiteRefreshAt = time;
+    }
+  }
+
+  /// 全站统计汇总 — 聚合已有 SiteUserInfo，零新增网络请求
+  ///
+  /// 数值字段遍历 _userInfo.values，跳过 fetchFailed 与 null；公开站点天然
+  /// 不在 _userInfo 中，自动跳过。lastRefreshAt 取所有 lastFetchedAt 最大值。
+  SiteStats get siteStats {
+    int totalUploaded = 0;
+    int totalDownloaded = 0;
+    int totalBonus = 0;
+    int totalSeedingCount = 0;
+    int totalSeedingSize = 0;
+    int hnrPreWarningTotal = 0;
+    int hnrUnsatisfiedTotal = 0;
+    DateTime? lastRefreshAt;
+
+    for (final info in _userInfo.values) {
+      if (info.fetchFailed) continue;
+      if (info.uploaded != null) totalUploaded += info.uploaded!;
+      if (info.downloaded != null) totalDownloaded += info.downloaded!;
+      if (info.bonusPoints != null) totalBonus += info.bonusPoints!;
+      if (info.seedingCount != null) totalSeedingCount += info.seedingCount!;
+      if (info.seedingSize != null) totalSeedingSize += info.seedingSize!;
+      if (info.hnrPreWarning != null) hnrPreWarningTotal += info.hnrPreWarning!;
+      if (info.hnrUnsatisfied != null) {
+        hnrUnsatisfiedTotal += info.hnrUnsatisfied!;
+      }
+      if (info.lastFetchedAt != null) {
+        if (lastRefreshAt == null ||
+            info.lastFetchedAt!.isAfter(lastRefreshAt)) {
+          lastRefreshAt = info.lastFetchedAt;
+        }
+      }
+    }
+
+    return SiteStats(
+      totalSites: _sites.length,
+      activeSites: _sites.where((s) => s.isActive).length,
+      sitesWithCookie: _sites
+          .where((s) => s.isActive && !s.isPublicSite && hasCookie(s.id))
+          .length,
+      totalUploaded: totalUploaded,
+      totalDownloaded: totalDownloaded,
+      totalBonus: totalBonus,
+      totalSeedingCount: totalSeedingCount,
+      totalSeedingSize: totalSeedingSize,
+      unreadTotal: unreadTotal,
+      hnrPreWarningTotal: hnrPreWarningTotal,
+      hnrUnsatisfiedTotal: hnrUnsatisfiedTotal,
+      lastRefreshAt: lastRefreshAt,
+    );
   }
 
   /// 获取站点用户信息
