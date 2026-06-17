@@ -438,6 +438,10 @@ class SiteProvider extends ChangeNotifier {
           }
         }
       }
+      // 真正执行刷新后才标记时间，与 RefreshService 同步
+      if (targets.isNotEmpty) {
+        markSiteRefreshed(DateTime.now());
+      }
     } finally {
       _refreshingAll = false;
       notifyListeners();

@@ -418,4 +418,21 @@ void main() {
       expect(provider.allTags, containsAll(['电影', '官组', '音乐']));
     });
   });
+
+  group('refreshAllUserInfo 时间标记', () {
+    test('无可刷新站点时不标记 lastSiteRefreshAt', () async {
+      // 无 Cookie 站点 → targets 为空 → 直接返回 (0,0)，不标记时间
+      final provider = SiteProvider();
+      await provider.addSite(testSite('s1'));
+
+      expect(provider.lastSiteRefreshAt, isNull);
+
+      final (success, failed) = await provider.refreshAllUserInfo();
+
+      expect(success, 0);
+      expect(failed, 0);
+      // 无可刷新站点不应标记时间（保持 null）
+      expect(provider.lastSiteRefreshAt, isNull);
+    });
+  });
 }
