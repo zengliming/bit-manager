@@ -48,6 +48,7 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       clientProvider: clientProvider,
       torrentProvider: torrentProvider,
       statsProvider: statsProvider,
+      siteProvider: siteProvider,
     );
     _refreshService!.start();
   }

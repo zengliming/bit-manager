@@ -2,10 +2,13 @@ import 'package:bit_manager/models/client_config.dart';
 import 'package:bit_manager/models/stats.dart';
 import 'package:bit_manager/models/torrent.dart';
 import 'package:bit_manager/providers/client_provider.dart';
+import 'package:bit_manager/providers/site_provider.dart';
 import 'package:bit_manager/providers/stats_provider.dart';
 import 'package:bit_manager/providers/torrent_provider.dart';
 import 'package:bit_manager/services/refresh_service.dart';
 import 'package:bit_manager/services/torrent_client.dart';
+import 'package:bit_manager/utils/storage.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -109,6 +112,8 @@ class _EmptyTorrentService implements ITorrentClientService {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test(
     'keeps client online when torrent refresh succeeds with an empty list',
     () async {
@@ -123,6 +128,7 @@ void main() {
         clientProvider: clientProvider,
         torrentProvider: torrentProvider,
         statsProvider: statsProvider,
+        siteProvider: SiteProvider(),
       );
 
       await clientProvider.addClient(
@@ -142,4 +148,57 @@ void main() {
       expect(statsProvider.globalStats.clientStatsList.single.online, isTrue);
     },
   );
+
+  test('站点刷新：从未刷新时触发，标记 lastSiteRefreshAt', () async {
+    SharedPreferences.setMockInitialValues({});
+    LocalStorage.resetForTest();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+      (call) async => null,
+    );
+
+    final siteProvider = SiteProvider();
+    final refreshService = RefreshService(
+      clientProvider: ClientProvider(),
+      torrentProvider:
+          TorrentProvider(serviceResolver: (_) => _EmptyTorrentService()),
+      statsProvider: StatsProvider(),
+      siteProvider: siteProvider,
+    );
+
+    expect(refreshService.lastSiteRefreshAtForTest, isNull);
+
+    await refreshService.maybeRefreshSitesForTest();
+
+    expect(refreshService.lastSiteRefreshAtForTest, isNotNull);
+  });
+
+  test('站点刷新：距上次不足 2 小时不刷新（保留旧时间）', () async {
+    final recent = DateTime.now().subtract(const Duration(minutes: 30));
+    SharedPreferences.setMockInitialValues({
+      'site_last_refresh_at': recent.toIso8601String(),
+    });
+    LocalStorage.resetForTest();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+      (call) async => null,
+    );
+
+    final siteProvider = SiteProvider();
+    final refreshService = RefreshService(
+      clientProvider: ClientProvider(),
+      torrentProvider:
+          TorrentProvider(serviceResolver: (_) => _EmptyTorrentService()),
+      statsProvider: StatsProvider(),
+      siteProvider: siteProvider,
+    );
+
+    await refreshService.maybeRefreshSitesForTest();
+
+    final last = refreshService.lastSiteRefreshAtForTest!;
+    // 30 分钟前的时间应被保留，未被刷新覆盖
+    expect(last.difference(recent).inSeconds.abs(), lessThan(5));
+  });
 }
