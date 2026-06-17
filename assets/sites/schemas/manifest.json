@@ -3,6 +3,7 @@
   "_version": 1,
   "schemas": [
     { "key": "NexusPHP", "path": "assets/sites/schemas/nexusphp.json" },
-    { "key": "Gazelle",  "path": "assets/sites/schemas/gazelle.json" }
+    { "key": "Gazelle",  "path": "assets/sites/schemas/gazelle.json" },
+    { "key": "Unit3D",   "path": "assets/sites/schemas/unit3d.json" }
   ]
 }

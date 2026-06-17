@@ -87,6 +87,12 @@ class SiteService {
         return null;
       }
 
+      // 首页一次性判架构：Unit3D（Laravel/Blade）靠 navbar 顶栏指纹识别。
+      // 后续详情页 URL 与详情页规则都据此分支，不再二次嗅探 userId 是否数字 ——
+      // 否则纯数字的 Unit3D username 会被误判为 NexusPHP 数字 id，详情页落到
+      // /userdetails.php?id=N 而 404。
+      final isUnit3D = _looksLikeUnit3D(indexHtml);
+
       // 先用首页能拿到的字段填充
       final info = _parseIndexHtml(config.id, indexHtml);
       _log(
@@ -103,7 +109,18 @@ class SiteService {
           '检查 baseUrl 是否真的是登录后首页（而非登录页/重定向页）',
         );
       } else {
-        final detailUrl = _joinUrl(config.baseUrl!, '$detailsPath?id=$userId');
+        // 数字 userId（NexusPHP/Gazelle）→ ?id=N；Unit3D 的 userId 存的是
+        // username slug → /users/{username}。slug 经 encodeComponent 防特殊字符
+        // 破坏 URL。用首页识别的 isUnit3D 决定，而非嗅探 userId 是否数字。
+        final String detailUrl;
+        if (isUnit3D) {
+          detailUrl = _joinUrl(
+            config.baseUrl!,
+            '/users/${Uri.encodeComponent(userId)}',
+          );
+        } else {
+          detailUrl = _joinUrl(config.baseUrl!, '$detailsPath?id=$userId');
+        }
         final detailHtml = await _getHtml(detailUrl, cookie);
         _log(
           '[${config.id}] detail html: '
@@ -159,6 +176,10 @@ class SiteService {
           has('id="app"') && has('vue') ||
           has('id="root"') && has('react'))
         'SPA shell✓(JS 渲染)',
+      // Unit3D（Laravel/Blade，如 monikadesign）：navbar 顶栏 + /users/{slug} 用户主页
+      if (has('top-nav__stats') || has('ratio-bar__')) 'Unit3D navbar✓',
+      if (RegExp('/users/[^"\'/\\s]+["\']', caseSensitive: false).hasMatch(html))
+        'unit3d /users/✓',
     ];
     _log(
       '[$siteId] $tag fingerprint: '
@@ -340,6 +361,13 @@ class SiteService {
       }
     }
 
+    // Unit3D（Laravel/Blade，如 monikadesign）兜底：NexusPHP/Gazelle 都没命中时，
+    // 按 navbar 顶栏 top-nav__stats / ratio-bar 提取。Unit3D 没有 userdetails.php，
+    // 用户主页是 /users/{username}（无数字 id），故 userId 存 username slug。
+    if (info.userId == null && _looksLikeUnit3D(html)) {
+      _applyUnit3DIndex(info, html);
+    }
+
     // 首页 info_block 里 NexusPHP 通常已经有上传/下载/分享率（带 class 着色）
     info.uploaded ??= parseSize(_classText(html, 'color_uploaded'));
     info.downloaded ??= parseSize(_classText(html, 'color_downloaded'));
@@ -358,6 +386,113 @@ class SiteService {
     );
 
     return info;
+  }
+
+  // ── Unit3D（Laravel/Blade 框架，如 monikadesign）──
+
+  /// Unit3D username slug 的合法字符集（Laravel alpha_dash：字母数字 + _ . -）。
+  /// 用来收紧从 href/alt 抽出的 slug，避免把 query/fragment（?#&=）或显示名
+  /// （含空格/Unicode）当成 slug 拼进详情页 URL。
+  static final RegExp _unit3dSlugRe = RegExp(r'^[A-Za-z0-9_.\-]+$');
+
+  /// 页面是否像 Unit3D：navbar 顶栏 class（top-nav__stats / ratio-bar__）
+  /// 且含 /users/{slug} 用户主页链接或 table.user-info 详情表。
+  /// NexusPHP/Gazelle 不会有这些标记。
+  static bool _looksLikeUnit3D(String html) {
+    final h = html.toLowerCase();
+    if (!h.contains('top-nav__stats') && !h.contains('ratio-bar__')) {
+      return false;
+    }
+    return RegExp('/users/[^"\'/\\s]+', caseSensitive: false).hasMatch(html) ||
+        h.contains('user-info');
+  }
+
+  /// 取 class 含 [className] 的首个元素（任意标签）的 inner 纯文本。
+  ///
+  /// 比 [_classText] 更适合 navbar 的 `<li class="top-nav__stats-up">`：
+  /// 后者在第一个子标签闭合处（如 `</i>`）就截断，取不到 `<i>` 之后的文本。
+  /// 这里用反向引用要求闭合标签同名，并剥标签 + 合并空白。
+  String? _classInnerText(String html, String className) {
+    final escaped = RegExp.escape(className);
+    final m = RegExp(
+      '''<([a-z][a-z0-9-]*)[^>]*class=["'][^"']*$escaped[^"']*["'][^>]*>([\\s\\S]*?)</\\1>''',
+      caseSensitive: false,
+    ).firstMatch(html);
+    if (m == null) return null;
+    final t = _stripTags(m.group(2) ?? '').trim();
+    return t.isEmpty ? null : t;
+  }
+
+  /// 从 Unit3D navbar 右上角头像下拉链接提取用户名（Unit3D 无数字 id，
+  /// username 即用户主页 slug）。
+  ///
+  /// 遍历所有 `<a>` 开标签，找 class 含 `top-nav__dropdown--nontouch` 且 href
+  /// 指向 `/users/{slug}` 的 —— 不依赖 class/href 的属性先后顺序（Blade 模板
+  /// 渲染顺序不保证）。slug 收紧到 [_unit3dSlugRe]，排除 query/fragment。
+  /// 兜底取 `top-nav__profile-image` 图片的 alt（同样校验为合法 slug，避免
+  /// 把显示名当 slug）。
+  String? _unit3dUsername(String html) {
+    final tagRe = RegExp(r'<a\b([^>]*)>', caseSensitive: false);
+    for (final m in tagRe.allMatches(html)) {
+      final attrs = m.group(1) ?? '';
+      final cls = RegExp(
+        r'''class=["']([^"']*)["']''',
+        caseSensitive: false,
+      ).firstMatch(attrs)?.group(1)?.toLowerCase() ?? '';
+      if (!cls.contains('top-nav__dropdown--nontouch')) continue;
+      final href = RegExp(
+        r'''href=["']([^"']*)["']''',
+        caseSensitive: false,
+      ).firstMatch(attrs)?.group(1) ?? '';
+      final slug = RegExp(
+        r'/users/([A-Za-z0-9_.\-]+)',
+        caseSensitive: false,
+      ).firstMatch(href)?.group(1);
+      if (slug != null && slug.isNotEmpty) return slug;
+    }
+    // 兜底：profile-image 图片 alt
+    final img = RegExp(
+      r'''<img\b[^>]*class=["'][^"']*top-nav__profile-image[^"']*["'][^>]*>''',
+      caseSensitive: false,
+    ).firstMatch(html);
+    if (img != null) {
+      final alt = RegExp(
+        r'''alt=["']([^"']+)["']''',
+        caseSensitive: false,
+      ).firstMatch(img.group(0)!)?.group(1);
+      if (alt != null && _unit3dSlugRe.hasMatch(alt)) return alt;
+    }
+    return null;
+  }
+
+  /// Unit3D 首页解析：从 navbar 顶栏填 userId/username 与传输类字段。
+  ///
+  /// navbar 在首页与详情页都出现，且首页就含完整的 上传/下载/分享率/魔力/做种/下载数，
+  /// 因此这些字段在首页阶段就能拿到，无需依赖详情页。所有赋值用 `??=`，不覆盖已填值。
+  void _applyUnit3DIndex(SiteUserInfo info, String html) {
+    final username = _unit3dUsername(html);
+    if (username != null && username.isNotEmpty) {
+      info.userId ??= username; // Unit3D 用 username slug 作用户标识
+      info.username ??= username;
+    }
+
+    // 每个字段优先用 top-nav__stats（无链接、文本更干净），缺失再退 ratio-bar
+    String? pick(List<String> classes) {
+      for (final c in classes) {
+        final t = _classInnerText(html, c);
+        if (t != null) return t;
+      }
+      return null;
+    }
+
+    info.uploaded ??= parseSize(pick(['top-nav__stats-up', 'ratio-bar__uploaded']));
+    info.downloaded ??= parseSize(
+      pick(['top-nav__stats-down', 'ratio-bar__downloaded']),
+    );
+    info.ratio ??= parseRatio(pick(['top-nav__stats-ratio', 'ratio-bar__ratio']));
+    info.bonusPoints ??= _parseInt(pick(['ratio-bar__points']));
+    info.seedingCount ??= _parseInt(pick(['ratio-bar__seeding']));
+    info.leechingCount ??= _parseInt(pick(['ratio-bar__leeching']));
   }
 
   /// 从 info_block 中挑一个最像「用户名链接」的 `<a href="userdetails.php?id=N">`
@@ -780,7 +915,9 @@ class SiteService {
     }
 
     // ── 阶段 2：按 schema 选默认规则（null 回落 NexusPHP）──
-    final schemaKey = schema?.schema ?? 'NexusPHP';
+    // schema 为 null 时，按 HTML 指纹判架构：Unit3D 页面用 Unit3D 规则，否则 NexusPHP。
+    final schemaKey = schema?.schema ??
+        (_looksLikeUnit3D(html) ? 'Unit3D' : 'NexusPHP');
     final defaults =
         _defaultFieldsBySchema[schemaKey] ??
         _defaultFieldsBySchema['NexusPHP']!;

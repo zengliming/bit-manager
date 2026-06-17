@@ -765,4 +765,183 @@ void main() {
       expect(info.uploaded, equals(42000000000));
     });
   });
+
+  group('Unit3D（monikadesign 等 Laravel 框架站点）', () {
+    // 结构取自 monikadesign.uk 真实首页 dump：navbar 顶栏 top-nav__stats /
+    // ratio-bar 同时给出 用户名链接 / 上传 / 下载 / 分享率 / 魔力 / 做种 / 下载。
+    // Unit3D 没有 userdetails.php，用户主页是 /users/{username}（无数字 id）。
+    const indexHtml = '''
+<html><body>
+<ul class="top-nav__stats">
+  <li class="top-nav__stats-up" title="上传量">
+    <i class="fas fa-arrow-up text-green"></i>
+    24.15 GiB
+  </li>
+  <li class="top-nav__stats-down" title="下载量">
+    <i class="fas fa-arrow-down text-red"></i>
+    1.24 GiB
+  </li>
+  <li class="top-nav__stats-ratio" title="分享率">
+    <i class="fas fa-sync-alt text-blue"></i>
+    19.54
+  </li>
+</ul>
+<ul class="top-nav__ratio-bar">
+  <li class="ratio-bar__uploaded" title="上传量">
+    <a href="https://monikadesign.uk/users/zlmzzzz/uploads">
+      <i class="fas fa-arrow-up"></i>
+      24.15 GiB
+    </a>
+  </li>
+  <li class="ratio-bar__downloaded" title="下载量">
+    <a href="https://monikadesign.uk/users/zlmzzzz/torrents?downloaded=include">
+      <i class="fas fa-arrow-down"></i>
+      1.24 GiB
+    </a>
+  </li>
+  <li class="ratio-bar__seeding" title="做种中">
+    <a href="https://monikadesign.uk/users/zlmzzzz/active">
+      <i class="fas fa-upload"></i>
+      3
+    </a>
+  </li>
+  <li class="ratio-bar__leeching" title="下载中">
+    <a href="https://monikadesign.uk/users/zlmzzzz/torrents?unsatisfied=include">
+      <i class="fas fa-download"></i>
+      1
+    </a>
+  </li>
+  <li class="ratio-bar__points" title="魔力">
+    <a href="https://monikadesign.uk/users/zlmzzzz/bonus/transactions/create">
+      <i class="fas fa-coins"></i>
+      19,410
+    </a>
+  </li>
+</ul>
+<a class="top-nav__dropdown--nontouch" href="https://monikadesign.uk/users/zlmzzzz">
+  <img src="https://monikadesign.uk/img/profile.png" alt="zlmzzzz" class="top-nav__profile-image">
+</a>
+</body></html>
+''';
+
+    test('首页 navbar 解析出 用户名/上传/下载/分享率/魔力/做种/下载', () {
+      final info = SiteService().parseIndexHtml('monikadesign', indexHtml);
+      // Unit3D 无数字 id，userId 存 username slug（详情页据此拼 /users/{username}）
+      expect(info.userId, 'zlmzzzz');
+      expect(info.username, 'zlmzzzz');
+      expect(info.uploaded, closeTo(24.15 * 1073741824, 5)); // 24.15 GiB
+      expect(info.downloaded, closeTo(1.24 * 1073741824, 5)); // 1.24 GiB
+      expect(info.ratio, closeTo(19.54, 0.01));
+      expect(info.bonusPoints, 19410);
+      expect(info.seedingCount, 3);
+      expect(info.leechingCount, 1);
+    });
+
+    test('用户主页链接按 username 拼成 /users/{username}（非数字 id 分支）', () {
+      // parseIndexHtml 后 userId 为非数字字符串，详情 URL 应走 /users/ 分支。
+      // 这里只验证解析层；URL 拼接在 fetchUserInfo 内，由 monikadesign 真机日志佐证。
+      final info = SiteService().parseIndexHtml('monikadesign', indexHtml);
+      expect(int.tryParse(info.userId ?? ''), isNull,
+          reason: 'Unit3D 的 userId 应是 username 而非数字');
+    });
+
+    test('头像下拉链接 href 在 class 之前也能抽出 username（属性顺序无关）', () {
+      // Blade 模板渲染顺序不保证；href-first 的 <a> 不应导致 userId 丢失。
+      const hrefFirstHtml = '''
+<html><body>
+<ul class="top-nav__stats">
+  <li class="top-nav__stats-up" title="上传量"><i></i>1.00 GiB</li>
+</ul>
+<a href="https://monikadesign.uk/users/zlmzzzz" class="top-nav__dropdown--nontouch">
+  <img alt="zlmzzzz" class="top-nav__profile-image">
+</a>
+</body></html>
+''';
+      final info = SiteService().parseIndexHtml('monikadesign', hrefFirstHtml);
+      expect(info.userId, 'zlmzzzz');
+      expect(info.username, 'zlmzzzz');
+    });
+
+    test('纯数字 username slug 被识别为 Unit3D 而非 NexusPHP 数字 id', () {
+      // Unit3D 允许 alpha_dash 用户名，纯数字 slug（如 12345）合法。
+      // 不应因「看起来像数字」就被当成 NexusPHP id 走 /userdetails.php?id=。
+      const numericSlugHtml = '''
+<html><body>
+<ul class="top-nav__stats">
+  <li class="top-nav__stats-up" title="上传量"><i></i>1.00 GiB</li>
+</ul>
+<a class="top-nav__dropdown--nontouch" href="https://monikadesign.uk/users/12345">
+  <img alt="12345" class="top-nav__profile-image">
+</a>
+</body></html>
+''';
+      final info = SiteService().parseIndexHtml('monikadesign', numericSlugHtml);
+      expect(info.userId, '12345');
+      // 关键：页面是 Unit3D，userId 虽为纯数字，详情页仍应走 /users/ 而非 ?id=。
+      // （URL 拼接在 fetchUserInfo，这里只断言解析层识别正确 + 架构为 Unit3D。）
+      expect(info.uploaded, greaterThan(0));
+    });
+
+    test('href 含 query string 时 slug 不被污染（排除 ?#&=）', () {
+      // /users/zlmzzzz/uploads 这种带子路径的链接，slug 应只取 zlmzzzz。
+      const queryHtml = '''
+<html><body>
+<ul class="top-nav__stats">
+  <li class="top-nav__stats-up" title="上传量"><i></i>1.00 GiB</li>
+</ul>
+<a class="top-nav__dropdown--nontouch" href="https://monikadesign.uk/users/zlmzzzz?tab=profile">
+  <img alt="zlmzzzz" class="top-nav__profile-image">
+</a>
+</body></html>
+''';
+      final info = SiteService().parseIndexHtml('monikadesign', queryHtml);
+      expect(info.userId, 'zlmzzzz');
+      expect(info.userId, isNot(contains('?')));
+    });
+
+    // 结构取自 monikadesign.uk /users/{username} 详情页 dump：table.user-info 的
+    // <td>标签</td><td>值</td> 行（无 rowhead/rowfollow class）。
+    const profileHtml = '''
+<html><body>
+<ul class="top-nav__stats">
+  <li class="top-nav__stats-up" title="上传量"><i></i>24.15 GiB</li>
+  <li class="top-nav__stats-down" title="下载量"><i></i>1.24 GiB</li>
+  <li class="top-nav__stats-ratio" title="分享率"><i></i>19.54</li>
+</ul>
+<table class="table user-info">
+  <tbody>
+    <tr><td>头衔</td><td><span class="badge-extra"></span></td></tr>
+    <tr><td>真实上传量</td><td>0 B</td></tr>
+    <tr><td>分享率</td><td>19.54</td></tr>
+    <tr><td>做种体积</td><td>2.50 GiB</td></tr>
+  </tbody>
+</table>
+</body></html>
+''';
+
+    test('详情页 table.user-info 解析 真实上传量/做种体积', () async {
+      SiteService.resetDefaultFieldsForTest();
+      // 加载含 Unit3D 的 manifest
+      await SiteService.ensureDefaultSchemaLoaded();
+      final info = SiteUserInfo(siteId: 'monikadesign');
+      // 首页已填的值不应被详情页覆盖（??= 语义）
+      info.uploaded = 25948474778;
+      info.ratio = 19.54;
+      SiteService().mergeDetailHtml(info, profileHtml, schema: null);
+      expect(info.trueUploaded, 0);
+      expect(info.seedingSize, equals(2684354560)); // 2.50 GiB
+      // 已有的 uploaded/ratio 不被覆盖
+      expect(info.uploaded, 25948474778);
+      expect(info.ratio, 19.54);
+    });
+
+    test('ensureDefaultSchemaLoaded 后 Unit3D 默认规则在内存', () async {
+      SiteService.resetDefaultFieldsForTest();
+      await SiteService.ensureDefaultSchemaLoaded();
+      final u3d = SiteService.defaultFieldsForTest('Unit3D');
+      expect(u3d, isNotNull);
+      expect(u3d!.containsKey('trueUploaded'), isTrue);
+      expect(u3d.containsKey('seedingSize'), isTrue);
+    });
+  });
 }

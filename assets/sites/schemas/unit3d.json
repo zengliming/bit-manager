@@ -1,0 +1,31 @@
+{
+  "_comment": "Unit3D（Laravel/Blade 框架，如 monikadesign）站点默认解析规则。首页 navbar 顶栏 top-nav__stats / ratio-bar 已给出 用户名/上传/下载/分享率/魔力/做种/下载数（见 SiteService._applyUnit3DIndex，在首页阶段直接解析），这里只补详情页 table.user-info 独有的字段。table.user-info 的行是 <td>标签</td><td>值</td>（无 rowhead/rowfollow class），用 td:contains('标签') + td 取下一格。",
+  "_version": 1,
+  "fields": {
+    "trueUploaded": {
+      "_label": "真实上传量",
+      "selector": [
+        "td:contains('真实上传量') + td",
+        "td:contains('Real Upload') + td",
+        "td:contains('Real Up') + td"
+      ],
+      "filter": "parseSize"
+    },
+    "seedingSize": {
+      "_label": "做种体积",
+      "selector": [
+        "td:contains('做种体积') + td",
+        "td:contains('Seeding Size') + td"
+      ],
+      "filter": "parseSize"
+    },
+    "levelName": {
+      "_label": "头衔/等级",
+      "selector": [
+        "td:contains('头衔') + td",
+        "td:contains('Title') + td"
+      ],
+      "filter": "trim"
+    }
+  }
+}
