@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/client_provider.dart';
@@ -90,57 +89,54 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
             const SettingsScreen(),
           ],
         ),
-        bottomNavigationBar: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.surface.withValues(alpha: 0.85),
-                border: Border(
-                  top: BorderSide(
-                    color: Theme.of(context).dividerColor,
-                    width: 0.5,
-                  ),
-                ),
-              ),
-              child: NavigationBar(
-                selectedIndex: _currentIndex,
-                onDestinationSelected: (i) => setState(() => _currentIndex = i),
-                elevation: 0,
-                surfaceTintColor: Colors.transparent,
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                indicatorShape: const StadiumBorder(),
-                indicatorColor: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.12),
-                destinations: const [
-                  NavigationDestination(
-                    icon: Icon(Icons.language_outlined),
-                    selectedIcon: Icon(Icons.language),
-                    label: '站点',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.dns_outlined),
-                    selectedIcon: Icon(Icons.dns),
-                    label: '下载器',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.download_outlined),
-                    selectedIcon: Icon(Icons.download),
-                    label: '种子',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.settings_outlined),
-                    selectedIcon: Icon(Icons.settings),
-                    label: '设置',
-                  ),
-                ],
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(
+              context,
+            ).colorScheme.surface.withValues(alpha: 0.92),
+            border: Border(
+              top: BorderSide(
+                color: Theme.of(context).dividerColor,
+                width: 0.5,
               ),
             ),
+          ),
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (i) => setState(() => _currentIndex = i),
+            elevation: 0,
+            surfaceTintColor: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            indicatorShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            indicatorColor: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.14),
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.language_outlined),
+                selectedIcon: Icon(Icons.language),
+                label: '站点',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.dns_outlined),
+                selectedIcon: Icon(Icons.dns),
+                label: '下载器',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.download_outlined),
+                selectedIcon: Icon(Icons.download),
+                label: '种子',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings),
+                label: '设置',
+              ),
+            ],
           ),
         ),
       ),
@@ -188,7 +184,9 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 64,
-        indicatorShape: const StadiumBorder(),
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -291,7 +289,9 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 64,
-        indicatorShape: const StadiumBorder(),
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
