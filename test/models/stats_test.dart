@@ -43,4 +43,33 @@ void main() {
 
     expect(stats.uploadingCount, 0);
   });
+
+  test('SiteStats 持有全部汇总字段', () {
+    final stats = SiteStats(
+      totalSites: 5,
+      activeSites: 4,
+      sitesWithCookie: 3,
+      totalUploaded: 1000,
+      totalDownloaded: 500,
+      totalBonus: 200,
+      totalSeedingCount: 12,
+      totalSeedingSize: 3000,
+      unreadTotal: 2,
+      hnrPreWarningTotal: 1,
+      hnrUnsatisfiedTotal: 0,
+      lastRefreshAt: null,
+    );
+    expect(stats.totalSites, 5);
+    expect(stats.activeSites, 4);
+    expect(stats.sitesWithCookie, 3);
+    expect(stats.totalUploaded, 1000);
+    expect(stats.totalDownloaded, 500);
+    expect(stats.totalBonus, 200);
+    expect(stats.totalSeedingCount, 12);
+    expect(stats.totalSeedingSize, 3000);
+    expect(stats.unreadTotal, 2);
+    expect(stats.hnrPreWarningTotal, 1);
+    expect(stats.hnrUnsatisfiedTotal, 0);
+    expect(stats.lastRefreshAt, isNull);
+  });
 }

@@ -91,3 +91,34 @@ class ClientStats {
     this.freeSpace = 0,
   });
 }
+
+/// 站点统计汇总 — 聚合所有站点的 SiteUserInfo，零新增网络请求
+class SiteStats {
+  final int totalSites;
+  final int activeSites;
+  final int sitesWithCookie;
+  final int totalUploaded;
+  final int totalDownloaded;
+  final int totalBonus;
+  final int totalSeedingCount;
+  final int totalSeedingSize;
+  final int unreadTotal;
+  final int hnrPreWarningTotal;
+  final int hnrUnsatisfiedTotal;
+  final DateTime? lastRefreshAt;
+
+  SiteStats({
+    required this.totalSites,
+    required this.activeSites,
+    required this.sitesWithCookie,
+    required this.totalUploaded,
+    required this.totalDownloaded,
+    required this.totalBonus,
+    required this.totalSeedingCount,
+    required this.totalSeedingSize,
+    required this.unreadTotal,
+    required this.hnrPreWarningTotal,
+    required this.hnrUnsatisfiedTotal,
+    this.lastRefreshAt,
+  });
+}
