@@ -72,6 +72,27 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    const destinations = [
+      (Icons.language_outlined, Icons.language, '站点'),
+      (Icons.dns_outlined, Icons.dns, '下载器'),
+      (Icons.download_outlined, Icons.download, '种子'),
+      (Icons.settings_outlined, Icons.settings, '设置'),
+    ];
+
+    final body = IndexedStack(
+      index: _currentIndex,
+      children: [
+        const SiteListScreen(),
+        DashboardScreen(
+          onNavigateToTorrents: () => setState(() => _currentIndex = 2),
+        ),
+        const TorrentListScreen(),
+        const SettingsScreen(),
+      ],
+    );
+
+    final isWide = MediaQuery.of(context).size.width >= 600;
+
     return MaterialApp(
       title: 'Bit Manager',
       debugShowCheckedModeBanner: false,
@@ -79,56 +100,88 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
       home: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: [
-            const SiteListScreen(),
-            DashboardScreen(
-              onNavigateToTorrents: () => setState(() => _currentIndex = 2),
-            ),
-            const TorrentListScreen(),
-            const SettingsScreen(),
-          ],
-        ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.surface.withValues(alpha: 0.92),
-            border: Border(
-              top: BorderSide(
-                color: Theme.of(context).dividerColor,
-                width: 0.5,
+        body: isWide
+            ? Row(
+                children: [
+                  // 宽屏：收起式侧边导航栏
+                  NavigationRail(
+                    selectedIndex: _currentIndex,
+                    onDestinationSelected: (i) =>
+                        setState(() => _currentIndex = i),
+                    extended: false,
+                    minExtendedWidth: 72,
+                    minWidth: 72,
+                    labelType: NavigationRailLabelType.none,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surface,
+                    indicatorColor: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.14),
+                    indicatorShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    destinations: [
+                      for (final d in destinations)
+                        NavigationRailDestination(
+                          icon: Icon(d.$1),
+                          selectedIcon: Icon(d.$2),
+                          label: Text(d.$3),
+                        ),
+                    ],
+                  ),
+                  VerticalDivider(
+                    width: 1,
+                    thickness: 0.5,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                  Expanded(child: body),
+                ],
+              )
+            : body,
+        // 窄屏：保留底部滑动导航栏
+        bottomNavigationBar: isWide
+            ? null
+            : Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surface.withValues(alpha: 0.92),
+                  border: Border(
+                    top: BorderSide(
+                      color: Theme.of(context).dividerColor,
+                      width: 0.5,
+                    ),
+                  ),
+                ),
+                child: SlidingNavBar(
+                  selectedIndex: _currentIndex,
+                  onDestinationSelected: (i) =>
+                      setState(() => _currentIndex = i),
+                  destinations: const [
+                    NavDestination(
+                      icon: Icons.language_outlined,
+                      selectedIcon: Icons.language,
+                      label: '站点',
+                    ),
+                    NavDestination(
+                      icon: Icons.dns_outlined,
+                      selectedIcon: Icons.dns,
+                      label: '下载器',
+                    ),
+                    NavDestination(
+                      icon: Icons.download_outlined,
+                      selectedIcon: Icons.download,
+                      label: '种子',
+                    ),
+                    NavDestination(
+                      icon: Icons.settings_outlined,
+                      selectedIcon: Icons.settings,
+                      label: '设置',
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          child: SlidingNavBar(
-            selectedIndex: _currentIndex,
-            onDestinationSelected: (i) => setState(() => _currentIndex = i),
-            destinations: const [
-              NavDestination(
-                icon: Icons.language_outlined,
-                selectedIcon: Icons.language,
-                label: '站点',
-              ),
-              NavDestination(
-                icon: Icons.dns_outlined,
-                selectedIcon: Icons.dns,
-                label: '下载器',
-              ),
-              NavDestination(
-                icon: Icons.download_outlined,
-                selectedIcon: Icons.download,
-                label: '种子',
-              ),
-              NavDestination(
-                icon: Icons.settings_outlined,
-                selectedIcon: Icons.settings,
-                label: '设置',
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

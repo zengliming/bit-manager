@@ -239,14 +239,8 @@ class _SiteListScreenState extends State<SiteListScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // 数值网格（双列，标签左·数值右）
-          Wrap(
-            spacing: 12,
-            runSpacing: 10,
-            children: _statsItems(stats)
-                .map((item) => _statCell(context, item.label, item.value))
-                .toList(),
-          ),
+          // 数值网格（双列等分，标签左·数值右，两列数值右边缘对齐）
+          _buildStatsGrid(context, stats),
           const SizedBox(height: 12),
           Text(
             lastText,
@@ -286,27 +280,53 @@ class _SiteListScreenState extends State<SiteListScreen> {
       fontSize: 12,
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
-    const valueStyle = TextStyle(
+    final valueStyle = TextStyle(
       fontSize: 14,
       fontWeight: FontWeight.w600,
+      color: Theme.of(context).colorScheme.onSurface,
     );
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width - 64) / 2 - 6,
-      child: Row(
-        children: [
-          Text(label, style: labelStyle),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              value,
-              style: valueStyle,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.right,
-            ),
+    // 标签左、数值右，中间 Expanded 撑开；两列等分后数值右边缘对齐
+    return Row(
+      children: [
+        Text(label, style: labelStyle),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value,
+            style: valueStyle,
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  /// 双列等分网格：每行两个 _statCell，行间距 10，列间距 16
+  Widget _buildStatsGrid(BuildContext context, SiteStats stats) {
+    final items = _statsItems(stats);
+    final rows = <Widget>[];
+    for (var i = 0; i < items.length; i += 2) {
+      final left = items[i];
+      final right = (i + 1 < items.length) ? items[i + 1] : null;
+      rows.add(Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _statCell(context, left.label, left.value)),
+            const SizedBox(width: 16),
+            Expanded(
+              child: right == null
+                  ? const SizedBox.shrink()
+                  : _statCell(context, right.label, right.value),
+            ),
+          ],
+        ),
+      ));
+    }
+    return Column(children: rows);
   }
 
   Widget _buildTagFilter(SiteProvider provider) {
