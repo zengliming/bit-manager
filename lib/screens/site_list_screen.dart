@@ -181,67 +181,81 @@ class _SiteListScreenState extends State<SiteListScreen> {
     );
   }
 
-  /// 顶部全站统计汇总卡片
+  /// 顶部全站统计汇总卡片（对齐 Dashboard SpeedHeroCard 的渐变风格）
   Widget _buildStatsCard(SiteProvider provider) {
+    final theme = Theme.of(context);
     final stats = provider.siteStats;
     final lastText = stats.lastRefreshAt == null
         ? '尚未刷新'
         : '上次刷新：${_relativeTime(stats.lastRefreshAt!)}';
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 顶部概览行
-            Row(
-              children: [
-                Text(
-                  '站点 ${stats.totalSites} · 活跃 ${stats.activeSites} · '
-                  '已登录 ${stats.sitesWithCookie}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const Spacer(),
-                if (provider.refreshingAll)
-                  const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                else
-                  IconButton(
-                    icon: const Icon(Icons.refresh, size: 20),
-                    tooltip: '刷新全部用户信息',
-                    onPressed: stats.sitesWithCookie > 0
-                        ? () => _refreshAll(context, provider)
-                        : null,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // 数值网格
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: _statsItems(stats)
-                  .map((item) => _statCell(context, item.label, item.value))
-                  .toList(),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              lastText,
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary.withValues(alpha: 0.10),
+            theme.colorScheme.primary.withValues(alpha: 0.03),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 顶部概览行
+          Row(
+            children: [
+              Text(
+                '站点 ${stats.totalSites} · 活跃 ${stats.activeSites} · '
+                '已登录 ${stats.sitesWithCookie}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const Spacer(),
+              if (provider.refreshingAll)
+                SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: theme.colorScheme.primary,
+                  ),
+                )
+              else
+                IconButton(
+                  icon: const Icon(Icons.refresh, size: 20),
+                  tooltip: '刷新全部用户信息',
+                  onPressed: stats.sitesWithCookie > 0
+                      ? () => _refreshAll(context, provider)
+                      : null,
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // 数值网格（双列，标签左·数值右）
+          Wrap(
+            spacing: 12,
+            runSpacing: 10,
+            children: _statsItems(stats)
+                .map((item) => _statCell(context, item.label, item.value))
+                .toList(),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            lastText,
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

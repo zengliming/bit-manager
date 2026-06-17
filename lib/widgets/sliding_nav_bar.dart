@@ -27,7 +27,7 @@ class SlidingNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final indicatorColor = colorScheme.primary.withValues(alpha: 0.14);
+    final indicatorColor = colorScheme.primary.withValues(alpha: 0.16);
     final selectedColor = colorScheme.primary;
     final unselectedColor = colorScheme.onSurfaceVariant;
 
@@ -55,13 +55,13 @@ class SlidingNavBar extends StatelessWidget {
                     duration: _duration,
                     curve: _curve,
                     width: indicatorWidth,
-                    // 用对齐容器让胶囊在纵向居中，高度固定 40
                     alignment: Alignment.center,
                     child: Container(
-                      height: 40,
+                      height: 34,
                       decoration: BoxDecoration(
                         color: indicatorColor,
-                        borderRadius: BorderRadius.circular(12),
+                        // 圆角 = 高度的一半，形成胶囊端（StadiumBorder 效果）
+                        borderRadius: BorderRadius.circular(17),
                       ),
                     ),
                   ),
