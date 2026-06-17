@@ -10,7 +10,7 @@ import 'screens/site_list_screen.dart';
 import 'screens/torrent_list_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/status_border.dart';
-import 'widgets/sliding_nav_bar.dart';
+import 'widgets/collapsible_side_nav.dart';
 import 'models/torrent.dart';
 
 /// Extension on [ColorScheme] to provide torrent state colors.
@@ -27,6 +27,7 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
   int _currentIndex = 0;
+  bool _navExpanded = false;
   RefreshService? _refreshService;
 
   @override
@@ -73,10 +74,26 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     const destinations = [
-      (Icons.language_outlined, Icons.language, '站点'),
-      (Icons.dns_outlined, Icons.dns, '下载器'),
-      (Icons.download_outlined, Icons.download, '种子'),
-      (Icons.settings_outlined, Icons.settings, '设置'),
+      NavDestinationItem(
+        icon: Icons.language_outlined,
+        selectedIcon: Icons.language,
+        label: '站点',
+      ),
+      NavDestinationItem(
+        icon: Icons.dns_outlined,
+        selectedIcon: Icons.dns,
+        label: '下载器',
+      ),
+      NavDestinationItem(
+        icon: Icons.download_outlined,
+        selectedIcon: Icons.download,
+        label: '种子',
+      ),
+      NavDestinationItem(
+        icon: Icons.settings_outlined,
+        selectedIcon: Icons.settings,
+        label: '设置',
+      ),
     ];
 
     final body = IndexedStack(
@@ -97,96 +114,25 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       themeMode: ThemeMode.system,
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
-      home: LayoutBuilder(
-        builder: (context, constraints) {
-          // 用 LayoutBuilder 拿 Scaffold 实际可用宽度，避免在
-          // MaterialApp 父级读 MediaQuery 拿不到准确值
-          final isWide = constraints.maxWidth >= 600;
-          return Scaffold(
-        body: isWide
-            ? Row(
-                children: [
-                  // 宽屏：收起式侧边导航栏
-                  NavigationRail(
-                    selectedIndex: _currentIndex,
-                    onDestinationSelected: (i) =>
-                        setState(() => _currentIndex = i),
-                    extended: false,
-                    minExtendedWidth: 72,
-                    minWidth: 72,
-                    labelType: NavigationRailLabelType.none,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surface,
-                    indicatorColor: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.14),
-                    indicatorShape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    destinations: [
-                      for (final d in destinations)
-                        NavigationRailDestination(
-                          icon: Icon(d.$1),
-                          selectedIcon: Icon(d.$2),
-                          label: Text(d.$3),
-                        ),
-                    ],
-                  ),
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 0.5,
-                    color: Theme.of(context).dividerColor,
-                  ),
-                  Expanded(child: body),
-                ],
-              )
-            : body,
-        // 窄屏：保留底部滑动导航栏
-        bottomNavigationBar: isWide
-            ? null
-            : Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surface.withValues(alpha: 0.92),
-                  border: Border(
-                    top: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                      width: 0.5,
-                    ),
-                  ),
-                ),
-                child: SlidingNavBar(
-                  selectedIndex: _currentIndex,
-                  onDestinationSelected: (i) =>
-                      setState(() => _currentIndex = i),
-                  destinations: const [
-                    NavDestination(
-                      icon: Icons.language_outlined,
-                      selectedIcon: Icons.language,
-                      label: '站点',
-                    ),
-                    NavDestination(
-                      icon: Icons.dns_outlined,
-                      selectedIcon: Icons.dns,
-                      label: '下载器',
-                    ),
-                    NavDestination(
-                      icon: Icons.download_outlined,
-                      selectedIcon: Icons.download,
-                      label: '种子',
-                    ),
-                    NavDestination(
-                      icon: Icons.settings_outlined,
-                      selectedIcon: Icons.settings,
-                      label: '设置',
-                    ),
-                  ],
-                ),
-              ),
-          );
-        },
+      home: Scaffold(
+        body: Row(
+          children: [
+            // 可折叠侧边导航栏：平时收起，点左上汉堡按钮展开
+            CollapsibleSideNav(
+              selectedIndex: _currentIndex,
+              expanded: _navExpanded,
+              onToggleExpand: () =>
+                  setState(() => _navExpanded = !_navExpanded),
+              onDestinationSelected: (i) => setState(() {
+                _currentIndex = i;
+                // 选中后自动收起，回到纯净页面
+                _navExpanded = false;
+              }),
+              destinations: destinations,
+            ),
+            Expanded(child: body),
+          ],
+        ),
       ),
     );
   }
