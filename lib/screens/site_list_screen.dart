@@ -268,22 +268,27 @@ class _SiteListScreenState extends State<SiteListScreen> {
   }
 
   Widget _statCell(BuildContext context, String label, String value) {
+    final labelStyle = TextStyle(
+      fontSize: 12,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    );
+    const valueStyle = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+    );
     return SizedBox(
       width: (MediaQuery.of(context).size.width - 64) / 2 - 6,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+          Text(label, style: labelStyle),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              value,
+              style: valueStyle,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ],
       ),
