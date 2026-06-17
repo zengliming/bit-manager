@@ -10,6 +10,7 @@ import 'screens/site_list_screen.dart';
 import 'screens/torrent_list_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/status_border.dart';
+import 'widgets/sliding_nav_bar.dart';
 import 'models/torrent.dart';
 
 /// Extension on [ColorScheme] to provide torrent state colors.
@@ -101,39 +102,28 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
               ),
             ),
           ),
-          child: NavigationBar(
+          child: SlidingNavBar(
             selectedIndex: _currentIndex,
             onDestinationSelected: (i) => setState(() => _currentIndex = i),
-            elevation: 0,
-            surfaceTintColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            indicatorShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            indicatorColor: Theme.of(
-              context,
-            ).colorScheme.primary.withValues(alpha: 0.14),
             destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.language_outlined),
-                selectedIcon: Icon(Icons.language),
+              NavDestination(
+                icon: Icons.language_outlined,
+                selectedIcon: Icons.language,
                 label: '站点',
               ),
-              NavigationDestination(
-                icon: Icon(Icons.dns_outlined),
-                selectedIcon: Icon(Icons.dns),
+              NavDestination(
+                icon: Icons.dns_outlined,
+                selectedIcon: Icons.dns,
                 label: '下载器',
               ),
-              NavigationDestination(
-                icon: Icon(Icons.download_outlined),
-                selectedIcon: Icon(Icons.download),
+              NavDestination(
+                icon: Icons.download_outlined,
+                selectedIcon: Icons.download,
                 label: '种子',
               ),
-              NavigationDestination(
-                icon: Icon(Icons.settings_outlined),
-                selectedIcon: Icon(Icons.settings),
+              NavDestination(
+                icon: Icons.settings_outlined,
+                selectedIcon: Icons.settings,
                 label: '设置',
               ),
             ],
