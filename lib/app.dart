@@ -91,15 +91,18 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
       ],
     );
 
-    final isWide = MediaQuery.of(context).size.width >= 600;
-
     return MaterialApp(
       title: 'Bit Manager',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
-      home: Scaffold(
+      home: LayoutBuilder(
+        builder: (context, constraints) {
+          // 用 LayoutBuilder 拿 Scaffold 实际可用宽度，避免在
+          // MaterialApp 父级读 MediaQuery 拿不到准确值
+          final isWide = constraints.maxWidth >= 600;
+          return Scaffold(
         body: isWide
             ? Row(
                 children: [
@@ -182,6 +185,8 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
                   ],
                 ),
               ),
+          );
+        },
       ),
     );
   }
