@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 网络访问权限：用于请求站点 API、辅种等网络操作 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Bit Manager"
         android:name="${applicationName}"
