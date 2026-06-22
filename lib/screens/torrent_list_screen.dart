@@ -153,10 +153,15 @@ class TorrentListScreen extends StatelessWidget {
           'selected=${tp.selectedCount} -> show=$showFab',
         );
         return showFab
-            ? FloatingActionButton.extended(
-                onPressed: () => showBatchOperationSheet(context),
-                icon: const Icon(Icons.adb),
-                label: Text('操作 ${tp.selectedCount}'),
+            ? Padding(
+                // 上移避开外层悬浮底部导航栏（FloatingNavBar 高 64 + margin），
+                // 否则 FAB 默认 endFloat 位置被导航栏遮挡而不可见。
+                padding: const EdgeInsets.only(bottom: 88),
+                child: FloatingActionButton.extended(
+                  onPressed: () => showBatchOperationSheet(context),
+                  icon: const Icon(Icons.adb),
+                  label: Text('操作 ${tp.selectedCount}'),
+                ),
               )
             : null;
       }(),
