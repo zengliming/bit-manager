@@ -635,4 +635,60 @@ class TransmissionService implements ITorrentClientService {
       sessionId: sid,
     );
   }
+
+  @override
+  Future<void> addTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    List<String> trackerUrls,
+  ) async {
+    if (hashes.isEmpty || trackerUrls.isEmpty) return;
+    final sid = await _getSessionId(config);
+    final ids = await _hashToIdsOrThrow(config, hashes, sid);
+    if (ids.isEmpty) return;
+    await _rpcCall(
+      config,
+      'torrent-set',
+      args: {'ids': ids, 'trackerAdd': trackerUrls},
+      sessionId: sid,
+    );
+  }
+
+  @override
+  Future<void> replaceTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String oldUrl,
+    String newUrl,
+  ) async {
+    if (hashes.isEmpty) return;
+    final sid = await _getSessionId(config);
+    final ids = await _hashToIdsOrThrow(config, hashes, sid);
+    if (ids.isEmpty) return;
+    // Transmission 的 trackerReplace 接受 [oldUrl, newUrl] 一对
+    await _rpcCall(
+      config,
+      'torrent-set',
+      args: {'ids': ids, 'trackerReplace': [oldUrl, newUrl]},
+      sessionId: sid,
+    );
+  }
+
+  @override
+  Future<void> removeTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String trackerUrl,
+  ) async {
+    if (hashes.isEmpty) return;
+    final sid = await _getSessionId(config);
+    final ids = await _hashToIdsOrThrow(config, hashes, sid);
+    if (ids.isEmpty) return;
+    await _rpcCall(
+      config,
+      'torrent-set',
+      args: {'ids': ids, 'trackerRemove': [trackerUrl]},
+      sessionId: sid,
+    );
+  }
 }
