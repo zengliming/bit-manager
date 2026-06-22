@@ -300,6 +300,10 @@ class _SiteCookieScreenState extends State<SiteCookieScreen> {
 
     await provider.saveCookie(site.id, cookieString);
 
+    // 把抓到的 cookie 回填到文本框，方便用户查看 / 微调后再次保存。
+    // （已自动保存一次；用户编辑后点「保存 Cookie」会覆盖为新内容。）
+    _cookieCtrl.text = cookieString;
+
     // 检查是否含有 NexusPHP 鉴权字段
     final hasUid = RegExp(
       r'\b(c_secure_uid|uid|user_id)=',
