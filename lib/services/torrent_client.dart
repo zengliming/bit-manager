@@ -74,6 +74,28 @@ abstract class ITorrentClientService {
     String trackerUrl,
   );
 
+  /// 批量添加 Tracker：给 [hashes] 中每个种子追加 [trackerUrls] 里的全部 Tracker
+  Future<void> addTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    List<String> trackerUrls,
+  );
+
+  /// 批量替换 Tracker：把 [hashes] 中每个种子的 [oldUrl] Tracker 换成 [newUrl]
+  Future<void> replaceTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String oldUrl,
+    String newUrl,
+  );
+
+  /// 批量移除 Tracker：从 [hashes] 中每个种子删除 [trackerUrl] Tracker
+  Future<void> removeTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String trackerUrl,
+  );
+
   /// 检查种子是否已存在
   Future<bool> isTorrentExist(ClientConfig config, String hash);
 
