@@ -255,6 +255,19 @@ class TorrentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// AppBar「全选」按钮的统一入口：
+  /// - 未进入选择模式 / 已选为空 → 进入选择模式并全选当前筛选结果
+  /// - 已有选中 → 取消全选并退出选择模式
+  void toggleSelectAllOrExit() {
+    if (_selectMode && _selectedHashes.isNotEmpty) {
+      exitSelectMode();
+    } else {
+      _selectMode = true;
+      _selectedHashes.addAll(filteredTorrents.map((t) => t.hash));
+      notifyListeners();
+    }
+  }
+
   void toggleSelection(String hash) {
     if (_selectedHashes.contains(hash)) {
       _selectedHashes.remove(hash);
@@ -266,11 +279,6 @@ class TorrentProvider extends ChangeNotifier {
 
   void selectAll() {
     _selectedHashes.addAll(filteredTorrents.map((t) => t.hash));
-    notifyListeners();
-  }
-
-  void clearSelection() {
-    _selectedHashes.clear();
     notifyListeners();
   }
 
@@ -480,6 +488,61 @@ class TorrentProvider extends ChangeNotifier {
           ok;
     }
     return ok;
+  }
+
+  /// 批量添加 Tracker（单客户端）。空输入直接返回 true 不调用 service。
+  Future<bool> addTrackers(
+    ClientConfig client,
+    List<String> hashes,
+    List<String> urls,
+  ) async {
+    if (hashes.isEmpty || urls.isEmpty) return true;
+    try {
+      final service = _serviceResolver(client.type);
+      await service.addTrackers(client, hashes, urls);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// 批量替换 Tracker（单客户端）
+  Future<bool> replaceTrackers(
+    ClientConfig client,
+    List<String> hashes,
+    String oldUrl,
+    String newUrl,
+  ) async {
+    if (hashes.isEmpty) return true;
+    try {
+      final service = _serviceResolver(client.type);
+      await service.replaceTrackers(client, hashes, oldUrl, newUrl);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// 批量移除 Tracker（单客户端）
+  Future<bool> removeTrackers(
+    ClientConfig client,
+    List<String> hashes,
+    String url,
+  ) async {
+    if (hashes.isEmpty) return true;
+    try {
+      final service = _serviceResolver(client.type);
+      await service.removeTrackers(client, hashes, url);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<bool> replaceTracker(
