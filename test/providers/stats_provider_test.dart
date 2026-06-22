@@ -88,6 +88,28 @@ class _FakeStatsService implements ITorrentClientService {
   ) async {}
 
   @override
+  Future<void> addTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    List<String> trackerUrls,
+  ) async {}
+
+  @override
+  Future<void> replaceTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String oldUrl,
+    String newUrl,
+  ) async {}
+
+  @override
+  Future<void> removeTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String trackerUrl,
+  ) async {}
+
+  @override
   Future<bool> isTorrentExist(ClientConfig config, String hash) async => false;
 
   @override

@@ -15,6 +15,12 @@ class _FakeTorrentService implements ITorrentClientService {
   /// 记录批量删除调用：(hashes, deleteFiles)
   final List<(List<String>, bool)> deleteCalls = [];
 
+  /// Tracker 操作是否抛错（用于测试失败路径）
+  bool throwsOnTracker = false;
+
+  /// 记录批量 Tracker 调用
+  final List<({String op, List<String> hashes, List<String> urls, String? oldUrl, String? newUrl})> trackerCalls = [];
+
   _FakeTorrentService.success(this.torrents)
     : error = null,
       throwsOnBatch = false,
@@ -100,6 +106,55 @@ class _FakeTorrentService implements ITorrentClientService {
   }) async {
     if (throwsOnBatch) throw Exception('batch error');
     deleteCalls.add((List<String>.from(hashes), deleteFiles));
+  }
+
+  @override
+  Future<void> addTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    List<String> trackerUrls,
+  ) async {
+    if (throwsOnTracker) throw Exception('tracker error');
+    trackerCalls.add((
+      op: 'add',
+      hashes: List<String>.from(hashes),
+      urls: List<String>.from(trackerUrls),
+      oldUrl: null,
+      newUrl: null,
+    ));
+  }
+
+  @override
+  Future<void> replaceTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String oldUrl,
+    String newUrl,
+  ) async {
+    if (throwsOnTracker) throw Exception('tracker error');
+    trackerCalls.add((
+      op: 'replace',
+      hashes: List<String>.from(hashes),
+      urls: const [],
+      oldUrl: oldUrl,
+      newUrl: newUrl,
+    ));
+  }
+
+  @override
+  Future<void> removeTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String trackerUrl,
+  ) async {
+    if (throwsOnTracker) throw Exception('tracker error');
+    trackerCalls.add((
+      op: 'remove',
+      hashes: List<String>.from(hashes),
+      urls: [trackerUrl],
+      oldUrl: null,
+      newUrl: null,
+    ));
   }
 
   @override
@@ -888,6 +943,97 @@ void main() {
       expect(result, isTrue);
     });
 
+    test('selectAll 选中当前筛选结果（而非全部种子）', () async {
+      final qb = client('qb');
+      // 3 个下载中 + 1 个做种中
+      final t1 = torrent(
+        id: '1',
+        hash: 'a',
+        state: TorrentState.downloading,
+      );
+      final t2 = torrent(
+        id: '2',
+        hash: 'b',
+        state: TorrentState.downloading,
+      );
+      final t3 = torrent(
+        id: '3',
+        hash: 'c',
+        state: TorrentState.downloading,
+      );
+      final t4 = torrent(
+        id: '4',
+        hash: 'd',
+        state: TorrentState.seeding,
+      );
+      final svc = _FakeTorrentService.success([t1, t2, t3, t4]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      // 筛选为「下载中」→ filteredTorrents 只剩 3 个
+      p.setStateFilter({TorrentState.downloading});
+      expect(p.filteredTorrents.length, 3);
+
+      p.enterSelectMode();
+      p.selectAll();
+      expect(p.selectedCount, 3);
+      expect(p.selectedHashes, containsAll(['a', 'b', 'c']));
+      expect(p.selectedHashes.contains('d'), isFalse);
+    });
+
+    test('selectAll 在无筛选时选中全部种子', () async {
+      final qb = client('qb');
+      final t1 = torrent(id: '1', hash: 'a');
+      final t2 = torrent(id: '2', hash: 'b');
+      final svc = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      p.enterSelectMode();
+      p.selectAll();
+      expect(p.selectedCount, 2);
+      expect(p.selectedHashes, containsAll(['a', 'b']));
+    });
+
+    test('toggleSelectAllOrExit：未选时进入选择模式并全选', () async {
+      final qb = client('qb');
+      final t1 = torrent(id: '1', hash: 'a');
+      final t2 = torrent(id: '2', hash: 'b');
+      final svc = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      expect(p.selectMode, isFalse);
+      p.toggleSelectAllOrExit();
+      expect(p.selectMode, isTrue);
+      expect(p.selectedCount, 2);
+    });
+
+    test('toggleSelectAllOrExit：已选时取消全选并退出选择模式', () async {
+      final qb = client('qb');
+      final t1 = torrent(id: '1', hash: 'a');
+      final svc = _FakeTorrentService.success([t1]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      p.toggleSelectAllOrExit(); // 进入并全选
+      expect(p.selectedCount, 1);
+      p.toggleSelectAllOrExit(); // 取消全选并退出
+      expect(p.selectMode, isFalse);
+      expect(p.selectedCount, 0);
+    });
+
+    test('enterSelectMode 进入选择模式', () async {
+      final qb = client('qb');
+      final svc = _FakeTorrentService.success(const []);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      expect(p.selectMode, isFalse);
+      p.enterSelectMode();
+      expect(p.selectMode, isTrue);
+    });
+
     test(
       'resumeTorrents calls service batch method and returns true',
       () async {
@@ -971,6 +1117,51 @@ void main() {
 
       final result = await provider.pauseTorrents(qb, ['a']);
       expect(result, isFalse);
+    });
+
+    test('addTrackers 转发 hashes 与 urls，空 hashes 不调用', () async {
+      final qb = client('qb');
+      final svc = _FakeTorrentService.success(const []);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      var ok = await p.addTrackers(qb, const [], const ['http://t/announce']);
+      expect(ok, isTrue);
+      expect(svc.trackerCalls, isEmpty);
+
+      ok = await p.addTrackers(qb, ['aaa', 'bbb'], const ['http://t/announce']);
+      expect(ok, isTrue);
+      expect(svc.trackerCalls.single.op, 'add');
+      expect(svc.trackerCalls.single.hashes, ['aaa', 'bbb']);
+      expect(svc.trackerCalls.single.urls, ['http://t/announce']);
+    });
+
+    test('replaceTrackers / removeTrackers 正确转发', () async {
+      final qb = client('qb');
+      final svc = _FakeTorrentService.success(const []);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      await p.replaceTrackers(qb, ['aaa'], 'http://old/', 'http://new/');
+      expect(svc.trackerCalls.single.op, 'replace');
+      expect(svc.trackerCalls.single.oldUrl, 'http://old/');
+      expect(svc.trackerCalls.single.newUrl, 'http://new/');
+
+      await p.removeTrackers(qb, ['aaa'], 'http://t/announce');
+      expect(svc.trackerCalls.last.op, 'remove');
+      expect(svc.trackerCalls.last.urls, ['http://t/announce']);
+    });
+
+    test('Tracker 操作失败返回 false 并记入 error', () async {
+      final qb = client('qb');
+      final svc = _FakeTorrentService.success(const [])
+        ..throwsOnTracker = true;
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      final ok = await p.addTrackers(qb, ['aaa'], const ['http://t/announce']);
+      expect(ok, isFalse);
+      expect(p.error, isNotNull);
     });
   });
 }
