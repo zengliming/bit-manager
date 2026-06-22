@@ -259,12 +259,21 @@ class TorrentProvider extends ChangeNotifier {
   /// - 未进入选择模式 / 已选为空 → 进入选择模式并全选当前筛选结果
   /// - 已有选中 → 取消全选并退出选择模式
   void toggleSelectAllOrExit() {
+    debugPrint(
+      '[TorrentProvider] toggleSelectAllOrExit: before selectMode=$_selectMode '
+      'selected=${_selectedHashes.length} filtered=${filteredTorrents.length}',
+    );
     if (_selectMode && _selectedHashes.isNotEmpty) {
       exitSelectMode();
+      debugPrint('[TorrentProvider] toggleSelectAllOrExit: -> exit');
     } else {
       _selectMode = true;
       _selectedHashes.addAll(filteredTorrents.map((t) => t.hash));
       notifyListeners();
+      debugPrint(
+        '[TorrentProvider] toggleSelectAllOrExit: -> selectAll '
+        'selected=${_selectedHashes.length}',
+      );
     }
   }
 

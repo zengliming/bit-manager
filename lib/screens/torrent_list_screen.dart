@@ -147,7 +147,12 @@ class TorrentListScreen extends StatelessWidget {
       ),
       floatingActionButton: () {
         final tp = context.watch<TorrentProvider>();
-        return tp.selectMode && tp.selectedCount > 0
+        final showFab = tp.selectMode && tp.selectedCount > 0;
+        debugPrint(
+          '[TorrentListScreen] FAB eval: selectMode=${tp.selectMode} '
+          'selected=${tp.selectedCount} -> show=$showFab',
+        );
+        return showFab
             ? FloatingActionButton.extended(
                 onPressed: () => showBatchOperationSheet(context),
                 icon: const Icon(Icons.adb),
