@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/client_config.dart';
 import '../models/torrent.dart';
 import '../providers/torrent_provider.dart';
 import '../providers/client_provider.dart';
 import '../widgets/torrent_tile.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/delete_torrent_dialog.dart';
 import 'torrent_detail_screen.dart';
 
 class TorrentListScreen extends StatelessWidget {
@@ -267,42 +269,40 @@ class TorrentListScreen extends StatelessWidget {
   }
 
   Future<void> _batchDelete(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text(
-          '确定要删除选中的 ${context.read<TorrentProvider>().selectedCount} 个种子吗？',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('删除', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    if (!context.mounted) return;
-
     final tp = context.read<TorrentProvider>();
     final cp = context.read<ClientProvider>();
     final selected = tp.selectedHashes.toList();
 
+    // 预计算每个客户端的智能删除方案，汇总「勾选后将删文件」的种子数用于提示
+    final perClient = <ClientConfig, List<String>>{};
+    int willDeleteFilesCount = 0;
     for (final client in cp.activeClients) {
       final hashes = tp.allTorrents
           .where((t) => selected.contains(t.hash) && t.clientId == client.id)
           .map((t) => t.hash)
           .toList();
       if (hashes.isNotEmpty) {
-        await tp.deleteTorrents(client, hashes);
+        perClient[client] = hashes;
+        willDeleteFilesCount +=
+            tp.planSmartDelete(client, hashes).deleteFilesHashes.length;
       }
+    }
+
+    final result = await showDeleteTorrentDialog(
+      context,
+      count: selected.length,
+      willDeleteFilesCount: willDeleteFilesCount,
+    );
+    if (!result.confirmed) return;
+
+    if (!context.mounted) return;
+
+    for (final entry in perClient.entries) {
+      await tp.deleteTorrentsSmart(
+        entry.key,
+        entry.value,
+        deleteFilesWhenNoCrossSeed: result.deleteFilesWhenNoCrossSeed,
+      );
     }
     tp.exitSelectMode();
   }

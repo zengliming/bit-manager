@@ -7,6 +7,7 @@ import '../providers/client_provider.dart';
 import '../services/service_factory.dart';
 import '../services/torrent_client.dart';
 import '../utils/helpers.dart';
+import '../widgets/delete_torrent_dialog.dart';
 
 class TorrentDetailScreen extends StatefulWidget {
   final Torrent torrent;
@@ -513,32 +514,27 @@ class _TorrentDetailScreenState extends State<TorrentDetailScreen> {
   }
 
   Future<void> _confirmDelete() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('删除种子'),
-        content: const Text('确定要删除这个种子吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('删除', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+    final client = _client;
+    if (client == null || !mounted) return;
+    final tp = context.read<TorrentProvider>();
+
+    // 预计算智能删除方案：这个种子删后是否还有辅种引用同一份数据
+    final plan = tp.planSmartDelete(client, [_torrent.hash]);
+    final willDeleteFiles = plan.deleteFilesHashes.isNotEmpty;
+
+    final result = await showDeleteTorrentDialog(
+      context,
+      count: 1,
+      willDeleteFilesCount: willDeleteFiles ? 1 : 0,
     );
-    if (confirmed == true && mounted) {
-      final client = _client;
-      if (client != null) {
-        await context.read<TorrentProvider>().deleteTorrents(client, [
-          _torrent.hash,
-        ]);
-        if (mounted) Navigator.pop(context);
-      }
-    }
+    if (!result.confirmed || !mounted) return;
+
+    await tp.deleteTorrentsSmart(
+      client,
+      [_torrent.hash],
+      deleteFilesWhenNoCrossSeed: result.deleteFilesWhenNoCrossSeed,
+    );
+    if (mounted) Navigator.pop(context);
   }
 
   Future<void> _showAddTrackerDialog() async {

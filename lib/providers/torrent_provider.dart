@@ -394,6 +394,94 @@ class TorrentProvider extends ChangeNotifier {
     }
   }
 
+  /// 计算智能删除方案：在 [client] 内删除 [hashes] 时，哪些种子的数据文件
+  /// 可以安全删除。
+  ///
+  /// 判定依据（与辅种数 multiSource 同源）：同一客户端内、contentPath+totalSize
+  /// 相同的种子互为辅种、指向同一份数据。若某个辅种组里**所有**种子都在删除集合
+  /// 中（删除后无人再引用该数据），则这些种子的文件可安全删除；只要组里还有
+  /// 未入选的种子（即仍有辅种会保留），就仅删种子、保留文件。
+  ///
+  /// - contentPath 为空的种子无法判定辅种关系 → 归入保留文件组（保守）。
+  /// - 不在本地缓存里的 hash（理论上不会发生）→ 保守保留文件。
+  SmartDeletePlan planSmartDelete(ClientConfig client, List<String> hashes) {
+    final hashSet = hashes.toSet();
+    final byHash = <String, Torrent>{};
+    for (final t in _allTorrents) {
+      if (t.clientId == client.id) byHash[t.hash] = t;
+    }
+
+    // 标记每个辅种组是否存在「未被删除」的成员（即删完后仍有种子引用该数据）
+    final groupHasSurvivor = <String, bool>{};
+    for (final t in byHash.values) {
+      final cp = t.contentPath;
+      if (cp == null || cp.isEmpty) continue;
+      final gk = '$cp::${t.totalSize}';
+      if (!hashSet.contains(t.hash)) {
+        groupHasSurvivor[gk] = true;
+      }
+    }
+
+    final deleteFilesHashes = <String>[];
+    final keepFilesHashes = <String>[];
+    for (final h in hashes) {
+      final t = byHash[h];
+      if (t == null) {
+        keepFilesHashes.add(h);
+        continue;
+      }
+      final cp = t.contentPath;
+      if (cp == null || cp.isEmpty) {
+        keepFilesHashes.add(h);
+        continue;
+      }
+      final gk = '$cp::${t.totalSize}';
+      if (groupHasSurvivor[gk] == true) {
+        keepFilesHashes.add(h);
+      } else {
+        deleteFilesHashes.add(h);
+      }
+    }
+    return SmartDeletePlan(
+      deleteFilesHashes: deleteFilesHashes,
+      keepFilesHashes: keepFilesHashes,
+    );
+  }
+
+  /// 智能删除：勾选「无辅种时删除文件」时使用。
+  ///
+  /// - [deleteFilesWhenNoCrossSeed] = false：等同于普通删除，全部保留文件。
+  /// - = true：按 [planSmartDelete] 拆分，无辅种（组内全删）的种子连同文件删除，
+  ///   有辅种保留的种子仅删任务。两组分别调用客户端 API（deleteFiles 不同）。
+  Future<bool> deleteTorrentsSmart(
+    ClientConfig client,
+    List<String> hashes, {
+    required bool deleteFilesWhenNoCrossSeed,
+  }) async {
+    if (!deleteFilesWhenNoCrossSeed) {
+      return deleteTorrents(client, hashes, deleteFiles: false);
+    }
+    final plan = planSmartDelete(client, hashes);
+    var ok = true;
+    if (plan.deleteFilesHashes.isNotEmpty) {
+      ok = (await deleteTorrents(
+            client,
+            plan.deleteFilesHashes,
+            deleteFiles: true,
+          )) &&
+          ok;
+    }
+    if (plan.keepFilesHashes.isNotEmpty) {
+      ok = (await deleteTorrents(
+            client,
+            plan.keepFilesHashes,
+            deleteFiles: false,
+          )) &&
+          ok;
+    }
+    return ok;
+  }
+
   Future<bool> replaceTracker(
     ClientConfig client,
     String hash,
@@ -416,4 +504,18 @@ class TorrentProvider extends ChangeNotifier {
     _searchDebounce?.cancel();
     super.dispose();
   }
+}
+
+/// 智能删除方案：将待删种子拆成「可删文件」与「保留文件」两组。
+class SmartDeletePlan {
+  /// 删除后无人引用其数据的种子 → 可连同文件删除
+  final List<String> deleteFilesHashes;
+
+  /// 仍有辅种保留的种子 → 仅删任务、保留文件
+  final List<String> keepFilesHashes;
+
+  const SmartDeletePlan({
+    required this.deleteFilesHashes,
+    required this.keepFilesHashes,
+  });
 }

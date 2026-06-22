@@ -12,6 +12,9 @@ class _FakeTorrentService implements ITorrentClientService {
   /// 按客户端 id 区分返回不同种子列表；非空时优先于 [torrents]。
   final Map<String, List<Torrent>> byClient;
 
+  /// 记录批量删除调用：(hashes, deleteFiles)
+  final List<(List<String>, bool)> deleteCalls = [];
+
   _FakeTorrentService.success(this.torrents)
     : error = null,
       throwsOnBatch = false,
@@ -96,6 +99,7 @@ class _FakeTorrentService implements ITorrentClientService {
     bool deleteFiles = false,
   }) async {
     if (throwsOnBatch) throw Exception('batch error');
+    deleteCalls.add((List<String>.from(hashes), deleteFiles));
   }
 
   @override
@@ -376,6 +380,142 @@ void main() {
         expect(p.allTorrents.firstWhere((t) => t.id == 'm2').multiSource, 1);
       },
     );
+  });
+
+  // ---- 智能删除（无辅种时删除文件）测试 ----
+  group('smart delete (deleteFilesWhenNoCrossSeed)', () {
+    final qb = ClientConfig(
+      id: 'qb',
+      name: 'Client qb',
+      type: ClientType.qBittorrent,
+      host: '127.0.0.1',
+      port: 8080,
+    );
+
+    test('无辅种种子：勾选后归入删文件组', () async {
+      final t1 = torrent(
+        id: '1',
+        hash: 'aaa',
+        contentPath: '/data/A',
+      )..totalSize = 1000;
+      final svc = _FakeTorrentService.success([t1]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      final plan = p.planSmartDelete(qb, ['aaa']);
+      expect(plan.deleteFilesHashes, ['aaa']);
+      expect(plan.keepFilesHashes, isEmpty);
+    });
+
+    test('有辅种保留：仅删种子，保留文件', () async {
+      // 两份同 contentPath 同 size 互为辅种；只删其中一份
+      final t1 = torrent(
+        id: '1',
+        hash: 'aaa',
+        contentPath: '/data/Movie',
+      )..totalSize = 1000;
+      final t2 = torrent(
+        id: '2',
+        hash: 'bbb',
+        contentPath: '/data/Movie',
+      )..totalSize = 1000;
+      final svc = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      final plan = p.planSmartDelete(qb, ['aaa']);
+      expect(plan.deleteFilesHashes, isEmpty);
+      expect(plan.keepFilesHashes, ['aaa']);
+    });
+
+    test('辅种组全部被删：可安全删文件', () async {
+      // 两份互为辅种，本次同时删除两者 → 删后无人引用 → 删文件
+      final t1 = torrent(
+        id: '1',
+        hash: 'aaa',
+        contentPath: '/data/Movie',
+      )..totalSize = 1000;
+      final t2 = torrent(
+        id: '2',
+        hash: 'bbb',
+        contentPath: '/data/Movie',
+      )..totalSize = 1000;
+      final svc = _FakeTorrentService.success([t1, t2]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      final plan = p.planSmartDelete(qb, ['aaa', 'bbb']);
+      expect(plan.deleteFilesHashes, containsAll(['aaa', 'bbb']));
+      expect(plan.keepFilesHashes, isEmpty);
+    });
+
+    test('contentPath 为空：保守保留文件', () async {
+      final t1 = torrent(id: '1', hash: 'aaa', contentPath: null);
+      final svc = _FakeTorrentService.success([t1]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      final plan = p.planSmartDelete(qb, ['aaa']);
+      expect(plan.deleteFilesHashes, isEmpty);
+      expect(plan.keepFilesHashes, ['aaa']);
+    });
+
+    test('未勾选时：全部保留文件，单次调用 deleteFiles=false', () async {
+      final t1 = torrent(
+        id: '1',
+        hash: 'aaa',
+        contentPath: '/data/A',
+      )..totalSize = 1000;
+      final svc = _FakeTorrentService.success([t1]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      final ok = await p.deleteTorrentsSmart(
+        qb,
+        ['aaa'],
+        deleteFilesWhenNoCrossSeed: false,
+      );
+      expect(ok, isTrue);
+      expect(svc.deleteCalls.length, 1);
+      expect(svc.deleteCalls.single.$1, ['aaa']);
+      expect(svc.deleteCalls.single.$2, isFalse);
+    });
+
+    test('勾选时：拆成两组分别调用，deleteFiles 标志正确', () async {
+      // a: 无辅种 → 删文件；b/c: 互为辅种但本次只删 b → 保留文件
+      final ta = torrent(
+        id: 'a',
+        hash: 'aaa',
+        contentPath: '/data/A',
+      )..totalSize = 1000;
+      final tb = torrent(
+        id: 'b',
+        hash: 'bbb',
+        contentPath: '/data/Movie',
+      )..totalSize = 2000;
+      final tc = torrent(
+        id: 'c',
+        hash: 'ccc',
+        contentPath: '/data/Movie',
+      )..totalSize = 2000;
+      final svc = _FakeTorrentService.success([ta, tb, tc]);
+      final p = TorrentProvider(serviceResolver: (_) => svc);
+      await p.refreshTorrents([qb], showLoading: false);
+
+      final ok = await p.deleteTorrentsSmart(
+        qb,
+        ['aaa', 'bbb'],
+        deleteFilesWhenNoCrossSeed: true,
+      );
+      expect(ok, isTrue);
+      expect(svc.deleteCalls.length, 2);
+      // 一组 deleteFiles=true（aaa），一组 deleteFiles=false（bbb）
+      final byFlag = {
+        for (final c in svc.deleteCalls) c.$2: c.$1,
+      };
+      expect(byFlag[true], containsAll(['aaa']));
+      expect(byFlag[false], containsAll(['bbb']));
+    });
   });
 
   // ---- 在线状态测试 ----
