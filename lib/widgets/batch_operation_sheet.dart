@@ -22,53 +22,55 @@ class _BatchOperationSheet extends StatelessWidget {
     final tp = context.read<TorrentProvider>();
     final count = tp.selectedCount;
     return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '批量操作 · 已选 $count 个',
-                style: Theme.of(context).textTheme.titleMedium,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '批量操作 · 已选 $count 个',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
             ),
-          ),
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.pause),
-            title: const Text('暂停选中'),
-            onTap: () => _runAction(context, 'pause'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.play_arrow),
-            title: const Text('恢复选中'),
-            onTap: () => _runAction(context, 'resume'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.delete_outline, color: Colors.red),
-            title: const Text('删除选中', style: TextStyle(color: Colors.red)),
-            onTap: () => _runDelete(context),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.add_link),
-            title: const Text('添加 Tracker'),
-            onTap: () => _addTrackers(context),
-          ),
-          ListTile(
-            leading: const Icon(Icons.swap_horiz),
-            title: const Text('替换 Tracker'),
-            onTap: () => _replaceTrackers(context),
-          ),
-          ListTile(
-            leading: const Icon(Icons.link_off),
-            title: const Text('删除 Tracker'),
-            onTap: () => _removeTrackers(context),
-          ),
-          const SizedBox(height: 8),
-        ],
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.pause),
+              title: const Text('暂停选中'),
+              onTap: () => _runAction(context, 'pause'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.play_arrow),
+              title: const Text('恢复选中'),
+              onTap: () => _runAction(context, 'resume'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.red),
+              title: const Text('删除选中', style: TextStyle(color: Colors.red)),
+              onTap: () => _runDelete(context),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.add_link),
+              title: const Text('添加 Tracker'),
+              onTap: () => _addTrackers(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.swap_horiz),
+              title: const Text('替换 Tracker'),
+              onTap: () => _replaceTrackers(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.link_off),
+              title: const Text('删除 Tracker'),
+              onTap: () => _removeTrackers(context),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/client_config.dart';
 import '../models/torrent.dart';
 import '../providers/torrent_provider.dart';
 import '../providers/client_provider.dart';
 import '../widgets/torrent_tile.dart';
 import '../widgets/empty_state.dart';
-import '../widgets/delete_torrent_dialog.dart';
+import '../widgets/batch_operation_sheet.dart';
 import 'torrent_detail_screen.dart';
 
 class TorrentListScreen extends StatelessWidget {
@@ -18,6 +17,18 @@ class TorrentListScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('种子'),
         actions: [
+          Consumer<TorrentProvider>(
+            builder: (ctx, tp, _) {
+              final active = tp.selectMode && tp.selectedCount > 0;
+              return IconButton(
+                icon: Icon(
+                  active ? Icons.deselect : Icons.select_all,
+                ),
+                tooltip: active ? '取消全选' : '全选',
+                onPressed: tp.toggleSelectAllOrExit,
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
@@ -126,7 +137,11 @@ class TorrentListScreen extends StatelessWidget {
       floatingActionButton: () {
         final tp = context.watch<TorrentProvider>();
         return tp.selectMode && tp.selectedCount > 0
-            ? _buildBatchActions(context)
+            ? FloatingActionButton.extended(
+                onPressed: () => showBatchOperationSheet(context),
+                icon: const Icon(Icons.adb),
+                label: Text('操作 ${tp.selectedCount}'),
+              )
             : null;
       }(),
     );
@@ -206,105 +221,14 @@ class TorrentListScreen extends StatelessWidget {
         children: [
           Text('已选 ${tp.selectedCount} 个'),
           const Spacer(),
-          TextButton(onPressed: () => tp.selectAll(), child: const Text('全选')),
+          TextButton(onPressed: tp.selectAll, child: const Text('全选')),
           TextButton(
-            onPressed: () => tp.exitSelectMode(),
-            child: const Text('取消'),
+            onPressed: tp.exitSelectMode,
+            child: const Text('取消全选'),
           ),
         ],
       ),
     );
-  }
-
-  Widget? _buildBatchActions(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FloatingActionButton.small(
-          heroTag: 'resume',
-          onPressed: () => _batchAction(context, 'resume'),
-          child: const Icon(Icons.play_arrow),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton.small(
-          heroTag: 'pause',
-          onPressed: () => _batchAction(context, 'pause'),
-          child: const Icon(Icons.pause),
-        ),
-        const SizedBox(height: 8),
-        FloatingActionButton.small(
-          heroTag: 'delete',
-          onPressed: () => _batchDelete(context),
-          child: const Icon(Icons.delete, color: Colors.red),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _batchAction(BuildContext context, String action) async {
-    final tp = context.read<TorrentProvider>();
-    final cp = context.read<ClientProvider>();
-    final selected = tp.selectedHashes.toList();
-
-    for (final client in cp.activeClients) {
-      final clientHashes = tp.allTorrents
-          .where((t) => selected.contains(t.hash) && t.clientId == client.id)
-          .map((t) => t.hash)
-          .toList();
-      if (clientHashes.isEmpty) continue;
-
-      bool ok;
-      if (action == 'resume') {
-        ok = await tp.resumeTorrents(client, clientHashes);
-      } else {
-        ok = await tp.pauseTorrents(client, clientHashes);
-      }
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(ok ? '操作成功' : '操作失败')));
-      }
-    }
-    tp.exitSelectMode();
-  }
-
-  Future<void> _batchDelete(BuildContext context) async {
-    final tp = context.read<TorrentProvider>();
-    final cp = context.read<ClientProvider>();
-    final selected = tp.selectedHashes.toList();
-
-    // 预计算每个客户端的智能删除方案，汇总「勾选后将删文件」的种子数用于提示
-    final perClient = <ClientConfig, List<String>>{};
-    int willDeleteFilesCount = 0;
-    for (final client in cp.activeClients) {
-      final hashes = tp.allTorrents
-          .where((t) => selected.contains(t.hash) && t.clientId == client.id)
-          .map((t) => t.hash)
-          .toList();
-      if (hashes.isNotEmpty) {
-        perClient[client] = hashes;
-        willDeleteFilesCount +=
-            tp.planSmartDelete(client, hashes).deleteFilesHashes.length;
-      }
-    }
-
-    final result = await showDeleteTorrentDialog(
-      context,
-      count: selected.length,
-      willDeleteFilesCount: willDeleteFilesCount,
-    );
-    if (!result.confirmed) return;
-
-    if (!context.mounted) return;
-
-    for (final entry in perClient.entries) {
-      await tp.deleteTorrentsSmart(
-        entry.key,
-        entry.value,
-        deleteFilesWhenNoCrossSeed: result.deleteFilesWhenNoCrossSeed,
-      );
-    }
-    tp.exitSelectMode();
   }
 
   void _showFilterSheet(BuildContext context) {
