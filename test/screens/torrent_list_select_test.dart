@@ -202,9 +202,17 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    // 全选前：无浮动操作按钮
+    expect(find.textContaining('操作'), findsNothing);
+
     // 全选进入选择模式
     await tester.tap(find.byIcon(Icons.select_all));
     await tester.pumpAndSettle();
+
+    // 全选后：浮动按钮「操作 1」出现（selectMode && selectedCount>0）
+    expect(find.textContaining('操作'), findsOneWidget);
+    expect(torrentProvider.selectMode, isTrue);
+    expect(torrentProvider.selectedCount, 1);
 
     // 点浮动按钮弹出面板
     await tester.tap(find.textContaining('操作'));
