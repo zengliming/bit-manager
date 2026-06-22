@@ -524,4 +524,63 @@ class QBittorrentService implements ITorrentClientService {
       sid: sid,
     );
   }
+
+  @override
+  Future<void> addTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    List<String> trackerUrls,
+  ) async {
+    if (hashes.isEmpty || trackerUrls.isEmpty) return;
+    final sid = await _login(config);
+    if (sid == null) throw Exception('Login failed');
+    await _post(
+      config,
+      '/api/v2/torrents/addTrackers',
+      data: {
+        'hashes': hashes.join('|'),
+        'urls': trackerUrls.join('\n'),
+      },
+      sid: sid,
+    );
+  }
+
+  @override
+  Future<void> replaceTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String oldUrl,
+    String newUrl,
+  ) async {
+    if (hashes.isEmpty) return;
+    final sid = await _login(config);
+    if (sid == null) throw Exception('Login failed');
+    await _post(
+      config,
+      '/api/v2/torrents/editTracker',
+      data: {
+        'hashes': hashes.join('|'),
+        'origUrl': oldUrl,
+        'newUrl': newUrl,
+      },
+      sid: sid,
+    );
+  }
+
+  @override
+  Future<void> removeTrackers(
+    ClientConfig config,
+    List<String> hashes,
+    String trackerUrl,
+  ) async {
+    if (hashes.isEmpty) return;
+    final sid = await _login(config);
+    if (sid == null) throw Exception('Login failed');
+    await _post(
+      config,
+      '/api/v2/torrents/removeTrackers',
+      data: {'hashes': hashes.join('|'), 'urls': trackerUrl},
+      sid: sid,
+    );
+  }
 }
