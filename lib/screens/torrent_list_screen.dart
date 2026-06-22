@@ -148,10 +148,6 @@ class TorrentListScreen extends StatelessWidget {
       floatingActionButton: () {
         final tp = context.watch<TorrentProvider>();
         final showFab = tp.selectMode && tp.selectedCount > 0;
-        debugPrint(
-          '[TorrentListScreen] FAB eval: selectMode=${tp.selectMode} '
-          'selected=${tp.selectedCount} -> show=$showFab',
-        );
         return showFab
             ? Padding(
                 // 上移避开外层悬浮底部导航栏（FloatingNavBar 高 64 + margin），
