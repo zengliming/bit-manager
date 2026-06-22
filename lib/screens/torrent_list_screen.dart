@@ -89,41 +89,52 @@ class TorrentListScreen extends StatelessWidget {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () => tp.refreshTorrents(cp.activeClients),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    itemCount:
-                        tp.filteredTorrents.length + (tp.loading ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (tp.loading && index == 0) {
-                        return const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
-                      final t = tp.loading
-                          ? tp.filteredTorrents[index - 1]
-                          : tp.filteredTorrents[index];
-                      return TorrentTile(
-                        torrent: t,
-                        selectMode: tp.selectMode,
-                        isSelected: tp.selectedHashes.contains(t.hash),
-                        onLongPress: () {
-                          if (!tp.selectMode) {
-                            tp.enterSelectMode();
-                            tp.toggleSelection(t.hash);
-                          }
-                        },
-                        onTap: () {
-                          if (tp.selectMode) {
-                            tp.toggleSelection(t.hash);
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => TorrentDetailScreen(torrent: t),
-                              ),
+                  child: Builder(
+                    builder: (listCtx) {
+                      // filteredTorrents 是每次访问都重算的 getter；
+                      // itemCount 与 itemBuilder 分两次访问会在 provider
+                      // 数据刷新瞬间拿到不一致的 length（加载完成时列表
+                      // 变长，旧帧 itemCount 越界 → RangeError）。这里算一次
+                      // 缓存，保证两处用同一份列表。
+                      final torrents = tp.filteredTorrents;
+                      final loading = tp.loading;
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        itemCount: torrents.length + (loading ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (loading && index == 0) {
+                            return const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Center(child: CircularProgressIndicator()),
                             );
                           }
+                          final t = loading
+                              ? torrents[index - 1]
+                              : torrents[index];
+                          return TorrentTile(
+                            torrent: t,
+                            selectMode: tp.selectMode,
+                            isSelected: tp.selectedHashes.contains(t.hash),
+                            onLongPress: () {
+                              if (!tp.selectMode) {
+                                tp.enterSelectMode();
+                                tp.toggleSelection(t.hash);
+                              }
+                            },
+                            onTap: () {
+                              if (tp.selectMode) {
+                                tp.toggleSelection(t.hash);
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        TorrentDetailScreen(torrent: t),
+                                  ),
+                                );
+                              }
+                            },
+                          );
                         },
                       );
                     },
