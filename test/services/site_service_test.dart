@@ -70,6 +70,68 @@ void main() {
     });
   });
 
+  group('extractHtmlRedirect', () {
+    test('meta refresh 跳转：相对路径解析为绝对 URL', () {
+      const html = '''
+<html><head>
+<title>Redirecting...</title>
+<meta http-equiv="refresh" content="0; url=/index.php">
+</head><body>Redirecting to <a href="/index.php">/index.php</a>.</body></html>
+''';
+      expect(
+        SiteService.extractHtmlRedirectForTest(html, 'https://lemonhd.org/'),
+        'https://lemonhd.org/index.php',
+      );
+    });
+
+    test('meta refresh 跳转：带延迟与引号的 url', () {
+      const html =
+          '<meta http-equiv="refresh" content="1;url=https://lemonhd.org/main.php">';
+      expect(
+        SiteService.extractHtmlRedirectForTest(html, 'https://lemonhd.org/'),
+        'https://lemonhd.org/main.php',
+      );
+    });
+
+    test('title 为 Redirecting 时的 JS location 跳转', () {
+      const html = '''
+<html><head><title>Redirecting...</title></head>
+<body><script>window.location.href="/login.php";</script></body></html>
+''';
+      expect(
+        SiteService.extractHtmlRedirectForTest(html, 'https://lemonhd.org/'),
+        'https://lemonhd.org/login.php',
+      );
+    });
+
+    test('大页面（≥24KB）不触发跳转提取，避免误伤真实首页', () {
+      final big = '<html><head><title>首页</title></head>'
+          '<body>${'x' * (24 * 1024)}</body></html>';
+      expect(
+        SiteService.extractHtmlRedirectForTest(big, 'https://lemonhd.org/'),
+        isNull,
+      );
+    });
+
+    test('长延迟 meta refresh（>3s）不视为跳转桩', () {
+      const html =
+          '<meta http-equiv="refresh" content="10; url=/somewhere.php">';
+      expect(
+        SiteService.extractHtmlRedirectForTest(html, 'https://lemonhd.org/'),
+        isNull,
+      );
+    });
+
+    test('普通页面无跳转特征返回 null', () {
+      const html = '<html><head><title>首页</title></head>'
+          '<body><a href="/userdetails.php?id=1">用户</a></body></html>';
+      expect(
+        SiteService.extractHtmlRedirectForTest(html, 'https://lemonhd.org/'),
+        isNull,
+      );
+    });
+  });
+
   group('parseHtml — NexusPHP', () {
     const html = '''
 <html><body>

@@ -267,30 +267,106 @@ class SiteService {
   }
 
   /// 拉取一个 URL 的 HTML，失败返回 null
+  ///
+  /// 除 HTTP 3xx 自动跟随外，还会处理 HTML 级跳转（meta refresh / JS location）——
+  /// 部分 PT 站（如 lemonhd.org）的首页直接返回 200 + `<meta http-equiv="refresh">`
+  /// 或 `window.location` 跳转页（title 为 "Redirecting..."），而非 HTTP 3xx，
+  /// dio 的 followRedirects 不会跟随这类跳转，需要在这里补一次。
   Future<String?> _getHtml(String url, String cookie) async {
-    final response = await _dio.get<List<int>>(
-      url,
-      options: Options(
-        headers: {
-          'Cookie': cookie,
-          'User-Agent':
-              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-              '(KHTML, like Gecko) Chrome/120.0 Safari/537.36',
-          'Accept':
-              'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
-        followRedirects: true,
-        responseType: ResponseType.bytes,
-        validateStatus: (s) => s != null && s < 500,
-      ),
-    );
-    _log('GET $url -> ${response.statusCode} (final: ${response.realUri})');
-    if (response.statusCode != 200) return null;
-    final bytes = response.data;
-    if (bytes == null || bytes.isEmpty) return null;
-    // 容错解码：站点偶尔返回非严格 UTF-8（GB2312/GBK 等），allowMalformed 防抛
-    final html = utf8.decode(Uint8List.fromList(bytes), allowMalformed: true);
-    return html.isEmpty ? null : html;
+    var currentUrl = url;
+    final visited = <String>{};
+    for (var hop = 0; hop < 5; hop++) {
+      // 已访问过同一 URL 则中止，避免死循环
+      if (!visited.add(currentUrl)) {
+        _log('HTML redirect loop detected at $currentUrl, stop.');
+        return null;
+      }
+      final response = await _dio.get<List<int>>(
+        currentUrl,
+        options: Options(
+          headers: {
+            'Cookie': cookie,
+            'User-Agent':
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                '(KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+            'Accept':
+                'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          },
+          followRedirects: true,
+          responseType: ResponseType.bytes,
+          validateStatus: (s) => s != null && s < 500,
+        ),
+      );
+      _log('GET $currentUrl -> ${response.statusCode} (final: ${response.realUri})');
+      if (response.statusCode != 200) return null;
+      final bytes = response.data;
+      if (bytes == null || bytes.isEmpty) return null;
+      // 容错解码：站点偶尔返回非严格 UTF-8（GB2312/GBK 等），allowMalformed 防抛
+      final html = utf8.decode(Uint8List.fromList(bytes), allowMalformed: true);
+      if (html.isEmpty) return null;
+
+      // 检测 HTML 级跳转：仅在「看起来像跳转桩」的小页面（< 24KB）上触发，
+      // 避免误伤真实首页里的偶发 meta refresh。
+      final target = _extractHtmlRedirect(html, response.realUri.toString());
+      if (target != null && target != currentUrl) {
+        _log('HTML redirect: $currentUrl -> $target (hop ${hop + 1})');
+        currentUrl = target;
+        continue;
+      }
+      return html;
+    }
+    _log('HTML redirect 跟随超过 5 跳，中止。');
+    return null;
+  }
+
+  /// 从 HTML 中抽取 HTML 级跳转目标 URL（已相对 baseUrl 解析为绝对地址）。
+  /// 返回 null 表示该页面不是跳转桩。
+  ///
+  /// 触发条件（需同时满足）：
+  /// 1. 页面较小（< 24KB）—— 真实首页/详情页通常远大于此；
+  /// 2. 命中以下任一跳转特征：
+  ///    - `<meta http-equiv="refresh" content="0; url=...">`（延迟 ≤ 3s）
+  ///    - title 含 "redirect" 且存在 JS `location[.href][.replace](...) = "..."` 跳转
+  String? _extractHtmlRedirect(String html, String baseUrl) {
+    if (html.length >= 24 * 1024) return null;
+
+    // meta http-equiv="refresh" content="0; url=/login.php"
+    final meta = RegExp(
+      r'''<meta[^>]+http-equiv\s*=\s*["']?refresh["']?[^>]*content\s*=\s*["']?\s*(\d+)\s*;\s*url\s*=\s*([^"'>\s]+)''',
+      caseSensitive: false,
+    ).firstMatch(html);
+    if (meta != null) {
+      final delay = int.tryParse(meta.group(1) ?? '0') ?? 0;
+      if (delay <= 3) {
+        return _resolveRedirectTarget(baseUrl, meta.group(2)!);
+      }
+    }
+
+    // title 含 redirect 时，才尝试 JS location 跳转（降低误伤）
+    final title = RegExp(
+      r'<title[^>]*>([\s\S]*?)</title>',
+      caseSensitive: false,
+    ).firstMatch(html)?.group(1)?.toLowerCase() ?? '';
+    if (title.contains('redirect')) {
+      final js = RegExp(
+        r'''(?:window\.)?location(?:\.href)?(?:\.replace)?\s*=\s*["']([^"']+)["']''',
+        caseSensitive: false,
+      ).firstMatch(html);
+      if (js != null) return _resolveRedirectTarget(baseUrl, js.group(1)!);
+    }
+
+    return null;
+  }
+
+  /// 将跳转目标（可能是相对路径）解析为绝对 URL
+  String _resolveRedirectTarget(String baseUrl, String target) {
+    final cleaned = target.trim();
+    if (cleaned.isEmpty) return baseUrl;
+    try {
+      return Uri.parse(baseUrl).resolveUri(Uri.parse(cleaned)).toString();
+    } catch (_) {
+      return baseUrl;
+    }
   }
 
   /// 把相对路径 `/userdetails.php?id=1` 拼到 baseUrl 上
@@ -305,6 +381,13 @@ class SiteService {
   @visibleForTesting
   SiteUserInfo parseIndexHtml(String siteId, String html) =>
       _parseIndexHtml(siteId, html);
+
+  /// 暴露给测试：从 HTML 中抽取 HTML 级跳转目标（已解析为绝对 URL），无则返回 null
+  @visibleForTesting
+  static String? extractHtmlRedirectForTest(String html, String baseUrl) {
+    final svc = SiteService();
+    return svc._extractHtmlRedirect(html, baseUrl);
+  }
 
   @visibleForTesting
   void mergeDetailHtml(
